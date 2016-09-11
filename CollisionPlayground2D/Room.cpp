@@ -69,18 +69,18 @@ void Room::markCollidingTiles(const Shape& collider, const units::Coordinate2D o
 
 	// Determine which side of the tiles (in the array) to check for innerAxisStart and innerAxisEnd.
 	// This combined with the tiles from the outer loop lets us determine the p in y = m(p - q) + b, where p - q = x.
-	const units::Coordinate innerAxisStartTileSide = isOuterAxisX ? xDir == RIGHT ? util::tileToCoord(1) : 0.0f :
-		                                                            yDir == DOWN  ? util::tileToCoord(1) : 0.0f;
+	const units::Coordinate innerAxisStartTileSide = isOuterAxisX ? xDir == RIGHT ? 0.0f : util::tileToCoord(1):
+		                                                            yDir == DOWN  ? 0.0f : util::tileToCoord(1);
 	const units::Coordinate innerAxisEndTileSide = innerAxisStartTileSide == 0.0f ? util::tileToCoord(1) : 0.0f;
 
 	// Determine the slope origins. This acts like q in y = m(p - q) + b, where p - q = x.
 	const units::Coordinate innerAxisStartOrigin = isOuterAxisX ? origin.x + collider.side(xDir) : origin.y + collider.side(yDir);
 	const units::Coordinate innerAxisEndOrigin =   isOuterAxisX ? origin.x + collider.side(oppositeDirection(xDir)) : 
-		                                                           origin.y + collider.side(oppositeDirection(yDir));
+		                                                          origin.y + collider.side(oppositeDirection(yDir));
 
 	// Determine where to offset the slopes from. This acts like the b in y = mx + b.
 	const units::Coordinate innerAxisStartOffset = isOuterAxisX ? origin.y + collider.side(oppositeDirection(yDir)) :
-		                                                           origin.x + collider.side(oppositeDirection(xDir));
+		                                                          origin.x + collider.side(oppositeDirection(xDir));
 	const units::Coordinate innerAxisEndOffset =   isOuterAxisX ? origin.y + collider.side(yDir) : origin.x + collider.side(xDir);
 
 	for (units::Tile i = outerAxisStart; i != outerAxisEnd + outerIncr; i += outerIncr) {

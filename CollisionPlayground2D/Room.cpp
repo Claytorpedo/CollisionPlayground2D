@@ -90,10 +90,10 @@ void Room::markCollidingTiles(const Shape& collider, const units::Coordinate2D o
 		const units::Tile calculatedStart = util::coordToTile(slope * (util::tileToCoord(i) + innerAxisStartTileSide - innerAxisStartOrigin) + innerAxisStartOffset);
 		const units::Tile calculatedEnd =   util::coordToTile(slope * (util::tileToCoord(i) + innerAxisEndTileSide   - innerAxisEndOrigin  ) + innerAxisEndOffset);
 		// Clamp values by limits.
-		const units::Tile start = slope > 0.0f ? ( calculatedStart < innerAxisStart ? innerAxisStart : calculatedStart ) :
-			                                     ( calculatedStart > innerAxisStart ? innerAxisStart : calculatedStart);
-		const units::Tile end = slope > 0.0f ? ( calculatedEnd > innerAxisEnd ? innerAxisEnd : calculatedEnd ) :
-			                                   ( calculatedEnd < innerAxisEnd ? innerAxisEnd : calculatedEnd );
+		const units::Tile start = isMax(innerDir) ? ( calculatedStart < innerAxisStart ? innerAxisStart : calculatedStart ) :
+			                                        ( calculatedStart > innerAxisStart ? innerAxisStart : calculatedStart);
+		const units::Tile end =   isMax(innerDir) ? ( calculatedEnd > innerAxisEnd ? innerAxisEnd : calculatedEnd ) :
+			                                      ( calculatedEnd < innerAxisEnd ? innerAxisEnd : calculatedEnd );
 
 		for (units::Tile k = start; k != end + innerIncr; k += innerIncr) {
 			const units::Tile row = isOuterAxisX ? k : i;

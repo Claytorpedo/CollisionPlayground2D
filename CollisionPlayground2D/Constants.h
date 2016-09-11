@@ -11,7 +11,7 @@ namespace constants {
 	const units::MS         SECOND_MILLIS = 1000;
 	const units::MS         MAX_FRAME_TIME = 50; // The maximum lengh one frame of gameplay can last in MS.
 	const units::Coordinate EPSILON = 0.00001f;  // Float equality tolerance.
-	const units::Pixel      TILE_SIZE = 64;
+	const units::Pixel      TILE_SIZE = 16;
 
 	// For the loading textures to work, the order of this enum and the following string paths must be the same.
 	enum ObjectTextures {

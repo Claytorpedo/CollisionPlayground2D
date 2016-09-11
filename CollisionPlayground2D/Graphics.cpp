@@ -34,38 +34,23 @@ void Graphics::renderRect(SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Ui
 	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
 	SDL_RenderDrawRect(renderer_, &rect);
 
-	if (thickness > 1) {
-		Uint8 first = static_cast<Uint8>(thickness/2.0f - 0.5f);
-		Uint8 second = static_cast<Uint8>(thickness/2.0f + 0.5f);
-		// Expand outwards.
-		for (Uint8 i = 0; i < first; ++i) {
-			SDL_Rect r = { rect.x-i, rect.y-i, rect.w+i*2, rect.h+i*2 };
-			SDL_RenderDrawRect(renderer_, &r);
-		}
-		// Expand inwards.
-		for (Uint8 i = 0; i < second; ++i) {
-			SDL_Rect r = { rect.x+i, rect.y+i, rect.w-i*2, rect.h-i*2 };
-			SDL_RenderDrawRect(renderer_, &r);
-		}
+	if (thickness < 2)
+		return;
+	for (Uint8 i = 1; i < thickness; ++i) {
+		SDL_Rect r = { rect.x+i, rect.y+i, rect.w-i*2, rect.h-i*2 };
+		SDL_RenderDrawRect(renderer_, &r);
 	}
 }
+
 void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint8 thickness) const {
 	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
 	SDL_RenderDrawLine(renderer_, start.x, start.y, end.x, end.y);
 
-	if (thickness > 1) {
-		Uint8 first = static_cast<Uint8>(thickness/2.0f - 0.5f);
-		Uint8 second = static_cast<Uint8>(thickness/2.0f + 0.5f);
-		// Expand outwards.
-		for (Uint8 i = 0; i < first; ++i) {
-			SDL_RenderDrawLine(renderer_, start.x-i, start.y, end.x-i, end.y);
-			SDL_RenderDrawLine(renderer_, start.x, start.y-i, end.x, end.y-i);
-		}
-		// Expand inwards.
-		for (Uint8 i = 0; i < second; ++i) {
-			SDL_RenderDrawLine(renderer_, start.x+i, start.y, end.x+i, end.y);
-			SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
-		}
+	if (thickness < 2)
+		return;
+	for (Uint8 i = 1; i < thickness; ++i) {
+		SDL_RenderDrawLine(renderer_, start.x+i, start.y, end.x+i, end.y);
+		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
 void Graphics::renderPoly(std::vector<SDL_Point>& points, Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {

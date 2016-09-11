@@ -13,11 +13,12 @@ using namespace units;
 class Rectangle : public Shape {
 public:
 	Coordinate x, y, w, h;
+	Uint8 r, g, b, a;
 
-	Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f){}
-	Rectangle(Coordinate x, Coordinate y, Coordinate w, Coordinate h) : x(x), y(y), w(w), h(h){}
-	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h){}
-	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h){}
+	Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f), r(0), g(0), b(255), a(255){}
+	Rectangle(Coordinate x, Coordinate y, Coordinate w, Coordinate h) : x(x), y(y), w(w), h(h), r(0), g(0), b(255), a(255){}
+	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h), r(0), g(0), b(255), a(255){}
+	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h), r(0), g(0), b(255), a(255){}
 
 	inline Coordinate2D position() const { return Coordinate2D(x, y); }
 	inline Coordinate2D center()   const { return Coordinate2D(x + w*0.5f, y + h*0.5f); }
@@ -42,6 +43,8 @@ public:
 	bool collides(const LineSegment& line) const;
 
 	virtual void draw(Graphics& graphics, bool isColliding) const;
+	void draw(Graphics& graphics, bool isColliding, Uint8 thickness) const;
+	void setColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
 
 	virtual Polygon toPoly() const;
 };

@@ -11,8 +11,8 @@ class Shape;
 class Graphics;
 
 namespace room {
-	static const Uint8 height = 12;
-	static const Uint8 width = 20;
+	static const Uint8 height = 12*4;
+	static const Uint8 width = 20*4;
 }
 
 class Room {

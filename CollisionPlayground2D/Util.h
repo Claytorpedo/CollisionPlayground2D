@@ -2,6 +2,7 @@
 #define _UTIL_H_
 
 #include <cmath>
+#include <SDL.h>
 
 #include "Units.h"
 #include "Constants.h"
@@ -28,6 +29,10 @@ namespace util {
 	}
 	inline units::MS fpsToMillis( const units::FPS fps ) {
 		return fps == 0 ? 0 : static_cast<units::MS>( constants::SECOND_MILLIS / fps );
+	}
+	inline SDL_Point coord2DToSDLPoint( const units::Coordinate2D c ) {
+		SDL_Point p = {static_cast<int>(c.x), static_cast<int>(c.y)};
+		return p;
 	}
 	template<typename T>
 	inline bool isZero(const T t) { // Use for floating point numbers.

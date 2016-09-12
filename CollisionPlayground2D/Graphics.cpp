@@ -30,8 +30,12 @@ bool Graphics::init() {
 	}
 	return true;
 }
-void Graphics::renderRect(SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint8 thickness) const {
+
+void Graphics::setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {
 	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
+}
+
+void Graphics::renderRect(SDL_Rect& rect, Uint8 thickness) const {
 	SDL_RenderDrawRect(renderer_, &rect);
 
 	if (thickness < 2)
@@ -42,8 +46,7 @@ void Graphics::renderRect(SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Ui
 	}
 }
 
-void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 r, Uint8 g, Uint8 b, Uint8 a, Uint8 thickness) const {
-	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
+void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 thickness) const {
 	SDL_RenderDrawLine(renderer_, start.x, start.y, end.x, end.y);
 
 	if (thickness < 2)
@@ -53,10 +56,26 @@ void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 r, Uint8 g, Ui
 		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
-void Graphics::renderPoly(std::vector<SDL_Point>& points, Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {
-	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
+void Graphics::renderPoly(std::vector<SDL_Point>& points) const {
 	points.push_back(points[0]); // Duplicate the last point to close the shape.
 	SDL_RenderDrawLines(renderer_, points.data(), points.size());
+}
+void Graphics::renderPoint(SDL_Point& point, Uint8 pointSize) const {
+	SDL_RenderDrawPoint(renderer_, point.x, point.y);
+
+	if (pointSize < 2)
+		return;
+	int s = static_cast<int>(pointSize);
+	int s2 = s*s;
+	for (int i = -s; i < s; ++i) {
+		for (int j = -s; j < s; ++j) {
+			if (i == 0 && j == 0)
+				continue; // Already drew the center;
+			if (i*i + j*j > s2)
+				continue; // Not inside the circle.
+			SDL_RenderDrawPoint(renderer_, point.x+i, point.y+j);
+		}
+	}
 }
 
 void Graphics::clear() {

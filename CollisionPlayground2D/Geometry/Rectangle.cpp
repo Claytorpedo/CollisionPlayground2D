@@ -42,10 +42,12 @@ bool Rectangle::collides(const LineSegment& l) const {
 }
 
 void Rectangle::draw(Graphics& graphics, bool isColliding) const {
-	graphics.renderRect(convertToSDLRect(), isColliding ? 255 : r, isColliding ? 0 : g, isColliding ? 0 : b, isColliding ? 255 : a);
+	graphics.setRenderColour(isColliding ? 255 : r, isColliding ? 0 : g, isColliding ? 0 : b, isColliding ? 255 : a);
+	graphics.renderRect(convertToSDLRect());
 }
 void Rectangle::draw(Graphics& graphics, bool isColliding, Uint8 thickness) const {
-	graphics.renderRect(convertToSDLRect(), isColliding ? 255 : r, isColliding ? 0 : g, isColliding ? 0 : b, isColliding ? 255 : a, thickness);
+	graphics.setRenderColour(isColliding ? 255 : r, isColliding ? 0 : g, isColliding ? 0 : b, isColliding ? 255 : a);
+	graphics.renderRect(convertToSDLRect(), thickness);
 }
 void Rectangle::setColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
 	this->r = r; this->g = g; this->b = b; this->a = a;

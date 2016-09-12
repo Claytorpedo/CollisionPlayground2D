@@ -33,7 +33,8 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 		SDL_Point p = { static_cast<int>(vertices_[i].x), static_cast<int>(vertices_[i].y) };
 		points.push_back(p);
 	}
-	graphics.renderPoly(points, isColliding ? 255 : 0, isColliding ? 0 : 255, 0, 255);
+	graphics.setRenderColour(isColliding ? 255 : 0, isColliding ? 0 : 255, 0, 255);
+	graphics.renderPoly(points);
 }
 
 Polygon Polygon::toPoly() const {

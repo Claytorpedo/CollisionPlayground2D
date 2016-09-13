@@ -1,12 +1,14 @@
 #include <SDL.h>
 #include <iostream>
 #include <random>
+#include <vector>
 
 #include "Room.h"
 #include "Input.h"
 #include "Graphics.h"
 #include "Constants.h"
 #include "Units.h"
+#include "Geometry/LineSegment.h"
 #include "Geometry/Rectangle.h"
 
 void close() {
@@ -36,38 +38,26 @@ int main (int argc, char* args[]) {
 	std::uniform_real_distribution<units::Coordinate> distSize(util::tileToPixel(2), util::tileToPixel(4));
 	std::uniform_int_distribution<units::Pixel> distDelta(-util::tileToPixel(20), util::tileToPixel(20));
 
-	Rectangle rect(0, 0, distSize(twister), distSize(twister));
-	Coordinate2D position(distX(twister), distY(twister));
-	Coordinate2D delta(distDelta(twister), distDelta(twister));
+	Rectangle rect(distX(twister), distY(twister), distSize(twister), distSize(twister));
 
+	//const Uint8 numLines = 10;
+	std::vector<LineSegment> lines;
+	//lines.reserve(numLines);
+	/*for (Uint8 i = 0; i < numLines; ++i) {
+		Coordinate2D start(distX(twister), distY(twister));
+		Coordinate2D end(distX(twister), distY(twister));
+		lines.push_back(LineSegment(start, end));
+	}*/
+	lines.push_back(LineSegment(500, 500, 400, 500));
+	//lines.push_back(LineSegment(500, 500, 400, 500));
+	//lines.push_back(LineSegment(500, 500, 600, 500));
+	//lines.push_back(LineSegment(500, 500, 500, 600));
+	lines.push_back(LineSegment(100, 100, 400, 400));
+	lines.push_back(LineSegment(100, 101, 400, 401));
+	lines.push_back(LineSegment(100, 101.5, 400, 401.5));
+	lines.push_back(LineSegment(500, 500.01, 400, 500.01));
 
 	previousTime = SDL_GetTicks();
-
-	room.markCollidingTiles(rect, position, delta);
-
-	graphics.clear();
-	room.draw(graphics);
-	Rectangle r(position, rect.w, rect.h);
-	r.setColour(0,255,255,255);
-	r.draw(graphics, false, 3);
-	// Top left to delta
-	SDL_Point o = { static_cast<int>(position.x), static_cast<int>(position.y) };
-	SDL_Point e = { static_cast<int>(position.x + delta.x), static_cast<int>(position.y + delta.y) };
-	graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-	// Top right to delta.
-	o.x += static_cast<int>(r.w);
-	e.x += static_cast<int>(r.w);
-	graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-	// Bottom right to delta
-	o.y += static_cast<int>(r.h);
-	e.y += static_cast<int>(r.h);
-	graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-	// Bottom left to delta
-	o.x -= static_cast<int>(r.w);
-	e.x -= static_cast<int>(r.w);
-	graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-
-	graphics.present();
 
 	// start game loop
 	while (true) {
@@ -76,38 +66,13 @@ int main (int argc, char* args[]) {
 		if (input.wasKeyPressed( Input::ESC ) )
 			break;
 		if (input.wasKeyPressed( Input::R) ) {
-			rect.w = distSize(twister);
-			rect.h = distSize(twister);
-			position = Coordinate2D(distX(twister), distY(twister));
-			delta = Coordinate2D(distDelta(twister), distDelta(twister));
-			room.reset();
-
-			room.markCollidingTiles(rect, position, delta);
-
-			graphics.clear();
-			room.draw(graphics);
-			Rectangle r(position, rect.w, rect.h);
-			r.setColour(0,255,255,255);
-			r.draw(graphics, false, 3);
-			// Top left to delta
-			SDL_Point o = { static_cast<int>(position.x), static_cast<int>(position.y) };
-			SDL_Point e = { static_cast<int>(position.x + delta.x), static_cast<int>(position.y + delta.y) };
-			graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-			// Top right to delta.
-			o.x += static_cast<int>(r.w);
-			e.x += static_cast<int>(r.w);
-			graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-			// Bottom right to delta
-			o.y += static_cast<int>(r.h);
-			e.y += static_cast<int>(r.h);
-			graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-			// Bottom left to delta
-			o.x -= static_cast<int>(r.w);
-			e.x -= static_cast<int>(r.w);
-			graphics.renderLine(o, e, 255, 255, 0, 255, 1);
-
-			graphics.present();
-
+			rect = Rectangle(distX(twister), distY(twister), distSize(twister), distSize(twister));
+			/*lines.clear();
+			for (Uint8 i = 0; i < numLines; ++i) {
+				Coordinate2D start(distX(twister), distY(twister));
+				Coordinate2D end(distX(twister), distY(twister));
+				lines.push_back(LineSegment(start, end));
+			}*/
 			previousTime = SDL_GetTicks();
 			continue;
 		}
@@ -118,9 +83,37 @@ int main (int argc, char* args[]) {
 
 		previousTime = currentTime;
 
-		units::MS frameDur = SDL_GetTicks() - currentTime;
-		if (frameDur < 16)
-			SDL_Delay(16 - frameDur);
+		graphics.clear();
+
+		// Find all the collisions.
+		bool isRectColliding = false;
+		std::vector<bool> isLineColliding(lines.size());
+		std::vector<SDL_Point> points;
+		for (std::size_t i = 0; i < lines.size(); ++i) {
+			if (rect.collides(lines[i])) {
+				isRectColliding = true;
+				isLineColliding[i] = true;
+			}
+			for (std::size_t j = i+1; j < lines.size(); ++j) {
+				units::Coordinate2D p;
+				if (lines[i].intersects(lines[j], p) ) {
+					isLineColliding[i] = true;
+					isLineColliding[j] = true;
+					points.push_back(util::coord2DToSDLPoint(p));
+				}
+			}
+			isLineColliding[i] ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0,0,255);
+			graphics.renderLine(util::coord2DToSDLPoint(lines[i].start), util::coord2DToSDLPoint(lines[i].end));
+		}
+		rect.draw(graphics, isRectColliding);
+		graphics.setRenderColour(255,255,0);
+		for (std::size_t p = 0; p < points.size(); ++p) {
+			graphics.renderPoint(points[p], 2);
+		}
+
+		// At a glace it looks like line segments and rectangle collisions are accurate. Should cook up some actual unit tests tomorrow to see for sure.
+
+		graphics.present();
 	}
 	close();
 	return 0;

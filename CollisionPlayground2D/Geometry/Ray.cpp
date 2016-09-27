@@ -39,29 +39,26 @@ bool Ray::intersects(const LineSegment& o, units::Coordinate2D& out_intersection
 		}
 		return false;
 	}
-	// TODO: this is still wrong.
 	const units::Coordinate2D s = o.end - o.start;
 	const units::Coordinate2D qp = o.start - origin;
 	const units::Coordinate rxs = dir.cross(s);
 	const units::Coordinate qpxr = qp.cross(dir);
 	if (rxs == 0 && qpxr == 0) {
 		// Lines are colinear. Test for overlap.
-		// Don't have to worry about r being zero, since we tested for points already.
 		const units::Coordinate recip = 1/dir.dot(dir); // Save a division.
 		const units::Coordinate t0 = qp.dot(dir) * recip;
 		const units::Coordinate s_dot_r = s.dot(dir);
-		const units::Coordinate t1 = t0 + s_dot_r * recip;
 		// See if the lines overlap.
 		if (s_dot_r < 0) {
-			if (0 <= t0 && t1 <= 1) {
-				// Get closest intersect (to start point) for the ray.
-				out_intersection = origin + t0*dir;
+			if (0 <= t0) {
+				// Get closest intersect (to origin) for the ray.
+				out_intersection = origin + (t0 + s_dot_r * recip)*dir;
 				return true;
 			}
 		} else {
-			if (0 <= t1 && t0 <= 1) {
-				// Get closest intersect (to start point) for the ray.
-				out_intersection = origin + t1*dir;
+			if (0 <= (t0 + s_dot_r * recip)) {
+				// Get closest intersect (to origin) for the ray.
+				out_intersection = origin + t0*dir;
 				return true;
 			}
 		}			
@@ -75,7 +72,7 @@ bool Ray::intersects(const LineSegment& o, units::Coordinate2D& out_intersection
 	const units::Coordinate recip = 1/rxs; // Save a division.
 	const units::Coordinate t = qp.cross(s) * recip;
 	const units::Coordinate u = qpxr * recip;
-	if (0 <= t && t <= 1 && 0 <= u && u <= 1) {
+	if (0 <= t && 0 <= u && u <= 1) {
 		// They intersect.
 		out_intersection = origin + t*dir;
 		return true;

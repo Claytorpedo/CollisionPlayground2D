@@ -56,6 +56,16 @@ void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 thickness) con
 		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
+void Graphics::renderRay(const SDL_Point& origin, const units::Coordinate2D& dir) const {
+	std::vector<SDL_Point> points;
+	points.reserve(500);
+	// Just draw an arbitrary length.
+	for (int i = 0; i < 1500; i+=3) {
+		SDL_Point p = {static_cast<int>(origin.x + dir.x*i), static_cast<int>(origin.y + dir.y*i)};
+		points.push_back(p);
+	}
+	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
+}
 void Graphics::renderPoly(std::vector<SDL_Point>& points) const {
 	points.push_back(points[0]); // Duplicate the last point to close the shape.
 	SDL_RenderDrawLines(renderer_, points.data(), points.size());
@@ -74,6 +84,17 @@ void Graphics::renderPoint(SDL_Point& point, Uint8 pointSize) const {
 			if (i*i + j*j > s2)
 				continue; // Not inside the circle.
 			SDL_RenderDrawPoint(renderer_, point.x+i, point.y+j);
+		}
+	}
+}
+void Graphics::renderCircle(const SDL_Point& center, Uint8 radius) const {
+	int r = static_cast<int>(radius);
+	int r2 = r*r;
+	for (int i = -r; i < r; ++i) {
+		for (int j = -r; j < r; ++j) {
+			if (i*i + j*j > r2)
+				continue; // Not inside the circle.
+			SDL_RenderDrawPoint(renderer_, center.x+i, center.y+j);
 		}
 	}
 }

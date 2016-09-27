@@ -4,6 +4,8 @@
 #include <SDL.h>
 #include <vector>
 
+#include "Units.h"
+
 class Graphics {
 private:
 	SDL_Window* window_;
@@ -18,8 +20,10 @@ public:
 	void setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a=255) const;
 	void renderRect(SDL_Rect& rect, Uint8 thickness=1) const;
 	void renderLine(SDL_Point& start, SDL_Point& end, Uint8 thickness=1) const;
+	void renderRay(const SDL_Point& origin, const units::Coordinate2D& dir) const;
 	void renderPoly(std::vector<SDL_Point>& points) const;
 	void renderPoint(SDL_Point& point, Uint8 pointSize=1) const;
+	void renderCircle(const SDL_Point& center, Uint8 radius) const;
 
 	void clear();
 	void present();

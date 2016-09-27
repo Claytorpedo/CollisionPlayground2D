@@ -10,6 +10,7 @@
 #include "Units.h"
 #include "Geometry/LineSegment.h"
 #include "Geometry/Rectangle.h"
+#include "Geometry/Ray.h"
 
 void close() {
 	SDL_Quit();
@@ -37,12 +38,13 @@ int main (int argc, char* args[]) {
 	std::uniform_int_distribution<units::Pixel> distY(util::tileToPixel(10), util::tileToPixel(room::height-10));
 	std::uniform_real_distribution<units::Coordinate> distSize(util::tileToPixel(2), util::tileToPixel(4));
 	std::uniform_int_distribution<units::Pixel> distDelta(-util::tileToPixel(20), util::tileToPixel(20));
+	std::uniform_real_distribution<units::Coordinate> normVec(-1.0f, 1.0f);
 
 	Rectangle rect(distX(twister), distY(twister), distSize(twister), distSize(twister));
-
-	//const Uint8 numLines = 10;
+	
+	const Uint8 numLines = 5;
 	std::vector<LineSegment> lines;
-	//lines.reserve(numLines);
+	lines.reserve(numLines);
 	/*for (Uint8 i = 0; i < numLines; ++i) {
 		Coordinate2D start(distX(twister), distY(twister));
 		Coordinate2D end(distX(twister), distY(twister));
@@ -52,10 +54,15 @@ int main (int argc, char* args[]) {
 	//lines.push_back(LineSegment(500, 500, 400, 500));
 	//lines.push_back(LineSegment(500, 500, 600, 500));
 	//lines.push_back(LineSegment(500, 500, 500, 600));
-	lines.push_back(LineSegment(100, 100, 400, 400));
-	lines.push_back(LineSegment(100, 101, 400, 401));
-	lines.push_back(LineSegment(100, 101.5, 400, 401.5));
-	lines.push_back(LineSegment(500, 500.01, 400, 500.01));
+	//lines.push_back(LineSegment(100, 100, 400, 400));
+	//lines.push_back(LineSegment(100, 101, 400, 401));
+	//lines.push_back(LineSegment(100, 101.5, 400, 401.5));
+	//lines.push_back(LineSegment(500, 500.01, 400, 500.01));
+	//units::Coordinate2D dir(normVec(twister), normVec(twister));
+	//dir = dir.normalize();
+	//Ray r(distX(twister), distY(twister), dir.x, dir.y);
+
+	Ray r(301.0f, 500.0f, -1, 0);
 
 	previousTime = SDL_GetTicks();
 
@@ -73,6 +80,10 @@ int main (int argc, char* args[]) {
 				Coordinate2D end(distX(twister), distY(twister));
 				lines.push_back(LineSegment(start, end));
 			}*/
+			units::Coordinate2D dir(normVec(twister), normVec(twister));
+			dir = dir.normalize();
+			r = Ray(distX(twister), distY(twister), dir.x, dir.y);
+
 			previousTime = SDL_GetTicks();
 			continue;
 		}
@@ -87,12 +98,19 @@ int main (int argc, char* args[]) {
 
 		// Find all the collisions.
 		bool isRectColliding = false;
+		bool isRayColliding = false;
 		std::vector<bool> isLineColliding(lines.size());
 		std::vector<SDL_Point> points;
 		for (std::size_t i = 0; i < lines.size(); ++i) {
 			if (rect.collides(lines[i])) {
 				isRectColliding = true;
 				isLineColliding[i] = true;
+			}
+			units::Coordinate2D p;
+			if (r.intersects(lines[i], p)) {
+				isLineColliding[i] = true;
+				isRayColliding = true;
+				points.push_back(util::coord2DToSDLPoint(p));
 			}
 			for (std::size_t j = i+1; j < lines.size(); ++j) {
 				units::Coordinate2D p;
@@ -111,8 +129,10 @@ int main (int argc, char* args[]) {
 			graphics.renderPoint(points[p], 2);
 		}
 
-		// At a glace it looks like line segments and rectangle collisions are accurate. Should cook up some actual unit tests tomorrow to see for sure.
-
+		graphics.setRenderColour(100,255,0);
+		graphics.renderCircle(util::coord2DToSDLPoint(r.origin), 3);
+		isRayColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,255,255);
+		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir);
 		graphics.present();
 	}
 	close();

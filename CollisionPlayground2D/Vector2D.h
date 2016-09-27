@@ -35,8 +35,8 @@ public:
 	T magnitude()  const { return std::sqrt(magnitude2()); }
 
 	Vector2D normalize() const {
-		const T mag = magnitude();
-		return mag == 0 ? Vector2D() : (this / mag );
+		T mag = magnitude();
+		return mag == 0 ? Vector2D() : Vector2D(x/mag, y/mag);
 	}
 
 	template <typename U>
@@ -46,6 +46,5 @@ public:
 };
 
 template <typename T> inline Vector2D<T> operator*(T t, const Vector2D<T>& v) { return v * t; }
-template <typename T> inline Vector2D<T> operator/(T t, const Vector2D<T>& v) { return v / t; }
 
 #endif // _VECTOR2D_H

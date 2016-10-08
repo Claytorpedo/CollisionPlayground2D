@@ -35,8 +35,11 @@ namespace util {
 		return p;
 	}
 	template<typename T>
-	inline bool isZero(const T t) { // Use for floating point numbers.
+	inline bool almostZero(const T t) { // Use for floating point numbers.
 		return -constants::EPSILON < t && t < constants::EPSILON;
+	}
+	inline bool almostEquals(const units::Coordinate& a, const units::Coordinate& b) {
+		return std::abs(a - b) < constants::EPSILON;
 	}
 	template<typename T>
 	inline T clamp(const T val, const T min, const T max) {

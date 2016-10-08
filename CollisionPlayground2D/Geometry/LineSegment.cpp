@@ -27,7 +27,7 @@ units::Coordinate LineSegment::magnitude() const {
 
 bool LineSegment::intersects(const units::Coordinate2D point) const {
 	// Check bounding box.
-	if (point.x >= min_x() && point.x <= max_x() && point.y <= min_y() && point.y >= max_y()) {
+	if (point.x >= min_x() && point.x <= max_x() && point.y >= min_y() && point.y <= max_y()) {
 		const units::Coordinate denom = end.x - start.x;
 		if (std::abs(denom) < constants::EPSILON) {
 			// Vertical line. See if they share an x value.

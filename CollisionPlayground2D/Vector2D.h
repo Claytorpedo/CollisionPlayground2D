@@ -39,6 +39,11 @@ public:
 		return mag == 0 ? Vector2D() : Vector2D(x/mag, y/mag);
 	}
 
+	// See if the vector is "inside" vectors a and b.
+	bool isInside(const Vector2D& a, const Vector2D& b) const {
+		return (a.cross(*this) * a.cross(b) >= 0) && (b.cross(*this) * b.cross(a) >= 0);
+	}
+
 	template <typename U>
 	Vector2D<U> convert(U (*conversionFunction)(T)) const {
 		return Vector2D<U> ( conversionFunction(x), conversionFunction(y));

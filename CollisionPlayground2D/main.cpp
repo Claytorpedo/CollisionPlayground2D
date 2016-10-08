@@ -11,6 +11,7 @@
 #include "Geometry/LineSegment.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Ray.h"
+#include "Geometry/CollisionMath.h"
 
 void close() {
 	SDL_Quit();
@@ -41,11 +42,21 @@ int main (int argc, char* args[]) {
 	std::uniform_real_distribution<units::Coordinate> normVec(-1.0f, 1.0f);
 
 	Rectangle rect(distX(twister), distY(twister), distSize(twister), distSize(twister));
+
+
+	units::Coordinate2D a(1,1);
+	units::Coordinate2D b(2,1);
+	units::Coordinate2D c(1,2);
+
+	std::cout << "a inside b,c: " << a.isInside(b, c) << "\n";
+	std::cout << "b inside a,c: " << b.isInside(a, c) << "\n";
+	std::cout << "c inside a,b: " << c.isInside(b, a) << "\n";
+	std::cout << "a inside a,b: " << a.isInside(a, b) << "\n";
 	
 	const Uint8 numLines = 5;
 	std::vector<LineSegment> lines;
-	lines.reserve(numLines);
-	/*for (Uint8 i = 0; i < numLines; ++i) {
+	/*lines.reserve(numLines);
+	for (Uint8 i = 0; i < numLines; ++i) {
 		Coordinate2D start(distX(twister), distY(twister));
 		Coordinate2D end(distX(twister), distY(twister));
 		lines.push_back(LineSegment(start, end));
@@ -62,7 +73,9 @@ int main (int argc, char* args[]) {
 	//dir = dir.normalize();
 	//Ray r(distX(twister), distY(twister), dir.x, dir.y);
 
-	Ray r(301.0f, 500.0f, -1, 0);
+	units::Coordinate2D dir(-1.0f, 0.0f);
+	dir = dir.normalize();
+	Ray r(600.0f, 500.0f, dir.x, dir.y);
 
 	previousTime = SDL_GetTicks();
 
@@ -74,12 +87,12 @@ int main (int argc, char* args[]) {
 			break;
 		if (input.wasKeyPressed( Input::R) ) {
 			rect = Rectangle(distX(twister), distY(twister), distSize(twister), distSize(twister));
-			/*lines.clear();
+			lines.clear();
 			for (Uint8 i = 0; i < numLines; ++i) {
 				Coordinate2D start(distX(twister), distY(twister));
 				Coordinate2D end(distX(twister), distY(twister));
 				lines.push_back(LineSegment(start, end));
-			}*/
+			}
 			units::Coordinate2D dir(normVec(twister), normVec(twister));
 			dir = dir.normalize();
 			r = Ray(distX(twister), distY(twister), dir.x, dir.y);
@@ -107,14 +120,14 @@ int main (int argc, char* args[]) {
 				isLineColliding[i] = true;
 			}
 			units::Coordinate2D p;
-			if (r.intersects(lines[i], p)) {
+			if (collision_math::intersects(r, lines[i], p)) {
 				isLineColliding[i] = true;
 				isRayColliding = true;
 				points.push_back(util::coord2DToSDLPoint(p));
 			}
 			for (std::size_t j = i+1; j < lines.size(); ++j) {
 				units::Coordinate2D p;
-				if (lines[i].intersects(lines[j], p) ) {
+				if (collision_math::intersects(lines[i], lines[j], p) ) {
 					isLineColliding[i] = true;
 					isLineColliding[j] = true;
 					points.push_back(util::coord2DToSDLPoint(p));
@@ -123,16 +136,19 @@ int main (int argc, char* args[]) {
 			isLineColliding[i] ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0,0,255);
 			graphics.renderLine(util::coord2DToSDLPoint(lines[i].start), util::coord2DToSDLPoint(lines[i].end));
 		}
+
+		graphics.setRenderColour(50,255,0);
+		graphics.renderCircle(util::coord2DToSDLPoint(r.origin), 3);
+		isRayColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,255,255);
+		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir);
+
 		rect.draw(graphics, isRectColliding);
+
 		graphics.setRenderColour(255,255,0);
 		for (std::size_t p = 0; p < points.size(); ++p) {
 			graphics.renderPoint(points[p], 2);
 		}
 
-		graphics.setRenderColour(100,255,0);
-		graphics.renderCircle(util::coord2DToSDLPoint(r.origin), 3);
-		isRayColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,255,255);
-		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir);
 		graphics.present();
 	}
 	close();

@@ -8,7 +8,6 @@ public:
 	T x, y;
 
 	Vector2D() : x(0), y(0) {}
-	Vector2D(T v) : x(v), y(v) {}
 	Vector2D(T x, T y) : x(x), y(y) {}
 	Vector2D(const Vector2D& o) : x(o.x), y(o.y) {}
 
@@ -40,6 +39,7 @@ public:
 	}
 
 	// See if the vector is "inside" vectors a and b.
+	// Considers vectors parallel with a or b to be inside.
 	bool isInside(const Vector2D& a, const Vector2D& b) const {
 		return (a.cross(*this) * a.cross(b) >= 0) && (b.cross(*this) * b.cross(a) >= 0);
 	}

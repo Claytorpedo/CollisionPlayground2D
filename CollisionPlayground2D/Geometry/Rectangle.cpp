@@ -54,10 +54,11 @@ void Rectangle::setColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
 }
 
 Polygon Rectangle::toPoly() const {
-	std::vector<units::Coordinate2D> vertices(4);
-	vertices[0] = units::Coordinate2D(x, y); // Top left.
-	vertices[1] = units::Coordinate2D(x, bottom()); // Bottom left.
-	vertices[2] = units::Coordinate2D(right(), bottom()); // Bottom right.
-	vertices[3] = units::Coordinate2D(right(), y); // Top right.
+	std::vector<units::Coordinate2D> vertices;
+	vertices.reserve(4);
+	vertices.push_back(units::Coordinate2D(x, y)); // Top left.
+	vertices.push_back(units::Coordinate2D(x, bottom())); // Bottom left.
+	vertices.push_back(units::Coordinate2D(right(), bottom())); // Bottom right.
+	vertices.push_back(units::Coordinate2D(right(), y)); // Top right.
 	return Polygon(vertices);
 }

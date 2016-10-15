@@ -14,6 +14,7 @@ public:
 		DOWN,
 		ESC,
 		R,
+		E,
 
 		TOTAL_KEYS
 	};

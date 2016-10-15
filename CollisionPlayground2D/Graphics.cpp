@@ -67,7 +67,7 @@ void Graphics::renderRay(const SDL_Point& origin, const units::Coordinate2D& dir
 	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
 }
 void Graphics::renderPoly(std::vector<SDL_Point>& points) const {
-	points.push_back(points[0]); // Duplicate the last point to close the shape.
+	points.push_back(points[0]); // Duplicate the first vertex to close the shape.
 	SDL_RenderDrawLines(renderer_, points.data(), points.size());
 }
 void Graphics::renderPoint(SDL_Point& point, Uint8 pointSize) const {

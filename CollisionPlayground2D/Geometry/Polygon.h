@@ -22,6 +22,10 @@ public:
 	Polygon(const Polygon& poly);
 	~Polygon();
 
+	// Compute the normals for each vertex of the polygon.
+	// To be used, for example, if the polygon is often used with the extend function.
+	void computeVertexNormals();
+
 	// Rather than recompute the bounds every call, the bounds
 	// are computed when the polygon is constructed or changed,
 	// and then cached to be returned here.
@@ -30,9 +34,14 @@ public:
 	virtual units::Coordinate top()    const { return y_min_; }
 	virtual units::Coordinate bottom() const { return y_max_; }
 
-	virtual void draw(Graphics& graphics, bool isColliding) const;
+	// Extend a polygon by projecting it along a delta vector.
+	virtual Polygon extend(units::Coordinate2D delta) const;
 
 	virtual Polygon toPoly() const;
+
+
+	void draw(Graphics& graphics, bool isColliding) const;
+	void drawNormals(Graphics& graphics) const;
 };
 
 #endif //_POLYGON_H

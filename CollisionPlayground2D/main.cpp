@@ -11,6 +11,7 @@
 #include "Geometry/LineSegment.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Ray.h"
+#include "Geometry/Polygon.h"
 #include "Geometry/CollisionMath.h"
 
 void close() {
@@ -38,46 +39,30 @@ int main (int argc, char* args[]) {
 	std::uniform_int_distribution<units::Pixel> distX(util::tileToPixel(10), util::tileToPixel(room::width-10));
 	std::uniform_int_distribution<units::Pixel> distY(util::tileToPixel(10), util::tileToPixel(room::height-10));
 	std::uniform_real_distribution<units::Coordinate> distSize(util::tileToPixel(2), util::tileToPixel(4));
-	std::uniform_int_distribution<units::Pixel> distDelta(-util::tileToPixel(20), util::tileToPixel(20));
+	std::uniform_int_distribution<units::Pixel> distDelta(-util::tileToPixel(1), util::tileToPixel(1));
 	std::uniform_real_distribution<units::Coordinate> normVec(-1.0f, 1.0f);
-
-	Rectangle rect(distX(twister), distY(twister), distSize(twister), distSize(twister));
-
-
-	units::Coordinate2D a(1,1);
-	units::Coordinate2D b(2,1);
-	units::Coordinate2D c(1,2);
-
-	std::cout << "a inside b,c: " << a.isInside(b, c) << "\n";
-	std::cout << "b inside a,c: " << b.isInside(a, c) << "\n";
-	std::cout << "c inside a,b: " << c.isInside(b, a) << "\n";
-	std::cout << "a inside a,b: " << a.isInside(a, b) << "\n";
 	
-	const Uint8 numLines = 5;
-	std::vector<LineSegment> lines;
-	/*lines.reserve(numLines);
-	for (Uint8 i = 0; i < numLines; ++i) {
-		Coordinate2D start(distX(twister), distY(twister));
-		Coordinate2D end(distX(twister), distY(twister));
-		lines.push_back(LineSegment(start, end));
-	}*/
-	lines.push_back(LineSegment(500, 500, 400, 500));
-	//lines.push_back(LineSegment(500, 500, 400, 500));
-	//lines.push_back(LineSegment(500, 500, 600, 500));
-	//lines.push_back(LineSegment(500, 500, 500, 600));
-	//lines.push_back(LineSegment(100, 100, 400, 400));
-	//lines.push_back(LineSegment(100, 101, 400, 401));
-	//lines.push_back(LineSegment(100, 101.5, 400, 401.5));
-	//lines.push_back(LineSegment(500, 500.01, 400, 500.01));
-	//units::Coordinate2D dir(normVec(twister), normVec(twister));
-	//dir = dir.normalize();
-	//Ray r(distX(twister), distY(twister), dir.x, dir.y);
-
-	units::Coordinate2D dir(-1.0f, 0.0f);
-	dir = dir.normalize();
-	Ray r(600.0f, 500.0f, dir.x, dir.y);
-
 	previousTime = SDL_GetTicks();
+
+	//Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
+	
+	// Approximate a circle with line segments.
+	const Uint8 numSegs = 15;
+	const units::Coordinate radius = 50;
+	const units::Coordinate2D center(500,300);
+	std::vector<units::Coordinate2D> vertices(numSegs);
+	for (Uint8 i = 0; i < numSegs; ++i) {
+		const units::Coordinate theta(2.0f*3.14159265358979323f*static_cast<float>(i) / static_cast<float>(numSegs));
+		const units::Coordinate x = radius * cosf(theta);
+		const units::Coordinate y = radius * sinf(theta);
+		vertices[numSegs - i - 1] = (units::Coordinate2D(center.x + x, center.y + y));
+	}
+
+
+	Polygon p(vertices);
+
+	units::Coordinate2D extendVec(distDelta(twister), distDelta(twister));
+	//units::Coordinate2D extendVec(50, 0);
 
 	// start game loop
 	while (true) {
@@ -85,18 +70,13 @@ int main (int argc, char* args[]) {
 			break; // Window was closed.
 		if (input.wasKeyPressed( Input::ESC ) )
 			break;
+		if (input.wasKeyPressed( Input::E) ) {
+			p = p.extend(extendVec);
+			continue;
+		}
 		if (input.wasKeyPressed( Input::R) ) {
-			rect = Rectangle(distX(twister), distY(twister), distSize(twister), distSize(twister));
-			lines.clear();
-			for (Uint8 i = 0; i < numLines; ++i) {
-				Coordinate2D start(distX(twister), distY(twister));
-				Coordinate2D end(distX(twister), distY(twister));
-				lines.push_back(LineSegment(start, end));
-			}
-			units::Coordinate2D dir(normVec(twister), normVec(twister));
-			dir = dir.normalize();
-			r = Ray(distX(twister), distY(twister), dir.x, dir.y);
-
+			extendVec = units::Coordinate2D(distDelta(twister), distDelta(twister));
+			//p = Polygon(vertices);
 			previousTime = SDL_GetTicks();
 			continue;
 		}
@@ -109,45 +89,13 @@ int main (int argc, char* args[]) {
 
 		graphics.clear();
 
-		// Find all the collisions.
-		bool isRectColliding = false;
-		bool isRayColliding = false;
-		std::vector<bool> isLineColliding(lines.size());
-		std::vector<SDL_Point> points;
-		for (std::size_t i = 0; i < lines.size(); ++i) {
-			if (rect.collides(lines[i])) {
-				isRectColliding = true;
-				isLineColliding[i] = true;
-			}
-			units::Coordinate2D p;
-			if (collision_math::intersects(r, lines[i], p)) {
-				isLineColliding[i] = true;
-				isRayColliding = true;
-				points.push_back(util::coord2DToSDLPoint(p));
-			}
-			for (std::size_t j = i+1; j < lines.size(); ++j) {
-				units::Coordinate2D p;
-				if (collision_math::intersects(lines[i], lines[j], p) ) {
-					isLineColliding[i] = true;
-					isLineColliding[j] = true;
-					points.push_back(util::coord2DToSDLPoint(p));
-				}
-			}
-			isLineColliding[i] ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0,0,255);
-			graphics.renderLine(util::coord2DToSDLPoint(lines[i].start), util::coord2DToSDLPoint(lines[i].end));
+		graphics.setRenderColour(50,255,255);
+		// Draw where the initial extend goes to.
+		for (std::size_t i = 0; i < vertices.size(); ++i) {
+			graphics.renderLine(util::coord2DToSDLPoint(vertices[i]), util::coord2DToSDLPoint(vertices[i] + extendVec));
 		}
 
-		graphics.setRenderColour(50,255,0);
-		graphics.renderCircle(util::coord2DToSDLPoint(r.origin), 3);
-		isRayColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,255,255);
-		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir);
-
-		rect.draw(graphics, isRectColliding);
-
-		graphics.setRenderColour(255,255,0);
-		for (std::size_t p = 0; p < points.size(); ++p) {
-			graphics.renderPoint(points[p], 2);
-		}
+		p.draw(graphics, false);
 
 		graphics.present();
 	}

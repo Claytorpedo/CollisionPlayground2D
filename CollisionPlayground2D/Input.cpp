@@ -45,6 +45,8 @@ Input::Key Input::mapSDLKToKey(SDL_Keycode k) const {
 		return Input::ESC;
 	case SDLK_r:
 		return Input::R;
+	case SDLK_e:
+		return Input::E;
 	default:
 		break;
 	}

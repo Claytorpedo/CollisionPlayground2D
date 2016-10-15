@@ -1,7 +1,7 @@
 #include "Polygon.h"
 
 namespace {
-	// Compute the normal of an edge of a polygon with counter-clockwise winding, without normalizing it to a unit vector.
+	// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
 	inline units::Coordinate2D _get_non_normalized_normal(units::Coordinate2D first, units::Coordinate2D second) {
 		return units::Coordinate2D(first.y - second.y, second.x - first.x);
 	}
@@ -60,7 +60,7 @@ Polygon Polygon::extend(units::Coordinate2D delta) const {
 	}
 	// We are interested in extending from vertices that have at least one edge normal with a minimum angle acute to the delta.
 	// With a convex polygon, there will form a single contiguous range of such vertices.
-	// The first and last vertices in that range may need to be duplicated, and then the vertices within the range
+	// The first and last vertex in that range may need to be duplicated, and then the vertices within the range
 	// are projected along the delta to form the new polygon.
 	// The first and last vertices are defined by the vertices that have only one acute edge normal.
 
@@ -84,7 +84,7 @@ Polygon Polygon::extend(units::Coordinate2D delta) const {
 		prevEdge = currEdge;
 	}
 	if (!found) {
-		// A valid polygon has two points that define where the loop starts and ends.
+		// A valid polygon has two points that define where the region starts and ends.
 		// If we didn't find one in the loop, the polygon is invalid.
 		std::cerr << "Error: Polygon can not be extended (invalid polygon).\n";
 		return Polygon();

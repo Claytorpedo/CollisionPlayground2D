@@ -38,7 +38,7 @@ void Polygon::findBounds() {
 	x_min_ = vertices_[0].x; x_max_ = vertices_[0].x;
 	y_min_ = vertices_[0].y; y_max_ = vertices_[0].y;
 	for (std::size_t i = 1; i < vertices_.size(); ++i) {
-		if (x_min_ < vertices_[i].x) 
+		if (x_min_ < vertices_[i].x)
 			x_min_ = vertices_[i].x;
 		if (x_max_ > vertices_[i].x)
 			x_max_ = vertices_[i].x;
@@ -50,7 +50,7 @@ void Polygon::findBounds() {
 }
 
 Polygon Polygon::extend(units::Coordinate2D delta) const {
-	if (delta.isZero()) { // Isn't being moved. Just return the current polygon.
+	if (delta.isZero()) { // No delta. Just return the current polygon.
 		return Polygon(*this);
 	}
 	const std::size_t numVerts = vertices_.size();
@@ -170,10 +170,10 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 3);
 	}
-	drawNormals(graphics);
+	drawEdgeNormals(graphics);
 }
 
-void Polygon::drawNormals(Graphics& graphics) const {
+void Polygon::drawEdgeNormals(Graphics& graphics) const {
 	graphics.setRenderColour(0,0,255);
 	for (std::size_t i = 0; i < vertices_.size() - 1; ++i) {
 		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i], vertices_[i+1]).normalize());

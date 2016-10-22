@@ -22,10 +22,6 @@ public:
 	Polygon(const Polygon& poly);
 	~Polygon();
 
-	// Compute the normals for each vertex of the polygon.
-	// To be used, for example, if the polygon is often used with the extend function.
-	void computeVertexNormals();
-
 	// Rather than recompute the bounds every call, the bounds
 	// are computed when the polygon is constructed or changed,
 	// and then cached to be returned here.
@@ -37,11 +33,18 @@ public:
 	// Extend a polygon by projecting it along a delta vector.
 	virtual Polygon extend(units::Coordinate2D delta) const;
 
-	virtual Polygon toPoly() const;
+	virtual Polygon toPoly() const; // Returns a copy of itself.
+
+	// For accessing the values of the vertices of the polygon. Note no safety checks.
+	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }
+	// Get the number of vertices in the polygon.
+	inline std::size_t size() const { return vertices_.size(); }
+	// Check if the polygon has any vertices.
+	inline bool isEmpty() const { return vertices_.empty(); }
 
 
 	void draw(Graphics& graphics, bool isColliding) const;
-	void drawNormals(Graphics& graphics) const;
+	void drawEdgeNormals(Graphics& graphics) const;
 };
 
 #endif //_POLYGON_H

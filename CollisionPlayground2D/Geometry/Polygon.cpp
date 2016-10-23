@@ -38,13 +38,13 @@ void Polygon::findBounds() {
 	x_min_ = vertices_[0].x; x_max_ = vertices_[0].x;
 	y_min_ = vertices_[0].y; y_max_ = vertices_[0].y;
 	for (std::size_t i = 1; i < vertices_.size(); ++i) {
-		if (x_min_ < vertices_[i].x)
+		if (x_min_ > vertices_[i].x)
 			x_min_ = vertices_[i].x;
-		if (x_max_ > vertices_[i].x)
+		if (x_max_ < vertices_[i].x)
 			x_max_ = vertices_[i].x;
-		if (y_min_ < vertices_[i].y) 
+		if (y_min_ > vertices_[i].y) 
 			y_min_ = vertices_[i].y;
-		if (y_max_ > vertices_[i].y)
+		if (y_max_ < vertices_[i].y)
 			y_max_ = vertices_[i].y;
 	}
 }
@@ -168,9 +168,8 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 	// Render the vertices over the lines.
 	graphics.setRenderColour(255,255,0);
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
-		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 3);
+		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 2);
 	}
-	drawEdgeNormals(graphics);
 }
 
 void Polygon::drawEdgeNormals(Graphics& graphics) const {

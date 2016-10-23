@@ -1,25 +1,25 @@
+#include "IntersectionMath.h"
+
 #include "../Units.h"
 #include "../Util.h"
+#include "../Constants.h"
 
 #include "LineSegment.h"
 #include "Ray.h"
+#include "Shape.h"
+#include "Rectangle.h"
+#include "Polygon.h"
 
-namespace collision_math {
-
-	namespace {
-		inline char _compute_direction(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c ) {
-			units::Coordinate p = (c.x - a.x) * (b.y - a.y);
-			units::Coordinate q = (b.x - a.x) * (c.y - a.y);
-			return p < q ? -1 : p > q ? 1 : 0;
-		}
-		inline bool _is_on_segment(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c) {
-			return	(a.x <= c.x || b.x <= c.x) && (c.x <= a.x || c.x <= b.x) &&
-				(a.y <= c.y || b.y <= c.y) && (c.y <= a.y || c.y <= b.y);
-		}
-	}
-
+namespace isect {
+	
 	// ------------------------------- Point intersections --------------------------------------------------
 
+	bool intersects(const Rectangle& r, const units::Coordinate2D p) {
+		return (p.x >= r.left()   - constants::EPSILON && 
+			    p.x <= r.right()  + constants::EPSILON && 
+			    p.y >= r.bottom() - constants::EPSILON && 
+			    p.y <= r.top()    + constants::EPSILON);
+	}
 	bool intersects(const LineSegment& l, const units::Coordinate2D p) {
 		// Check bounding box.
 		if ((p.x + constants::EPSILON) < l.min_x() || (p.x - constants::EPSILON) > l.max_x() ||
@@ -71,19 +71,29 @@ namespace collision_math {
 
 	// ---------------------------- No output point intersections --------------------------------------------
 
+	namespace {
+		inline char _compute_direction(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c ) {
+			const units::Coordinate p = (c.x - a.x) * (b.y - a.y);
+			const units::Coordinate q = (b.x - a.x) * (c.y - a.y);
+			return p < q ? -1 : p > q ? 1 : 0;
+		}
+		inline bool _is_on_segment(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c) {
+			return	(a.x <= c.x || b.x <= c.x) && (c.x <= a.x || c.x <= b.x) &&
+				    (a.y <= c.y || b.y <= c.y) && (c.y <= a.y || c.y <= b.y);
+		}
+	}
+	// Faster test to see if two line segments intersect.
 	bool intersects(const LineSegment& a, const LineSegment& b) {
-		char d1 = _compute_direction(b.start, b.end, a.start);
-		char d2 = _compute_direction(b.start, b.end, a.end);
-		char d3 = _compute_direction(a.start, a.end, b.start);
-		char d4 = _compute_direction(a.start, a.end, b.end);
+		const char d1 = _compute_direction(b.start, b.end, a.start);
+		const char d2 = _compute_direction(b.start, b.end, a.end);
+		const char d3 = _compute_direction(a.start, a.end, b.start);
+		const char d4 = _compute_direction(a.start, a.end, b.end);
 		return (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0))) ||
 			(d1 == 0 && _is_on_segment(b.start, b.end, a.start)) ||
-			(d2 == 0 && _is_on_segment(b.start, b.end, a.end)) ||
+			(d2 == 0 && _is_on_segment(b.start, b.end, a.end))   ||
 			(d3 == 0 && _is_on_segment(a.start, a.end, b.start)) ||
 			(d4 == 0 && _is_on_segment(a.start, a.end, b.end));
 	}
-
-
 
 	// --------------------------- Intersections with output point ----------------------------------------------------
 
@@ -201,5 +211,94 @@ namespace collision_math {
 		}
 		// No intersection.
 		return false;
+	}
+
+	// ------------------------------- Shape intersections --------------------------------------------------
+
+	bool intersects(const Rectangle& first, const Rectangle& second) {
+		return first.left()   < second.right()  &&
+			   first.right()  > second.left()   &&
+			   first.top()    < second.bottom() &&
+			   first.bottom() > second.top();
+	}
+	bool intersects(const Rectangle& r, const LineSegment& l) {
+		// Bounds test for early out.
+		if (!intersects(r, Rectangle(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
+			return false;
+		// Check if either endpoints are inside/touching the rectangle.
+		if (intersects(r, l.start) || intersects(r, l.end))
+			return true;
+		// Test l against 4 line segments that make up the rectangle.
+		if (intersects(l, LineSegment(r.left(), r.bottom(), r.left(), r.top())))     // Left side.
+			return true;
+		if (intersects(l, LineSegment(r.left(), r.top(), r.right(), r.top())))       // Top side.
+			return true;
+		if (intersects(l, LineSegment(r.right(), r.bottom(), r.right(), r.top())))   // Right side.
+			return true;
+		if (intersects(l, LineSegment(r.left(), r.bottom(), r.right(), r.bottom()))) // Bottom side.
+			return true;
+		return false;
+	}
+
+	namespace {
+		// ------------------------------ Separating Axis Theorem test ---------------------------------
+
+		struct Projection {
+			const units::Coordinate min, max;
+			Projection(units::Coordinate min, units::Coordinate max) : min(min), max(max) {}
+		};
+		inline Projection _get_projection(const Polygon& poly, units::Coordinate2D axis) {
+			units::Coordinate min(poly[0].dot(axis));
+			units::Coordinate max(min);
+			units::Coordinate proj;
+			for (std::size_t i = 1; i < poly.size(); ++i) {
+				proj = poly[i].dot(axis);
+				if (proj < min)
+					min = proj;
+				else if (proj > max)
+					max = proj;
+			}
+			return Projection(min, max);
+		}
+		// Tests the axes of one polygon against the other using SAT.
+		inline bool _SAT(const Polygon& first, const Polygon& second) {
+			const std::size_t size = first.size();
+			for (std::size_t i = 0; i < size; ++i) {
+				// Find the edge normal. This is the axis we're projecting along.
+				const std::size_t next = i+1 >= size ? 0 : i+1;
+				units::Coordinate2D axis(first[i].y - first[next].y, first[next].x - first[i].x);
+				// Note that we don't have to normalize the edge normal, since we only care
+				// whether or not there is any overlap, not calculating how much there is.
+				
+				// Get the projection on of both polygons with the found axis.
+				Projection projFirst(_get_projection(first, axis));
+				Projection projSecond(_get_projection(second, axis));
+
+				// Test if the projections overlap. If they don't, return false.
+				if (projFirst.min > projSecond.max || projFirst.max < projSecond.min)
+					return false;
+			}
+			return true;
+		}
+		// Perform SAT against both polygons (full test). Returns true on collision.
+		inline bool _perform_SAT(const Polygon& first, const Polygon& second) {
+			return _SAT(first, second) && _SAT(second, first);
+		}
+
+		// ---------------------------------------------------------------------------------------------
+	}
+	bool intersects(const Polygon& first, const Polygon& second) {
+		if (first.isEmpty() || second.isEmpty())
+			return false;
+
+		// Bounds test for quick out.
+		if (!intersects(Rectangle(first.left(), first.top(), first.right()-first.left(), first.bottom()-first.top()), 
+			            Rectangle(second.left(), second.top(), second.right()-second.left(), second.bottom()-second.top())))
+			return false;
+
+		return _perform_SAT(first, second);
+	}
+	bool intersects(const Shape& first, const Shape& second) {
+		return intersects(first.toPoly(), second.toPoly());
 	}
 }

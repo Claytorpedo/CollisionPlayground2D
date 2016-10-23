@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <algorithm>
 
 #include "Room.h"
 #include "Input.h"
@@ -12,7 +13,7 @@
 #include "Geometry/Rectangle.h"
 #include "Geometry/Ray.h"
 #include "Geometry/Polygon.h"
-#include "Geometry/CollisionMath.h"
+#include "Geometry/IntersectionMath.h"
 
 void close() {
 	SDL_Quit();
@@ -21,6 +22,52 @@ void closeWithError() {
 	std::cout << "Press Enter to close." << std::endl;
 	std::cin.ignore();
 	close();
+}
+
+Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSegs=15) {
+	// Approximate a circle with line segments.
+	std::vector<units::Coordinate2D> vertices(numSegs);
+	const units::Coordinate f(2.0f*3.14159265358979323f / static_cast<units::Coordinate>(numSegs));
+	for (Uint8 i = 0; i < numSegs; ++i) {
+		const units::Coordinate theta(f*static_cast<units::Coordinate>(i));
+		const units::Coordinate2D pos(radius * cosf(theta), radius * sinf(theta));
+		vertices[numSegs - i - 1] = cen + pos;
+	}
+	return Polygon(vertices);
+}
+
+Polygon genPoly(std::mt19937& rando) {
+	std::uniform_int_distribution<units::Pixel> distX(util::tileToPixel(10), util::tileToPixel(room::width-10));
+	std::uniform_int_distribution<units::Pixel> distY(util::tileToPixel(10), util::tileToPixel(room::height-10));
+	const units::Coordinate2D cen(distX(rando), distY(rando));
+	
+	std::uniform_int_distribution<std::size_t> distVerts(3, 20);
+	const std::size_t numVerts(distVerts(rando));
+
+	// Generate random numbers between 0 and 2pi to make points around a circle.
+	std::uniform_real_distribution<units::Coordinate> distPI(0.0f, 2.0f*3.14159265358979323f);
+	std::vector<units::Coordinate> piVec;
+	piVec.reserve(numVerts);
+
+	for (std::size_t i = 0; i < numVerts; ++i) {
+		piVec.push_back(distPI(rando));
+	}
+
+	// Sort descending (so we have counterclockwise winding).
+	std::sort(piVec.begin(), piVec.end(), [](const units::Coordinate& lhs, const units::Coordinate& rhs) {
+		return lhs > rhs;
+	});
+
+	std::normal_distribution<units::Coordinate> distRad(20.0f, 70.0f);
+	units::Coordinate radius(distRad(rando));
+
+	std::vector<units::Coordinate2D> vertices;
+	vertices.reserve(numVerts);
+	for (std::size_t i = 0; i < numVerts; ++i) {
+		vertices.push_back(cen + units::Coordinate2D(radius * std::cosf(piVec[i]), radius * sinf(piVec[i])));
+	}
+
+	return Polygon(vertices);
 }
 
 int main (int argc, char* args[]) {
@@ -44,25 +91,17 @@ int main (int argc, char* args[]) {
 	
 	previousTime = SDL_GetTicks();
 
-	//Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
+	Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
 	
-	// Approximate a circle with line segments.
-	const Uint8 numSegs = 15;
-	const units::Coordinate radius = 50;
-	const units::Coordinate2D center(500,300);
-	std::vector<units::Coordinate2D> vertices(numSegs);
-	for (Uint8 i = 0; i < numSegs; ++i) {
-		const units::Coordinate theta(2.0f*3.14159265358979323f*static_cast<float>(i) / static_cast<float>(numSegs));
-		const units::Coordinate x = radius * cosf(theta);
-		const units::Coordinate y = radius * sinf(theta);
-		vertices[numSegs - i - 1] = (units::Coordinate2D(center.x + x, center.y + y));
+	std::size_t numPolys(20);
+	std::vector<Polygon> polys;
+	polys.reserve(numPolys);
+	for (std::size_t i = 0; i < numPolys; ++i) {
+		polys.push_back(genPoly(twister));
 	}
 
-
-	Polygon p(vertices);
-
 	units::Coordinate2D extendVec(distDelta(twister), distDelta(twister));
-	//units::Coordinate2D extendVec(50, 0);
+	units::Coordinate2D drawStart(400, 300);
 
 	// start game loop
 	while (true) {
@@ -71,12 +110,18 @@ int main (int argc, char* args[]) {
 		if (input.wasKeyPressed( Input::ESC ) )
 			break;
 		if (input.wasKeyPressed( Input::E) ) {
-			p = p.extend(extendVec);
-			continue;
+			for (std::size_t i = 0; i < polys.size(); ++i) {
+				polys[i] = polys[i].extend(extendVec);
+			}
+		}
+		if (input.wasKeyPressed( Input::UP ) ) {
+			extendVec = units::Coordinate2D(distDelta(twister), distDelta(twister));
 		}
 		if (input.wasKeyPressed( Input::R) ) {
-			extendVec = units::Coordinate2D(distDelta(twister), distDelta(twister));
-			//p = Polygon(vertices);
+			r = Rectangle(distX(twister), distY(twister), distSize(twister),distSize(twister));
+			for (std::size_t i = 0; i < polys.size(); ++i) {
+				polys[i] = genPoly(twister);
+			}
 			previousTime = SDL_GetTicks();
 			continue;
 		}
@@ -89,13 +134,25 @@ int main (int argc, char* args[]) {
 
 		graphics.clear();
 
-		graphics.setRenderColour(50,255,255);
-		// Draw where the initial extend goes to.
-		for (std::size_t i = 0; i < vertices.size(); ++i) {
-			graphics.renderLine(util::coord2DToSDLPoint(vertices[i]), util::coord2DToSDLPoint(vertices[i] + extendVec));
-		}
+		graphics.setRenderColour(0,255,255);
+		graphics.renderLine(util::coord2DToSDLPoint(drawStart), util::coord2DToSDLPoint(drawStart + extendVec * 5), 2);
 
-		p.draw(graphics, false);
+		std::vector<bool> polyCollisions(polys.size());
+		bool rectCollision = false;
+		for (std::size_t i = 0; i < polys.size(); ++i) {
+			if (isect::intersects(r, polys[i])) {
+				rectCollision = true;
+				polyCollisions[i] = true;
+			}
+			for (std::size_t k = i+1; k < polys.size(); ++k) {
+				if (isect::intersects(polys[i], polys[k])) {
+					polyCollisions[i] = true;
+					polyCollisions[k] = true;
+				}
+			}
+			polys[i].draw(graphics, polyCollisions[i]);
+		}
+		r.draw(graphics, rectCollision);
 
 		graphics.present();
 	}

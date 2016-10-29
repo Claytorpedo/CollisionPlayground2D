@@ -98,7 +98,8 @@ void Room::markCollidingTiles(const Shape& collider, const units::Coordinate2D o
 		for (units::Tile k = start; k != end + innerIncr; k += innerIncr) {
 			const units::Tile row = isOuterAxisX ? k : i;
 			const units::Tile col = isOuterAxisX ? i : k;
-			if ( row >= 0 && col >= 0 && row < background_tiles_.size() && col < background_tiles_[row].size() ) // Bounds check.
+			if ( row >= 0 && col >= 0 &&
+				row < static_cast<units::Tile>(background_tiles_.size()) && col < static_cast<units::Tile>(background_tiles_[row].size()) ) // Bounds check.
 				is_marked_[row][col] = true;
 		}
 	}
@@ -113,8 +114,8 @@ void Room::reset() {
 }
 
 void Room::draw(Graphics& graphics) {
-	for ( units::Tile row = 0 ; row < background_tiles_.size(); ++row ) {
-		for ( units::Tile col = 0; col < background_tiles_[row].size(); ++col ) {
+	for ( std::size_t row = 0 ; row < background_tiles_.size(); ++row ) {
+		for ( std::size_t col = 0; col < background_tiles_[row].size(); ++col ) {
 			background_tiles_[row][col].draw(graphics, is_marked_[row][col]);
 		}
 	}

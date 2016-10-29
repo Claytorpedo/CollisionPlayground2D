@@ -93,7 +93,7 @@ int main (int argc, char* args[]) {
 
 	Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
 	
-	std::size_t numPolys(20);
+	std::size_t numPolys(10);
 	std::vector<Polygon> polys;
 	polys.reserve(numPolys);
 	for (std::size_t i = 0; i < numPolys; ++i) {

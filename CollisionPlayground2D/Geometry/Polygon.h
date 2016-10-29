@@ -45,6 +45,10 @@ public:
 	// Extend a polygon by projecting it along a delta vector, clipping the result to only include
 	// the portion of the polygon that was extended.
 	Polygon clipExtend(units::Coordinate2D delta) const;
+	// If we've already found the range, we can clip extend with the found values.
+	Polygon clipExtend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast) const;
+	// If we've already found the range, we can extend with the found values.
+	Polygon extend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast, bool shouldDupeFirst, bool shouldDupeLast) const;
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

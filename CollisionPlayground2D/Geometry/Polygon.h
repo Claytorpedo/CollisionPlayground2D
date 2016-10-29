@@ -35,6 +35,17 @@ public:
 
 	virtual Polygon toPoly() const; // Returns a copy of itself.
 
+	// Find the first and last vertices in the range to extend from in the direction of the given delta vector.
+	// Also finds whether the first and last vertices need to be duplicated when extending.
+	// Note that first and last follow the winding of the polygon, and thus can overlap between the end and
+	// start of the Polygon's vertex list (resulting in first > last).
+	// Returns false if the range could not be found, indicating an invalid polygon.
+	bool findExtendRange(units::Coordinate2D delta, std::size_t& out_first, std::size_t& out_last,
+		bool& out_should_dupe_first, bool& out_should_dupe_last) const;
+	// Extend a polygon by projecting it along a delta vector, clipping the result to only include
+	// the portion of the polygon that was extended.
+	Polygon clipExtend(units::Coordinate2D delta) const;
+
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }
 	// Get the number of vertices in the polygon.

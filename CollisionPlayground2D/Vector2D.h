@@ -23,6 +23,8 @@ public:
 	Vector2D& operator-=(const Vector2D& o) { x -= o.x; y -= o.y; return *this; }
 	Vector2D& operator*=(T t) {	x *= t; y *= t;	return *this; }
 	Vector2D& operator/=(T t) {	x /= t; y /= t;	return *this; }
+
+	Vector2D neg() const { return Vector2D(-x, -y); }
 	
 	bool operator==(const Vector2D& o) const { return x == o.x && y == o.y; }
 	bool isZero() const { return x == static_cast<T>(0) && y == static_cast<T>(0); }

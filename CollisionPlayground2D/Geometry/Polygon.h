@@ -7,6 +7,15 @@
 
 // Convex polygon with counterclockwise winding.
 
+namespace polygon {
+	// Help avoid accumulative floating point errors with an epsilon.
+	// Used when determining the type of angle between two vectors with a dot product.
+	// Because we don't normalize the vectors, the choice of epsilon is even more important.
+	// Choosing an epsilon that fits the scale of the polygons being used is important, or
+	// there will be errors when dealing with near-perpendicular lines.
+	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.001;
+}
+
 class Polygon : public Shape {
 private:
 	std::vector<units::Coordinate2D> vertices_;

@@ -13,10 +13,10 @@ namespace {
 	// Check what kind of angle the minimum angle between two vectors is.
 	inline AngleResult _check_min_angle(units::Coordinate2D vec1, units::Coordinate2D vec2) {
 		const units::Coordinate dot = vec1.dot(vec2);
-		if (dot > 0)
-			return ACUTE;
-		if (dot == 0)
+		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
 			return PERPENDICULAR;
+		if ((dot + polygon::EPSILON_DEGREE_TOLERANCE) > 0)
+			return ACUTE;
 		return OBTUSE;
 	}
 }

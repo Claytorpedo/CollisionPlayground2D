@@ -92,15 +92,15 @@ int main (int argc, char* args[]) {
 	previousTime = SDL_GetTicks();
 
 	Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
+	Polygon p = r.toPoly();
 	
-	std::size_t numPolys(10);
+	std::size_t numPolys(20);
 	std::vector<Polygon> polys;
 	polys.reserve(numPolys);
 	for (std::size_t i = 0; i < numPolys; ++i) {
 		polys.push_back(genPoly(twister));
 	}
-
-	units::Coordinate2D extendVec(distDelta(twister), distDelta(twister));
+	units::Coordinate2D extendVec(0,10);//(distDelta(twister), distDelta(twister));
 	units::Coordinate2D drawStart(400, 300);
 
 	// start game loop
@@ -111,14 +111,17 @@ int main (int argc, char* args[]) {
 			break;
 		if (input.wasKeyPressed( Input::E) ) {
 			for (std::size_t i = 0; i < polys.size(); ++i) {
-				polys[i] = polys[i].extend(extendVec);
+				polys[i] = polys[i].clipExtend(extendVec);
 			}
+			p = p.extend(extendVec);
+			std::cout << p.size() << "\n";
 		}
 		if (input.wasKeyPressed( Input::UP ) ) {
 			extendVec = units::Coordinate2D(distDelta(twister), distDelta(twister));
 		}
 		if (input.wasKeyPressed( Input::R) ) {
 			r = Rectangle(distX(twister), distY(twister), distSize(twister),distSize(twister));
+			p = r.toPoly();
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 				polys[i] = genPoly(twister);
 			}
@@ -153,6 +156,7 @@ int main (int argc, char* args[]) {
 			polys[i].draw(graphics, polyCollisions[i]);
 		}
 		r.draw(graphics, rectCollision);
+		//p.draw(graphics, false);
 
 		graphics.present();
 	}

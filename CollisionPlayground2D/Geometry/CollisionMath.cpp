@@ -307,8 +307,8 @@ namespace isect {
 
 
 namespace collision_math {
-	bool collides(const Polygon& collider, const units::Coordinate2D delta, const Polygon& other) {
-		return isect::intersects(collider.clipExtend(delta), other);
+	bool collides(const Polygon& collider, const units::Coordinate2D dir, const units::Coordinate delta, const Polygon& other) {
+		return isect::intersects(collider.clipExtend(dir, delta), other);
 	}
 
 	namespace {
@@ -330,7 +330,7 @@ namespace collision_math {
 		// firstInRange and lastInRange are the results from findExtendRange() on the other polygon using the opposite of the delta direction.
 		// Return the result that has the longest/deepest ray, if one exists. Will be testing for vertex collisions.
 		inline DepthTestInfo _deepest_dist_to_vertices(const Polygon& clippedCollider, const Polygon& other, 
-			const std::size_t firstInRange, const std::size_t lastInRange, const units::Coordinate2D& deltaNorm) {
+			const std::size_t firstInRange, const std::size_t lastInRange, const units::Coordinate2D& dir) {
 			DepthTestInfo deepest = DepthTestInfo();
 			const std::size_t otherSize = other.size();
 			const std::size_t clippedSize = clippedCollider.size();
@@ -340,7 +340,7 @@ namespace collision_math {
 					i = 0;
 				bool found = false;
 				// Need to shoot rays towards the inside of the other polygon (itself), so use delta direction.
-				Ray r(other[i], deltaNorm);
+				Ray r(other[i], dir);
 
 				for (std::size_t k = 2; k < clippedSize - 1; ++k) { // A clipped and extended poly has at least 5 vertices.
 					units::Coordinate2D out_point;
@@ -371,7 +371,7 @@ namespace collision_math {
 		// firstInRange and lastInRange are the results from findExtendRange() on the other polygon using the opposite of the delta direction.
 		// Return the result that has the longest/deepest ray, if one exists. Will be testing for edge collisions.
 		inline DepthTestInfo _deepest_dist_to_edges(const Polygon& clippedCollider, const Polygon& other, 
-			const std::size_t firstInRange, const std::size_t lastInRange, const units::Coordinate2D& oppDeltaNorm) {
+			const std::size_t firstInRange, const std::size_t lastInRange, const units::Coordinate2D& oppDir) {
 			DepthTestInfo deepest = DepthTestInfo();
 			const std::size_t otherSize = other.size();
 			const std::size_t clippedSize = clippedCollider.size();
@@ -380,7 +380,7 @@ namespace collision_math {
 			for (std::size_t i = 1; i < clippedSize - 1; ++i) { // Ignore the vertices that weren't extenced.
 				bool found = false;
 				// Shoot rays towards the inside of the clipped collider (itself), so use opposite of the delta direction.
-				Ray r(clippedCollider[i], oppDeltaNorm);
+				Ray r(clippedCollider[i], oppDir);
 
 				for (std::size_t k = firstInRange + 1; ; ++k) {
 					if (k == otherSize) // Wrap around the polygon's vertices, in the case that first > last.
@@ -412,26 +412,26 @@ namespace collision_math {
 
 		// Find how much the colliding polygon penetrated the other polygon along the delta vector.
 		// In doing so, also determine the normal of the vertex or edge that it entered through.
-		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D delta, const Polygon& other,
-			units::Coordinate2D& out_normal, units::Coordinate& out_depth) {
-			const units::Coordinate2D deltaNorm(delta.normalize()); // Normalized delta.
-			const units::Coordinate2D oppDeltaNorm(deltaNorm.neg()); // Normalized delta in the opposite direction.
+		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D& dir, const units::Coordinate delta,
+			const Polygon& other, units::Coordinate2D& out_normal, units::Coordinate& out_delta) {
+			const units::Coordinate2D oppDir(dir.neg()); // Delta in the opposite direction.
 			// Find the range of vertices (and edges) that the collider may have entered from.
 			std::size_t firstInRange, lastInRange;
 			bool a,b; // Don't care about these.
-			if ( !other.findExtendRange(oppDeltaNorm, firstInRange, lastInRange, a, b) ) {
-				std::cerr << "Error: Polygon invalid. Cannot determine penetration depth or collision normal.\n";
-				std::cerr << "oppDeltaNorm: " << oppDeltaNorm.x << ", " << oppDeltaNorm.y << "\n";
-				std::cerr << "deltaNorm: " << deltaNorm.x << ", " << deltaNorm.y << "\n";
-				std::cerr << "delta: " << delta.x << ", " << delta.y << "\n";
+			if ( !other.findExtendRange(oppDir, firstInRange, lastInRange, a, b) ) {
 				return false; // The second polygon isn't valid (ideally this should never happen: most invalid polygons should be caught by the SAT test).
 			}
 
-			DepthTestInfo testVertices = _deepest_dist_to_vertices(clippedCollider, other, firstInRange, lastInRange, deltaNorm);
-			DepthTestInfo testEdges = _deepest_dist_to_edges(clippedCollider, other, firstInRange, lastInRange, oppDeltaNorm);
+			DepthTestInfo testVertices = _deepest_dist_to_vertices(clippedCollider, other, firstInRange, lastInRange, dir);
+			DepthTestInfo testEdges = _deepest_dist_to_edges(clippedCollider, other, firstInRange, lastInRange, oppDir);
 			DepthTestInfo deepest;
 			if (!testVertices.isValid() && !testEdges.isValid()) {
 				std::cerr << "Error: Could not find any penetration depth. (Are the polygons really colliding?)\n";
+				std::cerr << dir.x << "," << dir.y << " delta: " << delta << " combDelta: " << (dir*delta).x << "," << (dir*delta).y << "\n";
+				std::cerr << "intersects? " << (isect::intersects(clippedCollider, other) ? "true\n" : "false\n");
+				out_normal = units::Coordinate2D(0,0);
+				out_delta = 0;
+
 				return false;
 			}
 			if (!testVertices.isValid()) {
@@ -443,7 +443,10 @@ namespace collision_math {
 				// (And if a collision is extremely close to a vertex, it shouldn't be problematic to use the vertex instead.)
 				deepest = testVertices.depthSquared >= testEdges.depthSquared ? testVertices : testEdges;
 			}
-			out_depth = std::sqrt(deepest.depthSquared) + constants::EPSILON; // Push out so that there is no longer a collision.
+			 // How far to push out of the polygon so that it is long longer a collision.
+			const units::Coordinate pushOut(std::sqrt(deepest.depthSquared) + collision_math::COLLISION_PUSHOUT_DISTANCE);
+			const units::Coordinate newDelta(delta - pushOut);
+			out_delta = newDelta > 0.0f ? newDelta : 0.0f; // Avoid pushing the collider further back than where it started.
 
 			// Find the normal.
 			if (deepest.type == EDGE) {
@@ -467,14 +470,15 @@ namespace collision_math {
 		}
 	}
 
-	// Test for collision, and if they collide find the collision normal and depth/amount of overlap.
-	bool collides(const Polygon& collider, const units::Coordinate2D delta, const Polygon& other, units::Coordinate2D& out_normal, units::Coordinate& out_depth) {
-		if (delta.isZero())
+	// Test for collision, and if they collide find the collision normal and how far along delta can be travelled.
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta,
+		const Polygon& other, units::Coordinate2D& out_normal, units::Coordinate& out_delta) {
+		if (dir.isZero() || delta == 0.0f)
 			return false; // Should not call this function with zero delta.
-		Polygon colliderClip (collider.clipExtend(delta));
-		if ( !isect::intersects(colliderClip, other) )
+		Polygon clippedCollider(collider.clipExtend(dir, delta));
+		if ( !isect::intersects(clippedCollider, other) )
 			return false;
-		_find_max_penetration(colliderClip, delta, other, out_normal, out_depth);
+		_find_max_penetration(clippedCollider, dir, delta, other, out_normal, out_delta);
 		return true;
 	}
 }

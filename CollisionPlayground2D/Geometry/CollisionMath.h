@@ -36,12 +36,22 @@ namespace isect {
 
 // Tests for if a colliding shape when moved by delta will collide with another shape.
 namespace collision_math {
-	// Just check whether or not they collide.
-	bool collides(const Polygon& collider, const units::Coordinate2D delta, const Polygon& other);
+	// An epsilon value for how far to push colliding polygons out of collidee polygons.
+	// Ensure this is large enough that adding it to the push-out distance will gurantee there is no longer a collision.
+	// One tenth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
+	// enough that it is invisible under most circumstances.
+	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.1f;
 
-	// Test for collision, and if so find the collision normal and depth/amount of overlap.
-	bool collides(const Polygon& collider, const units::Coordinate2D delta, const Polygon& other,
-		units::Coordinate2D& out_normal, units::Coordinate& out_depth);
+	// Just check whether or not they collide. dir is the direction the collider is moving (normalized vector), and delta is by how much.
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta, const Polygon& other);
+
+	// Test for collision (returns true if there is one).
+	// dir is the direction the collider is moving (normalized vector), and delta is by how much.
+	// If there is a collision:
+	// out_normal: the normal of the edge or vertex the collider ran into.
+	// out_delta: how far the collider can move along delta before reaching the other polygon (how far it is safe to move along delta).
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate delta, const Polygon& other,
+		units::Coordinate2D& out_normal, units::Coordinate& out_delta);
 }
 
 #endif // _INTERSECTION_MATH_H

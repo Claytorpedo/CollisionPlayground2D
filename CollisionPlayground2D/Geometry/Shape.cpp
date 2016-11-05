@@ -17,7 +17,7 @@ units::Coordinate Shape::side(direction::Direction side) const {
 	return 0;
 }
 
-Polygon Shape::extend(units::Coordinate2D delta) const {
+Polygon Shape::extend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
 	Polygon p(this->toPoly());
-	return p.extend(delta);
+	return p.extend(dir, delta);
 }

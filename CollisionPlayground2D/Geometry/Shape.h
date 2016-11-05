@@ -30,8 +30,8 @@ public:
 	// Convert the shape into a polygon.
 	// All child classes should be able to be at least approximated by a convex polygon.
 	virtual Polygon toPoly() const = 0;
-	// Extend a shape in a direction by projecting along a delta vector.
-	virtual Polygon extend(units::Coordinate2D delta) const;
+	// Extend a shape in a direction by projecting along a direciton by delta.
+	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
 
 	// Get x or y coordinate in a given direction.
 	units::Coordinate side(direction::Direction side) const;

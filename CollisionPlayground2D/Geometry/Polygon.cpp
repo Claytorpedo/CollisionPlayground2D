@@ -2,7 +2,7 @@
 
 namespace {
 	// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
-	inline units::Coordinate2D _get_non_normalized_normal(units::Coordinate2D first, units::Coordinate2D second) {
+	inline units::Coordinate2D _get_non_normalized_normal(const units::Coordinate2D& first, const units::Coordinate2D& second) {
 		return units::Coordinate2D(first.y - second.y, second.x - first.x);
 	}
 	enum AngleResult {
@@ -11,7 +11,7 @@ namespace {
 		OBTUSE
 	};
 	// Check what kind of angle the minimum angle between two vectors is.
-	inline AngleResult _check_min_angle(units::Coordinate2D vec1, units::Coordinate2D vec2) {
+	inline AngleResult _check_min_angle(const units::Coordinate2D& vec1, const units::Coordinate2D& vec2) {
 		const units::Coordinate dot = vec1.dot(vec2);
 		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
 			return PERPENDICULAR;
@@ -49,22 +49,22 @@ void Polygon::findBounds() {
 	}
 }
 
-// Assumes that delta is not a zero vector.
-bool Polygon::findExtendRange(units::Coordinate2D delta, std::size_t& out_first, std::size_t& out_last,
+// Assumes that dir is not a zero vector.
+bool Polygon::findExtendRange(const units::Coordinate2D& dir, std::size_t& out_first, std::size_t& out_last,
 							  bool& out_should_dupe_first, bool& out_should_dupe_last) const {
 	const std::size_t numVerts = vertices_.size();
 	if (numVerts < 3) {
 		std::cerr << "Error: Cannot extend polygon (polygon invalid; must have at least three vertices).\n";
 		return false;
 	}
-	// We are interested in extending from vertices that have at least one edge normal with a minimum angle acute to the delta.
+	// We are interested in extending from vertices that have at least one edge normal with a minimum angle acute to the direction vector.
 	// With a convex polygon, there will form a single contiguous range of such vertices.
 	// The first and last vertex in that range may need to be duplicated, and then the vertices within the range
-	// are projected along the delta to form the new polygon.
+	// are projected along the direction vector by delta to form the new polygon.
 	// The first and last vertices are defined by the vertices that have only one acute edge normal.
 
-	// Whether the minimum angle of the normal of the edge made from the last and first vertices is acute with delta.
-	const AngleResult firstEdge = _check_min_angle(_get_non_normalized_normal(vertices_[numVerts-1], vertices_[0]), delta);
+	// Whether the minimum angle of the normal of the edge made from the last and first vertices is acute with the direction vector.
+	const AngleResult firstEdge = _check_min_angle(_get_non_normalized_normal(vertices_[numVerts-1], vertices_[0]), dir);
 	const bool isFirstEdgeAcute = firstEdge == ACUTE;
 
 	AngleResult prevEdge = firstEdge;
@@ -72,7 +72,7 @@ bool Polygon::findExtendRange(units::Coordinate2D delta, std::size_t& out_first,
 	bool found = false;
 	std::size_t vertexInRegion;
 	for (std::size_t i = 0; i < numVerts - 1; ++i) {
-		currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i+1]), delta);
+		currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i+1]), dir);
 		if (isFirstEdgeAcute != (currEdge == ACUTE)) {
 			// Either crossed from inside to outside the region, or vice versa.
 			// (One side of the vertex has an edge normal that is acute, the other side obtuse.)
@@ -95,7 +95,7 @@ bool Polygon::findExtendRange(units::Coordinate2D delta, std::size_t& out_first,
 		out_should_dupe_last = currEdge != PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
 		// Loop backwards from the end to find the first vertex.
 		for (std::size_t i = numVerts - 1; i > 0; --i) {
-			currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i-1], vertices_[i]), delta);
+			currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i-1], vertices_[i]), dir);
 			if (currEdge != ACUTE) {
 				out_first = i;
 				out_should_dupe_first = currEdge != PERPENDICULAR;
@@ -110,7 +110,7 @@ bool Polygon::findExtendRange(units::Coordinate2D delta, std::size_t& out_first,
 	out_should_dupe_first = prevEdge != PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
 	// Loop forwards from the first vertex to find where it ends.
 	for (std::size_t i = vertexInRegion + 1; i < numVerts - 1; ++i) {
-		currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i+1]), delta);
+		currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i+1]), dir);
 		if (currEdge != ACUTE) {
 			out_last = i;
 			out_should_dupe_last = currEdge != PERPENDICULAR;
@@ -123,79 +123,82 @@ bool Polygon::findExtendRange(units::Coordinate2D delta, std::size_t& out_first,
 	return true;
 }
 
-Polygon Polygon::extend(units::Coordinate2D delta) const {
-	if (delta.isZero()) { // No delta. Just return the current polygon.
+Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
+	if (dir.isZero() || delta == 0.0f) { // No delta. Just return the current polygon.
 		return Polygon(*this);
 	}
 	std::size_t first, last;
 	bool shouldDuplicateFirst, shouldDuplicateLast;
-	if ( !findExtendRange(delta, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
+	if ( !findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
 		return Polygon(); // The polygon is invalid and cannot be extended.
 	}
-	return extend(delta, first, last, shouldDuplicateFirst, shouldDuplicateLast);
+	return extend(dir, delta, first, last, shouldDuplicateFirst, shouldDuplicateLast);
 }
 
-Polygon Polygon::clipExtend(units::Coordinate2D delta) const {
-	if (delta.isZero()) { // No delta. Just return the current polygon.
+Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
+	if (dir.isZero() || delta == 0.0f) { // No delta. Just return the current polygon.
 		return Polygon(*this);
 	}
 	std::size_t first, last;
 	bool shouldDuplicateFirst, shouldDuplicateLast; // Note that we always duplicate here.
-	if ( !findExtendRange(delta, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
+	if ( !findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
 		return Polygon(); // The polygon is invalid and cannot be extended.
 	}
-	return clipExtend(delta, first, last);
+	return clipExtend(dir, delta, first, last);
 }
 
-Polygon Polygon::extend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast, bool shouldDupeFirst, bool shouldDupeLast) const {
+Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate delta,
+						const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const {
 	std::vector<units::Coordinate2D> newVertices;
 	newVertices.reserve(vertices_.size() + (shouldDupeFirst ? 1 : 0) + (shouldDupeLast ? 1 : 0) );
+	const units::Coordinate2D translation(dir*delta);
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		// Extend vertices in the region first-to-last inclusive. Duplicate first/last vertices if required.
 		if (i == rangeFirst && shouldDupeFirst) {
 			newVertices.push_back(vertices_[i]);
-			newVertices.push_back(vertices_[i] + delta);
+			newVertices.push_back(vertices_[i] + translation);
 		} else if (i == rangeLast && shouldDupeLast) {
-			newVertices.push_back(vertices_[i] + delta);
+			newVertices.push_back(vertices_[i] + translation);
 			newVertices.push_back(vertices_[i]);
 		} else {
 			newVertices.push_back( rangeFirst > rangeLast ? // Determine which range to use.
-				( (i <= rangeLast || i >= rangeFirst) ? vertices_[i] + delta : vertices_[i] ) : // Range overlaps end/start of the array.
-				( (i <= rangeLast && i >= rangeFirst) ? vertices_[i] + delta : vertices_[i] )); // Range is somewhere in the middle of the array.
+				( (i <= rangeLast || i >= rangeFirst) ? vertices_[i] + translation : vertices_[i] ) : // Range overlaps end/start of the array.
+				( (i <= rangeLast && i >= rangeFirst) ? vertices_[i] + translation : vertices_[i] )); // Range is somewhere in the middle of the array.
 		}
 	}
 	return Polygon(newVertices);
 }
-Polygon Polygon::clipExtend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast) const {
+Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta, const std::size_t rangeFirst, const std::size_t rangeLast) const {
 	std::vector<units::Coordinate2D> newVertices;
 	// Since we always duplicate when clipping, we will have last-to-first inclusive + 2x duplicates.
 	newVertices.reserve(std::abs(static_cast<int>(rangeLast) - static_cast<int>(rangeFirst)) + 3);
 	newVertices.push_back(vertices_[rangeFirst]); // First vertex gets duplicated.
+	const units::Coordinate2D translation(dir*delta);
 	if ( rangeFirst < rangeLast ) {
 		for (std::size_t i = rangeFirst; i <= rangeLast; ++i) {
-			newVertices.push_back(vertices_[i] + delta);
+			newVertices.push_back(vertices_[i] + translation);
 		}
 	} else { // Range between first and last overlaps start/end of the array.
 		for (std::size_t i = rangeFirst; i < vertices_.size(); ++i) {
-			newVertices.push_back(vertices_[i] + delta);
+			newVertices.push_back(vertices_[i] + translation);
 		}
 		for (std::size_t i = 0; i <= rangeLast; ++i) {
-			newVertices.push_back(vertices_[i] + delta);
+			newVertices.push_back(vertices_[i] + translation);
 		}
 	}
 	newVertices.push_back(vertices_[rangeLast]); // Last vertex gets duplicated.
 	return Polygon(newVertices);
 }
 
-Polygon Polygon::translate(units::Coordinate2D delta) const {
+Polygon Polygon::translate(const units::Coordinate2D& translation) const {
 	Polygon poly(*this); // Copy self.
 	for (std::size_t i = 0; i < poly.vertices_.size(); ++i) {
-		poly.vertices_[i] = poly.vertices_[i] + delta;
+		poly.vertices_[i] = poly.vertices_[i] + translation;
 	}
-	poly.x_min_ += delta.x;
-	poly.x_max_ += delta.x;
-	poly.y_min_ += delta.y;
-	poly.y_max_ += delta.y;
+	poly.x_min_ += translation.x;
+	poly.x_max_ += translation.x;
+	poly.y_min_ += translation.y;
+	poly.y_max_ += translation.y;
 	return poly;
 }
 

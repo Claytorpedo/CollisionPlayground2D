@@ -10,7 +10,7 @@
 namespace polygon {
 	// Help avoid accumulative floating point errors with an epsilon.
 	// Used when determining the type of angle between two vectors with a dot product.
-	// Because we don't normalize the vectors, the choice of epsilon is even more important.
+	// Because we don't normalize the edge vectors, the choice of epsilon is even more important.
 	// Choosing an epsilon that fits the scale of the polygons being used is important, or
 	// there will be errors when dealing with near-perpendicular lines.
 	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.001f;
@@ -39,27 +39,29 @@ public:
 	virtual units::Coordinate top()    const { return y_min_; }
 	virtual units::Coordinate bottom() const { return y_max_; }
 
-	// Extend a polygon by projecting it along a delta vector.
-	virtual Polygon extend(units::Coordinate2D delta) const;
+	// Extend a polygon by projecting it along a direction by delta.
+	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
 
 	virtual Polygon toPoly() const; // Returns a copy of itself.
 
-	// Find the first and last vertices in the range to extend from in the direction of the given delta vector.
+	// Find the first and last vertices in the range to extend from in the direction of the given direction vector.
 	// Also finds whether the first and last vertices need to be duplicated when extending.
 	// Note that first and last follow the winding of the polygon, and thus can overlap between the end and
 	// start of the Polygon's vertex list (resulting in first > last).
 	// Returns false if the range could not be found, indicating an invalid polygon.
-	bool findExtendRange(units::Coordinate2D delta, std::size_t& out_first, std::size_t& out_last,
+	bool findExtendRange(const units::Coordinate2D& dir, std::size_t& out_first, std::size_t& out_last,
 		bool& out_should_dupe_first, bool& out_should_dupe_last) const;
-	// Extend a polygon by projecting it along a delta vector, clipping the result to only include
+	// Extend a polygon by projecting it along a direction by delta, clipping the result to only include
 	// the portion of the polygon that was extended.
-	Polygon clipExtend(units::Coordinate2D delta) const;
+	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
 	// If we've already found the range, we can clip extend with the found values.
-	Polygon clipExtend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast) const;
+	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta,
+		const std::size_t rangeFirst, const std::size_t rangeLast) const;
 	// If we've already found the range, we can extend with the found values.
-	Polygon extend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast, bool shouldDupeFirst, bool shouldDupeLast) const;
+	Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta,
+		const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const;
 
-	Polygon translate(units::Coordinate2D delta) const;
+	Polygon translate(const units::Coordinate2D& translation) const;
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

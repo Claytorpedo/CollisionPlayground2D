@@ -186,26 +186,26 @@ int main (int argc, char* args[]) {
 		if (!delta.isZero()) {
 			// Check collisions here.
 			bool wasCollision = false;
-			units::Coordinate depth = 0;
+			units::Coordinate deltaMag = delta.magnitude();
+			units::Coordinate2D dir = delta/deltaMag; // normalize delta dir.
+			units::Coordinate   dist = deltaMag;
 			units::Coordinate2D normal;
 			// Find the closest collision.
 			for (std::size_t i = 0; i < polys.size(); ++i) {
-				units::Coordinate testDepth;
+				units::Coordinate testDelta;
 				units::Coordinate2D testNorm;
-				if (collision_math::collides(mover, delta, polys[i], testNorm, testDepth)) {
+				if (collision_math::collides(mover, dir, deltaMag, polys[i], testNorm, testDelta)) {
 					if (!wasCollision) { // First time getting a collision.
-						depth = testDepth;
+						dist = testDelta;
 						normal = testNorm;
-					} else if (depth < testDepth) { // We got a collision before this. Take the closer one (has deeper depth, because it collided sooner).
-						depth = testDepth;
+					} else if (dist > testDelta) { // We got a collision before this. Take the closer one.
+						dist = testDelta;
 						normal = testNorm;
 					}
 					wasCollision = true;
 				}
 			}
-			units::Coordinate deltaMag = delta.magnitude();
-			units::Coordinate2D deltaNorm = delta/deltaMag;
-			mover = mover.translate(deltaNorm * (deltaMag - depth));
+			mover = mover.translate(dir*dist);
 		}
 		graphics.clear();
 

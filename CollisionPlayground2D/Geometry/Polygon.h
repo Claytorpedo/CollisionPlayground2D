@@ -13,7 +13,7 @@ namespace polygon {
 	// Because we don't normalize the vectors, the choice of epsilon is even more important.
 	// Choosing an epsilon that fits the scale of the polygons being used is important, or
 	// there will be errors when dealing with near-perpendicular lines.
-	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.001;
+	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.001f;
 }
 
 class Polygon : public Shape {
@@ -58,6 +58,8 @@ public:
 	Polygon clipExtend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast) const;
 	// If we've already found the range, we can extend with the found values.
 	Polygon extend(units::Coordinate2D delta, std::size_t rangeFirst, std::size_t rangeLast, bool shouldDupeFirst, bool shouldDupeLast) const;
+
+	Polygon translate(units::Coordinate2D delta) const;
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

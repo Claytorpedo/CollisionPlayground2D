@@ -187,6 +187,18 @@ Polygon Polygon::clipExtend(units::Coordinate2D delta, std::size_t rangeFirst, s
 	return Polygon(newVertices);
 }
 
+Polygon Polygon::translate(units::Coordinate2D delta) const {
+	Polygon poly(*this); // Copy self.
+	for (std::size_t i = 0; i < poly.vertices_.size(); ++i) {
+		poly.vertices_[i] = poly.vertices_[i] + delta;
+	}
+	poly.x_min_ += delta.x;
+	poly.x_max_ += delta.x;
+	poly.y_min_ += delta.y;
+	poly.y_max_ += delta.y;
+	return poly;
+}
+
 Polygon Polygon::toPoly() const {
 	return Polygon(*this);
 }
@@ -195,14 +207,14 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 	isColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,100,255);
 	// Draw the lines of the polygon.
 	for (std::size_t i = 0; i < vertices_.size() - 1; ++i) {
-		graphics.renderLine(util::coord2DToSDLPoint(vertices_[i]), util::coord2DToSDLPoint(vertices_[i+1]), 2);
+		graphics.renderLine(util::coord2DToSDLPoint(vertices_[i]), util::coord2DToSDLPoint(vertices_[i+1]), 1);
 	}
 	// Draw last line.
-	graphics.renderLine(util::coord2DToSDLPoint(vertices_[vertices_.size()-1]), util::coord2DToSDLPoint(vertices_[0]), 2);
+	graphics.renderLine(util::coord2DToSDLPoint(vertices_[vertices_.size()-1]), util::coord2DToSDLPoint(vertices_[0]), 1);
 	// Render the vertices over the lines.
 	graphics.setRenderColour(255,255,0);
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
-		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 2);
+		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 1);
 	}
 }
 

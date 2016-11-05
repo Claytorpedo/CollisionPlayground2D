@@ -13,7 +13,7 @@
 #include "Geometry/Rectangle.h"
 #include "Geometry/Ray.h"
 #include "Geometry/Polygon.h"
-#include "Geometry/IntersectionMath.h"
+#include "Geometry/CollisionMath.h"
 
 void close() {
 	SDL_Quit();
@@ -70,6 +70,26 @@ Polygon genPoly(std::mt19937& rando) {
 	return Polygon(vertices);
 }
 
+Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister) {
+	Polygon mover = genPoly(twister);;
+	// Ensure that the moving polygon doesn't start inside another polygon (do collision tests until it is put down cleanly).
+	while (true) {
+		bool isOccupied = false;
+		for (std::size_t i = 0; i < polys.size(); ++i) {
+			if (isect::intersects(mover, polys[i])) {
+				isOccupied = true; // Mover is in an occupied spot.
+				mover = genPoly(twister); // Try another spot.
+				std::cout << "Spot occupied. Trying somewhere else...\n";
+				break;
+			}
+		}
+		if (!isOccupied)
+			break; // Mover is on a spot free of other polygons.
+	}
+	std::cout << "Mover has entered the level.\n";
+	return mover;
+}
+
 int main (int argc, char* args[]) {
 	Room room;
 	Input input;
@@ -90,18 +110,23 @@ int main (int argc, char* args[]) {
 	std::uniform_real_distribution<units::Coordinate> normVec(-1.0f, 1.0f);
 	
 	previousTime = SDL_GetTicks();
-
-	Rectangle r(500.0f, 300.0f, 100.0f, 100.0f);
-	Polygon p = r.toPoly();
-	
+		
 	std::size_t numPolys(20);
 	std::vector<Polygon> polys;
 	polys.reserve(numPolys);
 	for (std::size_t i = 0; i < numPolys; ++i) {
 		polys.push_back(genPoly(twister));
 	}
-	units::Coordinate2D extendVec(0,10);//(distDelta(twister), distDelta(twister));
-	units::Coordinate2D drawStart(400, 300);
+	Polygon mover = getMover(polys, twister);
+
+	// Some variables for our moving polygon.
+	const units::Velocity MAX_SPEED = 0.3f;
+	const units::Acceleration ACCELERATION = 0.0025f;
+	const units::Acceleration DECELERATION = 0.004f;
+	units::Velocity2D velocity;
+	units::Acceleration2D acceleration;
+	//------------------------------------------
+	
 
 	// start game loop
 	while (true) {
@@ -109,54 +134,86 @@ int main (int argc, char* args[]) {
 			break; // Window was closed.
 		if (input.wasKeyPressed( Input::ESC ) )
 			break;
-		if (input.wasKeyPressed( Input::E) ) {
-			for (std::size_t i = 0; i < polys.size(); ++i) {
-				polys[i] = polys[i].clipExtend(extendVec);
-			}
-			p = p.extend(extendVec);
-			std::cout << p.size() << "\n";
+
+		// Horizontal movement.
+		if (input.isKeyHeld( Input::LEFT ) && input.isKeyHeld( Input::RIGHT )) {
+			acceleration.x = 0.0f;
+		} else if (input.isKeyHeld( Input::LEFT )) {
+			acceleration.x = -ACCELERATION;
+		} else if (input.isKeyHeld( Input::RIGHT )) {
+			acceleration.x = ACCELERATION;
+		} else {
+			acceleration.x = 0.0f;
 		}
-		if (input.wasKeyPressed( Input::UP ) ) {
-			extendVec = units::Coordinate2D(distDelta(twister), distDelta(twister));
+		// Vertical movement.
+		if (input.isKeyHeld( Input::UP ) && input.isKeyHeld(Input::DOWN)) {
+			acceleration.y = 0.0f;
+		} else if (input.isKeyHeld( Input::UP )) {
+			acceleration.y = -ACCELERATION;
+		} else if (input.isKeyHeld( Input::DOWN )) {
+			acceleration.y = ACCELERATION;
+		} else {
+			acceleration.y = 0.0f;
 		}
-		if (input.wasKeyPressed( Input::R) ) {
-			r = Rectangle(distX(twister), distY(twister), distSize(twister),distSize(twister));
-			p = r.toPoly();
-			for (std::size_t i = 0; i < polys.size(); ++i) {
+		if (input.wasKeyPressed( Input::R ) ) {
+			for (std::size_t i = 0; i < numPolys; ++i) {
 				polys[i] = genPoly(twister);
 			}
-			previousTime = SDL_GetTicks();
-			continue;
+			mover = getMover(polys, twister);
 		}
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;
-
-		// If there is anything being animated, do it here (say, a traversal).
-
 		previousTime = currentTime;
 
-		graphics.clear();
-
-		graphics.setRenderColour(0,255,255);
-		graphics.renderLine(util::coord2DToSDLPoint(drawStart), util::coord2DToSDLPoint(drawStart + extendVec * 5), 2);
-
-		std::vector<bool> polyCollisions(polys.size());
-		bool rectCollision = false;
-		for (std::size_t i = 0; i < polys.size(); ++i) {
-			if (isect::intersects(r, polys[i])) {
-				rectCollision = true;
-				polyCollisions[i] = true;
-			}
-			for (std::size_t k = i+1; k < polys.size(); ++k) {
-				if (isect::intersects(polys[i], polys[k])) {
-					polyCollisions[i] = true;
-					polyCollisions[k] = true;
+		// Update mover here.
+		// Control acceleration.
+		velocity += acceleration * elapsedTime;
+		velocity.x = util::clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
+		velocity.y = util::clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
+		// Control deceleration.
+		if (acceleration.x == 0 && velocity.x != 0) {
+			bool isPos(velocity.x > 0);
+			velocity.x += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
+			velocity.x = isPos ? (velocity.x < 0 ? 0.0f : velocity.x) : (velocity.x > 0 ? 0.0f : velocity.x);
+		}
+		if (acceleration.y == 0 && velocity.y != 0) {
+			bool isPos(velocity.y > 0);
+			velocity.y += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
+			velocity.y = isPos ? (velocity.y < 0 ? 0.0f : velocity.y) : (velocity.y > 0 ? 0.0f : velocity.y);
+		}
+		// Get delta.
+		const units::Coordinate2D delta (velocity * elapsedTime);
+		if (!delta.isZero()) {
+			// Check collisions here.
+			bool wasCollision = false;
+			units::Coordinate depth = 0;
+			units::Coordinate2D normal;
+			// Find the closest collision.
+			for (std::size_t i = 0; i < polys.size(); ++i) {
+				units::Coordinate testDepth;
+				units::Coordinate2D testNorm;
+				if (collision_math::collides(mover, delta, polys[i], testNorm, testDepth)) {
+					if (!wasCollision) { // First time getting a collision.
+						depth = testDepth;
+						normal = testNorm;
+					} else if (depth < testDepth) { // We got a collision before this. Take the closer one (has deeper depth, because it collided sooner).
+						depth = testDepth;
+						normal = testNorm;
+					}
+					wasCollision = true;
 				}
 			}
-			polys[i].draw(graphics, polyCollisions[i]);
+			units::Coordinate deltaMag = delta.magnitude();
+			units::Coordinate2D deltaNorm = delta/deltaMag;
+			mover = mover.translate(deltaNorm * (deltaMag - depth));
 		}
-		r.draw(graphics, rectCollision);
-		//p.draw(graphics, false);
+		graphics.clear();
+
+		for (std::size_t i = 0; i < polys.size(); ++i) {
+			polys[i].draw(graphics, isect::intersects(mover, polys[i]));
+		}
+
+		mover.draw(graphics, true);
 
 		graphics.present();
 	}

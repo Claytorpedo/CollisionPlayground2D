@@ -56,6 +56,45 @@ Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectan
 	return mover;
 }
 
+// Move the mover polygon by delta.
+void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
+	if (!delta.isZero()) {
+		bool wasCollision = false;
+		units::Coordinate deltaMag = delta.magnitude();
+		units::Coordinate2D dir = delta/deltaMag; // normalize delta dir.
+		units::Coordinate   dist = deltaMag;
+		units::Coordinate2D normal;
+		// Find the closest collision.
+		for (std::size_t i = 0; i < polys.size(); ++i) {
+			units::Coordinate testDelta;
+			units::Coordinate2D testNorm;
+			if (collision_math::collides(mover, dir, deltaMag, polys[i], testNorm, testDelta)) {
+				if (!wasCollision) { // First time getting a collision.
+					dist = testDelta;
+					normal = testNorm;
+				} else if (dist > testDelta) { // We got a collision before this. Take the closer one.
+					dist = testDelta;
+					normal = testNorm;
+				}
+				wasCollision = true;
+			}
+		}
+		// Move to new location.
+		mover = mover.translate(dir*dist);
+		units::Coordinate remainingDist = deltaMag - dist; // See if there is any more distance to move.
+		std::cout << "remaining dist: " << remainingDist  << " dir: " << dir.x << "," << dir.y << " deltaMag: " << deltaMag << "\n\n";
+		if (remainingDist > constants::EPSILON) {
+			// Find the deflection vector by projecting along the line perpendicular to the normal.
+			const units::Coordinate2D perpNorm(-normal.y, normal.x);
+			const units::Coordinate dot(perpNorm.dot(dir * remainingDist));
+			const units::Coordinate2D projection(dot*perpNorm.x, dot*perpNorm.y);
+			std::cout << "projection: " << projection.x << "," << projection.y << "\n";
+			// Continue moving.
+			move(mover, polys, projection);
+		}
+	}
+}
+
 int main (int argc, char* args[]) {
 	Room room;
 	Input input;
@@ -141,33 +180,12 @@ int main (int argc, char* args[]) {
 			velocity.y += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
 			velocity.y = isPos ? (velocity.y < 0 ? 0.0f : velocity.y) : (velocity.y > 0 ? 0.0f : velocity.y);
 		}
+
+		graphics.clear(); ////////////////////// here so we can debug things in "move"
 		// Get delta.
+
 		const units::Coordinate2D delta (velocity * elapsedTime);
-		if (!delta.isZero()) {
-			// Check collisions here.
-			bool wasCollision = false;
-			units::Coordinate deltaMag = delta.magnitude();
-			units::Coordinate2D dir = delta/deltaMag; // normalize delta dir.
-			units::Coordinate   dist = deltaMag;
-			units::Coordinate2D normal;
-			// Find the closest collision.
-			for (std::size_t i = 0; i < polys.size(); ++i) {
-				units::Coordinate testDelta;
-				units::Coordinate2D testNorm;
-				if (collision_math::collides(mover, dir, deltaMag, polys[i], testNorm, testDelta)) {
-					if (!wasCollision) { // First time getting a collision.
-						dist = testDelta;
-						normal = testNorm;
-					} else if (dist > testDelta) { // We got a collision before this. Take the closer one.
-						dist = testDelta;
-						normal = testNorm;
-					}
-					wasCollision = true;
-				}
-			}
-			mover = mover.translate(dir*dist);
-		}
-		graphics.clear();
+		move(mover, polys, delta);
 
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 			polys[i].draw(graphics, isect::intersects(mover, polys[i]));

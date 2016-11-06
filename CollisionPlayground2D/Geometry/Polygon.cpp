@@ -260,18 +260,35 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 1);
 	}
+	drawEdgeNormals(graphics);
 }
 
 void Polygon::drawEdgeNormals(Graphics& graphics) const {
 	graphics.setRenderColour(0,0,255);
-	for (std::size_t i = 0; i < vertices_.size() - 1; ++i) {
-		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i], vertices_[i+1]).normalize());
-		units::Coordinate2D start( (vertices_[i] + vertices_[i+1]) *0.5f);
+
+	std::vector<Coordinate2D> normals;
+	normals.reserve(vertices_.size());
+
+	for (std::size_t i = 0; i < vertices_.size(); ++i) {
+		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i==0 ? vertices_.size()-1 : i-1], vertices_[i]).normalize());
+		units::Coordinate2D start( (vertices_[i==0 ? vertices_.size()-1 : i-1] + vertices_[i]) *0.5f);
+		units::Coordinate2D end(start + norm*50.0f);
+		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
+
+		normals.push_back(norm);
+
+	}
+
+
+	// Draw the vertex normals too.
+	for (std::size_t i = 0; i < vertices_.size(); ++i) {
+		units::Coordinate2D norm( (normals[i==normals.size()-1 ? 0 : i+1] + normals[i]).normalize() );
+		units::Coordinate2D start( vertices_[i] );
 		units::Coordinate2D end(start + norm*50.0f);
 		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
 	}
-	units::Coordinate2D norm(_get_non_normalized_normal(vertices_[vertices_.size()-1], vertices_[0]).normalize());
-	units::Coordinate2D start( (vertices_[vertices_.size()-1] + vertices_[0]) *0.5f);
-	units::Coordinate2D end(start + norm*50.0f);
-	graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
+
+
+
+
 }

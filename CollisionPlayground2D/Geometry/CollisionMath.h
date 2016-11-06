@@ -38,9 +38,9 @@ namespace isect {
 namespace collision_math {
 	// An epsilon value for how far to push colliding polygons out of collidee polygons.
 	// Ensure this is large enough that adding it to the push-out distance will gurantee there is no longer a collision.
-	// One tenth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
+	// One fifth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
 	// enough that it is invisible under most circumstances.
-	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.1f;
+	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.2f;
 
 	// Just check whether or not they collide. dir is the direction the collider is moving (normalized vector), and delta is by how much.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta, const Polygon& other);

@@ -338,7 +338,7 @@ namespace collision_math {
 			for (std::size_t i = firstInRange; ; ++i) {
 				if (i == otherSize) // Wrap around the polygon's vertices, in the case that first > last.
 					i = 0;
-				bool found = false;
+				bool found = false; // Whether we found an intersection for this vertex.
 				// Need to shoot rays towards the inside of the other polygon (itself), so use delta direction.
 				Ray r(other[i], dir);
 
@@ -378,7 +378,7 @@ namespace collision_math {
 			bool foundRange = false; // Whether we have started finding ray intersections (any distance found).
 			// Loop through relevant vertices on the clipped collider, testing against relevant edges on the other polygon.
 			for (std::size_t i = 1; i < clippedSize - 1; ++i) { // Ignore the vertices that weren't extenced.
-				bool found = false;
+				bool found = false; // Whether we found an intersection for this vertex.
 				// Shoot rays towards the inside of the clipped collider (itself), so use opposite of the delta direction.
 				Ray r(clippedCollider[i], oppDir);
 
@@ -419,20 +419,24 @@ namespace collision_math {
 			std::size_t firstInRange, lastInRange;
 			bool a,b; // Don't care about these.
 			if ( !other.findExtendRange(oppDir, firstInRange, lastInRange, a, b) ) {
-				return false; // The second polygon isn't valid (ideally this should never happen: most invalid polygons should be caught by the SAT test).
+				// The second polygon isn't valid (ideally this should never happen; most but not all invalid polygons should be caught by the SAT test).
+				return false;
 			}
 
 			DepthTestInfo testVertices = _deepest_dist_to_vertices(clippedCollider, other, firstInRange, lastInRange, dir);
 			DepthTestInfo testEdges = _deepest_dist_to_edges(clippedCollider, other, firstInRange, lastInRange, oppDir);
 			DepthTestInfo deepest;
 			if (!testVertices.isValid() && !testEdges.isValid()) {
-				std::cerr << "Error: Could not find any penetration depth. (Are the polygons really colliding?)\n";
-				std::cerr << dir.x << "," << dir.y << " delta: " << delta << " combDelta: " << (dir*delta).x << "," << (dir*delta).y << "\n";
-				std::cerr << "intersects? " << (isect::intersects(clippedCollider, other) ? "true\n" : "false\n");
-				out_normal = units::Coordinate2D(0,0);
-				out_delta = 0;
+				// Are the polygons really colliding?
+				// This indicates that the SAT test says these polygons collide, but the penetartion test says they aren't penetrating at all.
+				// This may happen on rare occasions due to floating point errors. How to handle this may differ by implementation.
 
-				return false;
+				// Indicate that the collider should stop, by opposing its direction exactly (since otherwise we have no idea what the normal should be).
+				out_normal = oppDir;
+				// Avoid the collider getting stuck. Push it back a bit just in case (we don't want to move the collider to a location where the SAT test is true).
+				const units::Coordinate newDelta(delta - collision_math::COLLISION_PUSHOUT_DISTANCE);
+				out_delta = newDelta > 0.0f ? newDelta : 0.0f; // Avoid pushing the collider further back than where it started.
+				return false; // Still indicate that we didn't actually complete the test succesfully.
 			}
 			if (!testVertices.isValid()) {
 				deepest = testEdges;
@@ -470,7 +474,7 @@ namespace collision_math {
 		}
 	}
 
-	// Test for collision, and if they collide find the collision normal and how far along delta can be travelled.
+	// Test for collision, and if they collide find the collision normal and how far along direction vector can be travelled.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta,
 		const Polygon& other, units::Coordinate2D& out_normal, units::Coordinate& out_delta) {
 		if (dir.isZero() || delta == 0.0f)

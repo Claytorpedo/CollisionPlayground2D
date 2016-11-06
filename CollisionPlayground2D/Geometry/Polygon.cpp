@@ -1,5 +1,8 @@
 #include "Polygon.h"
 
+#include "Rectangle.h"
+#include <algorithm>
+
 namespace {
 	// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
 	inline units::Coordinate2D _get_non_normalized_normal(const units::Coordinate2D& first, const units::Coordinate2D& second) {
@@ -47,6 +50,44 @@ void Polygon::findBounds() {
 		if (y_max_ < vertices_[i].y)
 			y_max_ = vertices_[i].y;
 	}
+}
+
+Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
+	const units::Coordinate minRad, const units::Coordinate maxRad, const std::size_t minVerts, const std::size_t maxVerts) {
+	// Randomly generate the polygon's center within the region.
+	std::uniform_real_distribution<units::Coordinate> distX(region.left(), region.right());
+	std::uniform_real_distribution<units::Coordinate> distY(region.top(), region.bottom());
+	const units::Coordinate2D cen(distX(rando), distY(rando));
+	
+	if (minVerts < 3 || maxVerts < 3) std::cerr << "Error: Cannot generate a polygon with fewer than 3 vertices. Defaulting to 3 minimum.\n";
+	const std::size_t min = minVerts < 3 ? 3 : minVerts;
+	std::uniform_int_distribution<std::size_t> distVerts(min, maxVerts < min ? min : maxVerts);
+	const std::size_t numVerts(distVerts(rando));
+
+	// Generate random numbers between 0 and tau/2pi to make points around a circle.
+	std::uniform_real_distribution<units::Coordinate> distPI(0.0f, constants::TAU);
+	std::vector<units::Coordinate> piVec;
+	piVec.reserve(numVerts);
+	for (std::size_t i = 0; i < numVerts; ++i) {
+		piVec.push_back(distPI(rando));
+	}
+
+	// Sort descending (so we have counterclockwise winding).
+	std::sort(piVec.begin(), piVec.end(), [](const units::Coordinate& lhs, const units::Coordinate& rhs) {
+		return lhs > rhs;
+	});
+
+	// Get radius for polygon.
+	std::uniform_real_distribution<units::Coordinate> distRad(minRad, maxRad);
+	units::Coordinate radius(distRad(rando));
+
+	std::vector<units::Coordinate2D> vertices;
+	vertices.reserve(numVerts);
+	for (std::size_t i = 0; i < numVerts; ++i) {
+		vertices.push_back(cen + units::Coordinate2D(radius * std::cosf(piVec[i]), radius * std::sinf(piVec[i])));
+	}
+
+	return Polygon(vertices);
 }
 
 // Assumes that dir is not a zero vector.

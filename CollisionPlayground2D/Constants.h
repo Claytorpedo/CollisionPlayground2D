@@ -2,6 +2,7 @@
 #define _CONSTANTS_H
 
 #include <string>
+#include "Units.h"
 
 namespace constants {
 
@@ -12,6 +13,9 @@ namespace constants {
 	const units::MS         MAX_FRAME_TIME = 50; // The maximum lengh one frame of gameplay can last in MS.
 	const units::Coordinate EPSILON = 0.00001f;  // Float equality tolerance.
 	const units::Pixel      TILE_SIZE = 16;
+
+	const units::Fraction   PI  = 3.141592653589793238f;
+	const units::Fraction   TAU = 6.283185307179586477f; // 2PI
 
 	// For the loading textures to work, the order of this enum and the following string paths must be the same.
 	enum ObjectTextures {

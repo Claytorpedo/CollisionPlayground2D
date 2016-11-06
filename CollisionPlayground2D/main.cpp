@@ -36,49 +36,15 @@ Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSe
 	return Polygon(vertices);
 }
 
-Polygon genPoly(std::mt19937& rando) {
-	std::uniform_int_distribution<units::Pixel> distX(util::tileToPixel(10), util::tileToPixel(room::width-10));
-	std::uniform_int_distribution<units::Pixel> distY(util::tileToPixel(10), util::tileToPixel(room::height-10));
-	const units::Coordinate2D cen(distX(rando), distY(rando));
-	
-	std::uniform_int_distribution<std::size_t> distVerts(3, 20);
-	const std::size_t numVerts(distVerts(rando));
-
-	// Generate random numbers between 0 and 2pi to make points around a circle.
-	std::uniform_real_distribution<units::Coordinate> distPI(0.0f, 2.0f*3.14159265358979323f);
-	std::vector<units::Coordinate> piVec;
-	piVec.reserve(numVerts);
-
-	for (std::size_t i = 0; i < numVerts; ++i) {
-		piVec.push_back(distPI(rando));
-	}
-
-	// Sort descending (so we have counterclockwise winding).
-	std::sort(piVec.begin(), piVec.end(), [](const units::Coordinate& lhs, const units::Coordinate& rhs) {
-		return lhs > rhs;
-	});
-
-	std::normal_distribution<units::Coordinate> distRad(20.0f, 70.0f);
-	units::Coordinate radius(distRad(rando));
-
-	std::vector<units::Coordinate2D> vertices;
-	vertices.reserve(numVerts);
-	for (std::size_t i = 0; i < numVerts; ++i) {
-		vertices.push_back(cen + units::Coordinate2D(radius * std::cosf(piVec[i]), radius * sinf(piVec[i])));
-	}
-
-	return Polygon(vertices);
-}
-
-Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister) {
-	Polygon mover = genPoly(twister);;
+Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangle& region) {
+	Polygon mover = Polygon::generate(twister, region);
 	// Ensure that the moving polygon doesn't start inside another polygon (do collision tests until it is put down cleanly).
 	while (true) {
 		bool isOccupied = false;
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 			if (isect::intersects(mover, polys[i])) {
 				isOccupied = true; // Mover is in an occupied spot.
-				mover = genPoly(twister); // Try another spot.
+				mover = Polygon::generate(twister, region); // Try another spot.
 				std::cout << "Spot occupied. Trying somewhere else...\n";
 				break;
 			}
@@ -103,21 +69,15 @@ int main (int argc, char* args[]) {
 	}
 	std::random_device rd;
 	std::mt19937 twister(rd());
-	std::uniform_int_distribution<units::Pixel> distX(util::tileToPixel(10), util::tileToPixel(room::width-10));
-	std::uniform_int_distribution<units::Pixel> distY(util::tileToPixel(10), util::tileToPixel(room::height-10));
-	std::uniform_real_distribution<units::Coordinate> distSize(util::tileToPixel(2), util::tileToPixel(4));
-	std::uniform_int_distribution<units::Pixel> distDelta(-util::tileToPixel(1), util::tileToPixel(1));
-	std::uniform_real_distribution<units::Coordinate> normVec(-1.0f, 1.0f);
-	
-	previousTime = SDL_GetTicks();
+	Rectangle region(util::tileToCoord(10), util::tileToCoord(5), constants::SCREEN_WIDTH - util::tileToCoord(20), constants::SCREEN_HEIGHT - util::tileToCoord(10));
 		
 	std::size_t numPolys(20);
 	std::vector<Polygon> polys;
 	polys.reserve(numPolys);
 	for (std::size_t i = 0; i < numPolys; ++i) {
-		polys.push_back(genPoly(twister));
+		polys.push_back(Polygon::generate(twister, region));
 	}
-	Polygon mover = getMover(polys, twister);
+	Polygon mover = getMover(polys, twister, region);
 
 	// Some variables for our moving polygon.
 	const units::Velocity MAX_SPEED = 0.3f;
@@ -127,7 +87,7 @@ int main (int argc, char* args[]) {
 	units::Acceleration2D acceleration;
 	//------------------------------------------
 	
-
+	previousTime = SDL_GetTicks();
 	// start game loop
 	while (true) {
 		if (!input.refresh())
@@ -157,9 +117,9 @@ int main (int argc, char* args[]) {
 		}
 		if (input.wasKeyPressed( Input::R ) ) {
 			for (std::size_t i = 0; i < numPolys; ++i) {
-				polys[i] = genPoly(twister);
+				polys[i] = Polygon::generate(twister, region);
 			}
-			mover = getMover(polys, twister);
+			mover = getMover(polys, twister, region);
 		}
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;

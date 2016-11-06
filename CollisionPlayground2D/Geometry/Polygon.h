@@ -4,6 +4,9 @@
 #include "Shape.h"
 
 #include <vector>
+#include <random>
+
+class Rectangle;
 
 // Convex polygon with counterclockwise winding.
 
@@ -30,6 +33,13 @@ public:
 	Polygon(std::vector<units::Coordinate2D> vertices);
 	Polygon(const Polygon& poly);
 	~Polygon();
+
+	// Randomly generate a polygon.
+	// region is a bounding box defining the region to place the polygon's center in (part of the polygon can be outside this region).
+	// minRad and maxRad control how large the generated polygon will be.
+	// minVerts and maxVerts control how many vertices the generated polygon can have.
+	static Polygon generate(std::mt19937& rando, const Rectangle& region,
+		const units::Coordinate minRad=0.1f, const units::Coordinate maxRad=100.0f,  const std::size_t minVerts=3, const std::size_t maxVerts=20);
 
 	// Rather than recompute the bounds every call, the bounds
 	// are computed when the polygon is constructed or changed,

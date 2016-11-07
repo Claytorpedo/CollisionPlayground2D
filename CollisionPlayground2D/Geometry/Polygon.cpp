@@ -164,8 +164,8 @@ bool Polygon::findExtendRange(const units::Coordinate2D& dir, std::size_t& out_f
 	return true;
 }
 
-Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
-	if (dir.isZero() || delta == 0.0f) { // No delta. Just return the current polygon.
+Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate dist) const {
+	if (dir.isZero() || dist == 0.0f) { // No delta. Just return the current polygon.
 		return Polygon(*this);
 	}
 	std::size_t first, last;
@@ -173,11 +173,11 @@ Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate 
 	if ( !findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
 		return Polygon(); // The polygon is invalid and cannot be extended.
 	}
-	return extend(dir, delta, first, last, shouldDuplicateFirst, shouldDuplicateLast);
+	return extend(dir, dist, first, last, shouldDuplicateFirst, shouldDuplicateLast);
 }
 
-Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
-	if (dir.isZero() || delta == 0.0f) { // No delta. Just return the current polygon.
+Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate dist) const {
+	if (dir.isZero() || dist == 0.0f) { // No delta. Just return the current polygon.
 		return Polygon(*this);
 	}
 	std::size_t first, last;
@@ -185,14 +185,14 @@ Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordin
 	if ( !findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast) ) {
 		return Polygon(); // The polygon is invalid and cannot be extended.
 	}
-	return clipExtend(dir, delta, first, last);
+	return clipExtend(dir, dist, first, last);
 }
 
-Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate delta,
+Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate dist,
 						const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const {
 	std::vector<units::Coordinate2D> newVertices;
 	newVertices.reserve(vertices_.size() + (shouldDupeFirst ? 1 : 0) + (shouldDupeLast ? 1 : 0) );
-	const units::Coordinate2D translation(dir*delta);
+	const units::Coordinate2D translation(dir*dist);
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		// Extend vertices in the region first-to-last inclusive. Duplicate first/last vertices if required.
 		if (i == rangeFirst && shouldDupeFirst) {
@@ -209,12 +209,12 @@ Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate 
 	}
 	return Polygon(newVertices);
 }
-Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta, const std::size_t rangeFirst, const std::size_t rangeLast) const {
+Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate dist, const std::size_t rangeFirst, const std::size_t rangeLast) const {
 	std::vector<units::Coordinate2D> newVertices;
 	// Since we always duplicate when clipping, we will have last-to-first inclusive + 2x duplicates.
 	newVertices.reserve(std::abs(static_cast<int>(rangeLast) - static_cast<int>(rangeFirst)) + 3);
 	newVertices.push_back(vertices_[rangeFirst]); // First vertex gets duplicated.
-	const units::Coordinate2D translation(dir*delta);
+	const units::Coordinate2D translation(dir*dist);
 	if ( rangeFirst < rangeLast ) {
 		for (std::size_t i = rangeFirst; i <= rangeLast; ++i) {
 			newVertices.push_back(vertices_[i] + translation);
@@ -231,15 +231,15 @@ Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordin
 	return Polygon(newVertices);
 }
 
-Polygon Polygon::translate(const units::Coordinate2D& translation) const {
+Polygon Polygon::translate(const units::Coordinate2D& delta) const {
 	Polygon poly(*this); // Copy self.
 	for (std::size_t i = 0; i < poly.vertices_.size(); ++i) {
-		poly.vertices_[i] = poly.vertices_[i] + translation;
+		poly.vertices_[i] = poly.vertices_[i] + delta;
 	}
-	poly.x_min_ += translation.x;
-	poly.x_max_ += translation.x;
-	poly.y_min_ += translation.y;
-	poly.y_max_ += translation.y;
+	poly.x_min_ += delta.x;
+	poly.x_max_ += delta.x;
+	poly.y_min_ += delta.y;
+	poly.y_max_ += delta.y;
 	return poly;
 }
 
@@ -260,14 +260,13 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 1);
 	}
-	drawEdgeNormals(graphics);
 }
 
 void Polygon::drawEdgeNormals(Graphics& graphics) const {
 	graphics.setRenderColour(0,0,255);
 
-	std::vector<Coordinate2D> normals;
-	normals.reserve(vertices_.size());
+	//std::vector<Coordinate2D> normals;
+	//normals.reserve(vertices_.size());
 
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i==0 ? vertices_.size()-1 : i-1], vertices_[i]).normalize());
@@ -275,11 +274,11 @@ void Polygon::drawEdgeNormals(Graphics& graphics) const {
 		units::Coordinate2D end(start + norm*50.0f);
 		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
 
-		normals.push_back(norm);
+		//normals.push_back(norm);
 
 	}
 
-
+	/*
 	// Draw the vertex normals too.
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		units::Coordinate2D norm( (normals[i==normals.size()-1 ? 0 : i+1] + normals[i]).normalize() );
@@ -287,7 +286,7 @@ void Polygon::drawEdgeNormals(Graphics& graphics) const {
 		units::Coordinate2D end(start + norm*50.0f);
 		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
 	}
-
+	*/
 
 
 

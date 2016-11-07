@@ -6,7 +6,7 @@
 class LineSegment {
 
 public:
-	const units::Coordinate2D start, end;
+	units::Coordinate2D start, end;
 
 	LineSegment() : start(), end() {}
 	LineSegment(units::Coordinate2D start, units::Coordinate2D end) : start(start), end(end) {}
@@ -14,7 +14,7 @@ public:
 
 	bool isPoint() const;
 
-	units::Coordinate magnitudeSquared() const;
+	units::Coordinate magnitude2() const;
 	units::Coordinate magnitude() const;
 
 	inline units::Coordinate min_x() const { return start.x < end.x ? start.x : end.x; }

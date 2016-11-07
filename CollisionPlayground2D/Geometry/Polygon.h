@@ -49,8 +49,8 @@ public:
 	virtual units::Coordinate top()    const { return y_min_; }
 	virtual units::Coordinate bottom() const { return y_max_; }
 
-	// Extend a polygon by projecting it along a direction by delta.
-	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
+	// Extend a polygon by projecting it along a direction by dist.
+	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
 
 	virtual Polygon toPoly() const; // Returns a copy of itself.
 
@@ -61,17 +61,18 @@ public:
 	// Returns false if the range could not be found, indicating an invalid polygon.
 	bool findExtendRange(const units::Coordinate2D& dir, std::size_t& out_first, std::size_t& out_last,
 		bool& out_should_dupe_first, bool& out_should_dupe_last) const;
-	// Extend a polygon by projecting it along a direction by delta, clipping the result to only include
+	// Extend a polygon by projecting it along a direction by delta (dir*dist), clipping the result to only include
 	// the portion of the polygon that was extended.
-	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
+	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
 	// If we've already found the range, we can clip extend with the found values.
-	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate delta,
+	Polygon clipExtend(const units::Coordinate2D& dir, const units::Coordinate dist,
 		const std::size_t rangeFirst, const std::size_t rangeLast) const;
 	// If we've already found the range, we can extend with the found values.
-	Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta,
+	Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist,
 		const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const;
 
-	Polygon translate(const units::Coordinate2D& translation) const;
+	// Move the polygon by delta.
+	Polygon translate(const units::Coordinate2D& delta) const;
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

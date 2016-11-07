@@ -38,20 +38,21 @@ namespace isect {
 namespace collision_math {
 	// An epsilon value for how far to push colliding polygons out of collidee polygons.
 	// Ensure this is large enough that adding it to the push-out distance will gurantee there is no longer a collision.
-	// One fifth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
+	// One hundreth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
 	// enough that it is invisible under most circumstances.
-	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.2f;
+	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.01f;
 
 	// Just check whether or not they collide. dir is the direction the collider is moving (normalized vector), and delta is by how much.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta, const Polygon& other);
 
 	// Test for collision (returns true if there is one).
-	// dir is the direction the collider is moving (normalized vector), and delta is by how much.
+	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
 	// If there is a collision:
-	// out_normal: the normal of the edge or vertex the collider ran into.
-	// out_delta: how far the collider can move along delta before reaching the other polygon (how far it is safe to move along delta).
-	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate delta, const Polygon& other,
-		units::Coordinate2D& out_normal, units::Coordinate& out_delta);
+	// out_dist: how far the collider can move along dir before reaching the other polygon (how far it is safe to move along dir).
+	// out_deflection: contains the projection of the remaining delta along the collision edge
+	//                 (vector to move if sliding along the polygon; use as "new" delta for recursive tests).
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
+		units::Coordinate& out_dist, units::Coordinate2D& out_deflection);
 }
 
 #endif // _INTERSECTION_MATH_H

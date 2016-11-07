@@ -2,7 +2,6 @@
 #include <iostream>
 #include <random>
 #include <vector>
-#include <algorithm>
 
 #include "Room.h"
 #include "Input.h"
@@ -60,37 +59,33 @@ Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectan
 void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
 	if (!delta.isZero()) {
 		bool wasCollision = false;
-		units::Coordinate deltaMag = delta.magnitude();
-		units::Coordinate2D dir = delta/deltaMag; // normalize delta dir.
-		units::Coordinate   dist = deltaMag;
-		units::Coordinate2D normal;
+
+		
+		units::Coordinate dist  = delta.magnitude();
+		units::Coordinate2D dir = delta/dist; // normalize delta dir.
+		units::Coordinate   moveDist = dist;
+		units::Coordinate2D deflection(0,0);
+
 		// Find the closest collision.
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			units::Coordinate testDelta;
-			units::Coordinate2D testNorm;
-			if (collision_math::collides(mover, dir, deltaMag, polys[i], testNorm, testDelta)) {
+			units::Coordinate testDist;
+			units::Coordinate2D testDeflection;
+			if (collision_math::collides(mover, dir, dist, polys[i], testDist, testDeflection)) {
 				if (!wasCollision) { // First time getting a collision.
-					dist = testDelta;
-					normal = testNorm;
-				} else if (dist > testDelta) { // We got a collision before this. Take the closer one.
-					dist = testDelta;
-					normal = testNorm;
+					moveDist = testDist;
+					deflection = testDeflection;
+				} else if (moveDist > testDist) { // We got a collision before this. Take the closer one.
+					moveDist = testDist;
+					deflection = testDeflection;
 				}
 				wasCollision = true;
 			}
 		}
 		// Move to new location.
-		mover = mover.translate(dir*dist);
-		units::Coordinate remainingDist = deltaMag - dist; // See if there is any more distance to move.
-		std::cout << "remaining dist: " << remainingDist  << " dir: " << dir.x << "," << dir.y << " deltaMag: " << deltaMag << "\n\n";
-		if (remainingDist > constants::EPSILON) {
-			// Find the deflection vector by projecting along the line perpendicular to the normal.
-			const units::Coordinate2D perpNorm(-normal.y, normal.x);
-			const units::Coordinate dot(perpNorm.dot(dir * remainingDist));
-			const units::Coordinate2D projection(dot*perpNorm.x, dot*perpNorm.y);
-			std::cout << "projection: " << projection.x << "," << projection.y << "\n";
-			// Continue moving.
-			move(mover, polys, projection);
+		mover = mover.translate(dir*moveDist);
+		if (!deflection.isZero()) { // Slide along polygons by following the deflection vector as the new delta.
+			std::cout << "deflections: " << deflection.x << "," << deflection.y << "\n";
+			move(mover, polys, deflection);
 		}
 	}
 }
@@ -98,8 +93,9 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 int main (int argc, char* args[]) {
 	Room room;
 	Input input;
-	units::MS currentTime, previousTime, elapsedTime;
 	Graphics graphics;
+	units::MS currentTime, previousTime, elapsedTime;
+	
 
 	if (!graphics.init()) {
 		std::cerr << "Error: Failed to initialize graphics.\n";
@@ -180,13 +176,11 @@ int main (int argc, char* args[]) {
 			velocity.y += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
 			velocity.y = isPos ? (velocity.y < 0 ? 0.0f : velocity.y) : (velocity.y > 0 ? 0.0f : velocity.y);
 		}
-
-		graphics.clear(); ////////////////////// here so we can debug things in "move"
 		// Get delta.
-
 		const units::Coordinate2D delta (velocity * elapsedTime);
 		move(mover, polys, delta);
 
+		graphics.clear(); ////////////////////// here so we can debug things in "move"
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 			polys[i].draw(graphics, isect::intersects(mover, polys[i]));
 		}

@@ -315,10 +315,10 @@ namespace collision_math {
 		// Info about depth tests.
 		struct DepthTestInfo {
 			bool isValid;                   // Whether the the over values are valid or not.
-			units::Coordinate2D edgeDir;	// A direction parallel to the edge tested against. Note that either parallel direction is fine.
+			units::Coordinate2D edge;	    // The vector that makes up the edge that should be deflected along.
 			units::Coordinate depthSquared; // The squared depth of the test.
-			DepthTestInfo() : isValid(false), edgeDir(), depthSquared(0) {}
-			DepthTestInfo(const units::Coordinate2D& edgeDir, units::Coordinate depthSquared) : isValid(true), edgeDir(edgeDir), depthSquared(depthSquared) {}
+			DepthTestInfo() : isValid(false), edge(), depthSquared(0) {}
+			DepthTestInfo(const units::Coordinate2D& edge, units::Coordinate depthSquared) : isValid(true), edge(edge), depthSquared(depthSquared) {}
 		};
 		// Trace rays from the relevant vertices in the other polygon towards the relevant edges of the clipped collider.
 		// firstInRange and lastInRange are the results from findExtendRange() on the other polygon using the opposite of the delta direction.
@@ -407,15 +407,17 @@ namespace collision_math {
 		}
 
 		// Find how much the colliding polygon penetrated the other polygon along the delta vector.
-		// In doing so, also determine the deflection vector for any remaining delta.
+		// In doing so, also determine the edge to deflect along.
 		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D& dir, const units::Coordinate dist,
-			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_deflection) {
+			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
 			const units::Coordinate2D oppDir(dir.neg()); // Delta in the opposite direction.
 			// Find the range of vertices (and edges) that the collider may have entered from.
 			std::size_t firstInRange, lastInRange;
 			bool a,b; // Don't care about these.
 			if ( !other.findExtendRange(oppDir, firstInRange, lastInRange, a, b) ) {
 				std::cerr << "Failed to find max penetration distance, due to invalid polygons.\n";
+				out_dist = 0;
+				out_edge = units::Coordinate2D(0,0);
 				return false;
 			}
 
@@ -430,7 +432,7 @@ namespace collision_math {
 				// Avoid the collider getting stuck. Push it back a bit just in case (we don't want to move the collider to a location where the SAT test is true).
 				const units::Coordinate newDist(dist - collision_math::COLLISION_PUSHOUT_DISTANCE);
 				out_dist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
-				out_deflection = units::Coordinate2D(0,0);  // Indicate that the collider should stop (no deflection delta).
+				out_edge = units::Coordinate2D(0,0);        // There is no edge to deflect along.
 				return false; // Still indicate that we didn't actually complete the test succesfully.
 			}
 			DepthTestInfo deepest;
@@ -448,33 +450,22 @@ namespace collision_math {
 			units::Coordinate newDist(dist - pushOut);
 			newDist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
 
-			out_dist =  newDist;
+			out_dist = newDist;
+			out_edge = deepest.edge;
 
-			const units::Coordinate remainingDist(dist - newDist);
-			if (remainingDist < constants::EPSILON) {
-				out_deflection = units::Coordinate2D(0,0); // Done moving.
-				return true;
-			}
-			// Might not be done moving.
-			// Find projection of the remaining delta along the collision edge.
-			// Get a direction vector parallel to the edge. Doesn't matter which direction (we project onto it as if it was a line).
-			const units::Coordinate2D projDir = deepest.edgeDir.normalize();
-			const units::Coordinate dot(projDir.dot(dir * remainingDist));
-			const units::Coordinate2D projection(dot*projDir.x, dot*projDir.y);
-			out_deflection = projection;
 			return true;
 		}
 	}
 
 	// Test for collision, and if they collide find the collision normal and how far along direction vector can be travelled.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist,
-		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_deflection) {
+		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
 		if (dir.isZero() || dist == 0.0f)
 			return false; // Should not call this function with zero delta.
 		Polygon clippedCollider(collider.clipExtend(dir, dist));
 		if ( !isect::intersects(clippedCollider, other) )
 			return false;
-		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_deflection);
+		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_edge);
 		return true;
 	}
 }

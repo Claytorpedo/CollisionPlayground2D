@@ -26,7 +26,7 @@ void closeWithError() {
 Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSegs=15) {
 	// Approximate a circle with line segments.
 	std::vector<units::Coordinate2D> vertices(numSegs);
-	const units::Coordinate f(2.0f*3.14159265358979323f / static_cast<units::Coordinate>(numSegs));
+	const units::Coordinate f(constants::TAU / static_cast<units::Coordinate>(numSegs));
 	for (Uint8 i = 0; i < numSegs; ++i) {
 		const units::Coordinate theta(f*static_cast<units::Coordinate>(i));
 		const units::Coordinate2D pos(radius * cosf(theta), radius * sinf(theta));
@@ -55,38 +55,74 @@ Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectan
 	return mover;
 }
 
+// Returns true if there was a collision, false if none was found.
+bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& dir, const units::Coordinate dist,
+	units::Coordinate &out_dist, units::Coordinate2D& out_edge) {
+	if (dir.isZero() || dist == 0.0f)
+		return false;
+
+	bool wasCollision = false;
+
+	units::Coordinate   moveDist = dist;
+	units::Coordinate2D edge(0,0);
+
+	for (std::size_t i = 0; i < polys.size(); ++i) {
+		units::Coordinate testDist;
+		units::Coordinate2D testEdge;
+		if (collision_math::collides(mover, dir, dist, polys[i], testDist, testEdge)) {
+			if (!wasCollision) { // First time getting a collision.
+				moveDist = testDist;
+				edge = testEdge;
+				wasCollision = true;
+			} else if (moveDist > testDist) { // We got a collision before this. Take the closer one.
+				moveDist = testDist;
+				edge = testEdge;
+			}
+			if (moveDist == 0.0f)
+				break;// Can't move any less than not moving!
+		}
+	}
+	// Set our outputs.
+	out_dist = moveDist;
+	out_edge = edge;
+
+	return wasCollision;
+}
+
 // Move the mover polygon by delta.
 void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
-	if (!delta.isZero()) {
-		bool wasCollision = false;
-
-		
-		units::Coordinate dist  = delta.magnitude();
-		units::Coordinate2D dir = delta/dist; // normalize delta dir.
-		units::Coordinate   moveDist = dist;
-		units::Coordinate2D deflection(0,0);
-
-		// Find the closest collision.
-		for (std::size_t i = 0; i < polys.size(); ++i) {
-			units::Coordinate testDist;
-			units::Coordinate2D testDeflection;
-			if (collision_math::collides(mover, dir, dist, polys[i], testDist, testDeflection)) {
-				if (!wasCollision) { // First time getting a collision.
-					moveDist = testDist;
-					deflection = testDeflection;
-				} else if (moveDist > testDist) { // We got a collision before this. Take the closer one.
-					moveDist = testDist;
-					deflection = testDeflection;
-				}
-				wasCollision = true;
-			}
+	if (delta.isZero())
+		return; // Nowhere to move.
+	const units::Coordinate   originalDist  = delta.magnitude();
+	const units::Coordinate2D originalDir = delta/originalDist; // normalize delta dir.
+	units::Coordinate remainingDist = originalDist;
+	units::Coordinate2D currentDir = originalDir;
+	units::Coordinate moveDist(0);
+	units::Coordinate2D deflectEdge(0,0);
+	while ( true ) {
+		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
+			// No collision. Move the mover and exit.
+			mover = mover.translate(currentDir * remainingDist);
+			return;
 		}
-		// Move to new location.
-		mover = mover.translate(dir*moveDist);
-		if (!deflection.isZero()) { // Slide along polygons by following the deflection vector as the new delta.
-			std::cout << "deflections: " << deflection.x << "," << deflection.y << "\n";
-			move(mover, polys, deflection);
-		}
+		// We collided with something.
+		mover = mover.translate(currentDir*moveDist);
+		// See if we have anywhere left to move.
+		remainingDist -= moveDist;
+		if (remainingDist < constants::EPSILON || deflectEdge.isZero())
+			return;
+		// Find the projection of the remaining distance along the original direction on the deflection vector.
+		// Note that direction of the edge doesn't matter: it is treated like a line we are projecting against.
+		const units::Coordinate2D projDir = deflectEdge.normalize();
+		// Project using the original delta direction, to avoid "bouncing" off of corners.
+		const units::Coordinate dot(projDir.dot(originalDir * remainingDist));
+		const units::Coordinate2D projection(dot*projDir.x, dot*projDir.y);
+		// Projection is our new delta. Get new direction and remaining distance to move.
+		remainingDist = projection.magnitude();
+		if (remainingDist < constants::EPSILON)
+			return;
+
+		currentDir = projection/remainingDist;
 	}
 }
 
@@ -178,14 +214,18 @@ int main (int argc, char* args[]) {
 		}
 		// Get delta.
 		const units::Coordinate2D delta (velocity * elapsedTime);
+		const units::Coordinate prevX = mover.left();
+		const units::Coordinate prevY = mover.top();
 		move(mover, polys, delta);
 
-		graphics.clear(); ////////////////////// here so we can debug things in "move"
+		graphics.clear();
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 			polys[i].draw(graphics, isect::intersects(mover, polys[i]));
 		}
 
 		mover.draw(graphics, true);
+
+		//SDL_Delay(80 > elapsedTime ? 80 - elapsedTime : 0);
 
 		graphics.present();
 	}

@@ -38,9 +38,9 @@ namespace isect {
 namespace collision_math {
 	// An epsilon value for how far to push colliding polygons out of collidee polygons.
 	// Ensure this is large enough that adding it to the push-out distance will gurantee there is no longer a collision.
-	// One hundreth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
+	// One tenth of a pixel seems like a good choice -- far enough that we should avoid all floating points issues; close
 	// enough that it is invisible under most circumstances.
-	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.01f;
+	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.1f;
 
 	// Just check whether or not they collide. dir is the direction the collider is moving (normalized vector), and delta is by how much.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta, const Polygon& other);
@@ -49,10 +49,9 @@ namespace collision_math {
 	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
 	// If there is a collision:
 	// out_dist: how far the collider can move along dir before reaching the other polygon (how far it is safe to move along dir).
-	// out_deflection: contains the projection of the remaining delta along the collision edge
-	//                 (vector to move if sliding along the polygon; use as "new" delta for recursive tests).
+	// out_edge: The edge to deflect along.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
-		units::Coordinate& out_dist, units::Coordinate2D& out_deflection);
+		units::Coordinate& out_dist, units::Coordinate2D& out_edge);
 }
 
 #endif // _INTERSECTION_MATH_H

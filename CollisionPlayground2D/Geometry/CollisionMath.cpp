@@ -473,4 +473,14 @@ namespace collision_math {
 		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_edge);
 		return true;
 	}
+	// Test for collision with an already clip-extended collider.
+	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
+		units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
+		if (dir.isZero() || dist == 0.0f)
+			return false; // Should not call this function with zero delta.
+		if ( !isect::intersects(clippedCollider, other) )
+			return false;
+		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_edge);
+		return true;
+	}
 }

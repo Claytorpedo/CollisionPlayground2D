@@ -28,6 +28,9 @@ bool Graphics::init() {
 		std::cerr << "Error: The renderer could not be created.\nSDL Error: " << SDL_GetError() << "\n";
 		return false;
 	}
+	if (SDL_SetRenderDrawBlendMode(renderer_, SDL_BLENDMODE_BLEND) != 0) {
+		std::cerr << "Warning: SDL blending could not be enabled.\n";
+	}
 	return true;
 }
 

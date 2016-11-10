@@ -132,6 +132,32 @@ int main (int argc, char* args[]) {
 	Graphics graphics;
 	units::MS currentTime, previousTime, elapsedTime;
 	
+	std::vector<LineSegment> lines;
+	std::vector<Ray> rays;
+	rays.push_back(Ray (10,60, 0, 1));
+	lines.push_back(LineSegment (10,50, 10,150));
+	
+	rays.push_back(Ray (20, 30, 0, 1));
+	lines.push_back(LineSegment (20, 50, 20, 150));
+
+	rays.push_back(Ray (30, 60, 0, 1));
+	lines.push_back(LineSegment (30, 20, 30, 80));
+
+	rays.push_back(Ray (40, 70, 0, -1));
+	lines.push_back(LineSegment (40, 50, 40,150));
+
+	rays.push_back(Ray (50, 60, 0, -1));
+	lines.push_back(LineSegment (50, 50, 50,150));
+
+	rays.push_back(Ray (60, 100, 0, -1));
+	lines.push_back(LineSegment (60, 20, 60, 80));
+
+	std::vector<units::Coordinate2D> points;
+	for (std::size_t i = 0; i < lines.size(); ++i) {
+		units::Coordinate2D point;
+		isect::intersects(rays[i], lines[i], point);
+		points.push_back(point);
+	}
 
 	if (!graphics.init()) {
 		std::cerr << "Error: Failed to initialize graphics.\n";
@@ -220,9 +246,22 @@ int main (int argc, char* args[]) {
 
 		graphics.clear();
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			polys[i].draw(graphics, isect::intersects(mover, polys[i]));
+			//polys[i].draw(graphics, isect::intersects(mover, polys[i]));
 		}
 
+		for (std::size_t i = 0; i < lines.size(); ++i) {
+			graphics.setRenderColour(255, 0, 0, 255);
+			graphics.renderLine(util::coord2DToSDLPoint(lines[i].start), util::coord2DToSDLPoint(lines[i].end), 3);
+			graphics.setRenderColour(50, 50, 255, 2255);
+			graphics.renderRay(util::coord2DToSDLPoint(rays[i].origin), rays[i].dir);
+			graphics.setRenderColour(0,255,255,150);
+			graphics.renderCircle(util::coord2DToSDLPoint(rays[i].origin), 2);
+		}
+		graphics.setRenderColour(255,255,0,200);
+		for (std::size_t i = 0; i < points.size(); ++i) {
+			graphics.renderCircle(util::coord2DToSDLPoint(points[i]), 1);
+		}
+		
 		mover.draw(graphics, true);
 
 		//SDL_Delay(80 > elapsedTime ? 80 - elapsedTime : 0);

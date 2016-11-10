@@ -134,13 +134,15 @@ namespace isect {
 			if (s_dot_r < 0) {
 				if (0 <= t0 && t1 <= 1) {
 					// Get closest intersect (to start point) for the segment this is called on.
-					out_intersection = a.start + t0*r;
+					// Either the interval of overlap happens somewhere after start, or at the starting point.
+					out_intersection = t1 > 0.0 ? a.start + t1*r : a.start;
 					return true;
 				}
 			} else {
 				if (0 <= t1 && t0 <= 1) {
 					// Get closest intersect (to start point) for the segment this is called on.
-					out_intersection = a.start + t1*r;
+					// Either the interval of overlap happens somewhere after start, or at the starting point.
+					out_intersection = t0 > 0.0 ? a.start + t0*r : a.start;
 					return true;
 				}
 			}			
@@ -184,13 +186,16 @@ namespace isect {
 			if (s_dot_r < 0) {
 				if (0 <= t0) {
 					// Get closest intersect (to origin) for the ray.
-					out_intersection = r.origin + (t0 + s_dot_r * recip)*r.dir;
+					// Either the interval of overlap happens somewhere after origin, or at origin.
+					const units::Coordinate t1 = t0 + s_dot_r * recip;
+					out_intersection = t1 > 0.0f ? r.origin + t1*r.dir : r.origin;
 					return true;
 				}
 			} else {
 				if (0 <= (t0 + s_dot_r * recip)) {
 					// Get closest intersect (to origin) for the ray.
-					out_intersection = r.origin + t0*r.dir;
+					// Either the interval of overlap happens somewhere after origin, or at origin.
+					out_intersection = t0 > 0.0f ? r.origin + t0*r.dir : r.origin;
 					return true;
 				}
 			}			

@@ -12,7 +12,7 @@ public:
 	LineSegment(units::Coordinate2D start, units::Coordinate2D end) : start(start), end(end) {}
 	LineSegment(units::Coordinate x1, units::Coordinate y1, units::Coordinate x2, units::Coordinate y2)	: start(x1,y1), end(x2,y2) {}
 
-	bool isPoint() const;
+	inline bool isPoint() const;
 
 	units::Coordinate magnitude2() const;
 	units::Coordinate magnitude() const;

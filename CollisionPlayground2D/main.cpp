@@ -14,6 +14,13 @@
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMath.h"
 
+
+
+
+
+
+#include <ctime>
+
 void close() {
 	SDL_Quit();
 }
@@ -164,10 +171,10 @@ int main (int argc, char* args[]) {
 	for (std::size_t i = 0; i < numPolys; ++i) {
 		polys.push_back(Polygon::generate(twister, region));
 	}
-	std::size_t numMoves = 1;
+	std::size_t numMovers = 1;
 	std::vector<Polygon> movers;
-	movers.reserve(numMoves);
-	for (std::size_t i = 0; i < numMoves; ++i) {
+	movers.reserve(numMovers);
+	for (std::size_t i = 0; i < numMovers; ++i) {
 		movers.push_back(getMover(polys, twister, region));
 	}
 
@@ -212,7 +219,7 @@ int main (int argc, char* args[]) {
 				polys[i] = Polygon::generate(twister, region);
 			}
 			//mover = getMover(polys, twister, region);
-			for (std::size_t i = 0; i < numMoves; ++i) {
+			for (std::size_t i = 0; i < movers.size(); ++i) {
 				movers[i] = getMover(polys, twister, region);
 			}
 		}
@@ -238,15 +245,19 @@ int main (int argc, char* args[]) {
 		}
 		// Get delta.
 		const units::Coordinate2D delta (velocity * elapsedTime);
-		for (std::size_t i = 0; i < numMoves; ++i) {
+		for (std::size_t i = 0; i < movers.size(); ++i) {
 			move(movers[i], polys, delta);
 		}
 
 		graphics.clear();
 		for (std::size_t i = 0; i < polys.size(); ++i) {
+			bool isCollision = false;
 			for (std::size_t k = 0; k < movers.size(); ++k) {
-				polys[i].draw(graphics, isect::intersects(movers[k], polys[i]));
+				isCollision = isect::intersects(movers[k], polys[i]);
+				if (isCollision)
+					break;
 			}
+			polys[i].draw(graphics, isCollision);
 		}
 		for (std::size_t i = 0; i < movers.size(); ++i) {
 			movers[i].draw(graphics, true);

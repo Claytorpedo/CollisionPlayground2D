@@ -15,7 +15,7 @@ namespace {
 	}
 }
 
-bool LineSegment::isPoint() const { return start.x == end.x && start.y == end.y; }
+inline bool LineSegment::isPoint() const { return start.x == end.x && start.y == end.y; }
 
 units::Coordinate LineSegment::magnitude2() const {
 	return (end.x - start.x) * (end.x - start.x) + (end.y - start.y) * (end.y - start.y);

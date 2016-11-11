@@ -79,7 +79,7 @@ namespace isect {
 		}
 		inline bool _is_on_segment(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c) {
 			return	(a.x <= c.x || b.x <= c.x) && (c.x <= a.x || c.x <= b.x) &&
-				(a.y <= c.y || b.y <= c.y) && (c.y <= a.y || c.y <= b.y);
+				    (a.y <= c.y || b.y <= c.y) && (c.y <= a.y || c.y <= b.y);
 		}
 	}
 	// Faster test to see if two line segments intersect.
@@ -98,6 +98,10 @@ namespace isect {
 	// --------------------------- Intersections with output point ----------------------------------------------------
 
 	bool intersects(const LineSegment& a, const LineSegment& b, units::Coordinate2D& out_intersection) {
+		// Bounds test for early out.
+		if (a.min_x() > b.max_x() || a.max_x() < b.min_x() || a.min_y() > b.max_y() || a.max_y() < b.min_y())
+			return false;
+
 		// Check if either or both segments are a point.
 		if (a.isPoint()) {
 			if (util::almostEquals(a.start.x, b.start.x) && util::almostEquals(a.start.y, b.start.y)) {
@@ -173,6 +177,11 @@ namespace isect {
 			}
 			return false;
 		}
+		// Bounds test. Either start or end of line must be either at origin, or past origin in the direction of the ray.
+		if ( (r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) || 
+			 (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
+				return false;
+
 		const units::Coordinate2D s = l.end - l.start;
 		const units::Coordinate2D qp = l.start - r.origin;
 		const units::Coordinate rxs = r.dir.cross(s);

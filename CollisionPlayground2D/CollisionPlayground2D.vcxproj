@@ -75,10 +75,7 @@
   <ItemGroup>
     <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="Geometry\CollisionMath.cpp" />
-    <ClCompile Include="Geometry\LineSegment.cpp" />
     <ClCompile Include="Geometry\Polygon.cpp" />
-    <ClCompile Include="Geometry\Ray.cpp" />
-    <ClCompile Include="Geometry\Rectangle.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />

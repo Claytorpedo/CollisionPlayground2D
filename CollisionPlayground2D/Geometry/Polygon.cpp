@@ -3,34 +3,11 @@
 #include "Rectangle.h"
 #include <algorithm>
 
-namespace {
-	// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
-	inline units::Coordinate2D _get_non_normalized_normal(const units::Coordinate2D& first, const units::Coordinate2D& second) {
-		return units::Coordinate2D(first.y - second.y, second.x - first.x);
-	}
-	enum AngleResult {
-		ACUTE,
-		PERPENDICULAR,
-		OBTUSE
-	};
-	// Check what kind of angle the minimum angle between two vectors is.
-	inline AngleResult _check_min_angle(const units::Coordinate2D& vec1, const units::Coordinate2D& vec2) {
-		const units::Coordinate dot = vec1.dot(vec2);
-		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
-			return PERPENDICULAR;
-		if ((dot + polygon::EPSILON_DEGREE_TOLERANCE) > 0)
-			return ACUTE;
-		return OBTUSE;
-	}
-}
-
 Polygon::Polygon() : vertices_(), x_min_(), x_max_(), y_min_(), y_max_() {}
-
 Polygon::Polygon(std::vector<units::Coordinate2D> vertices) : vertices_(vertices), x_min_(), x_max_(), y_min_(), y_max_() {
 	findBounds();
 }
-Polygon::Polygon(const Polygon& poly) 
-	: vertices_(poly.vertices_), x_min_(poly.left()), x_max_(poly.right()), y_min_(poly.top()), y_max_(poly.bottom()) {}
+Polygon::Polygon(const Polygon& poly) : vertices_(poly.vertices_), x_min_(poly.left()), x_max_(poly.right()), y_min_(poly.top()), y_max_(poly.bottom()) {}
 Polygon::~Polygon() {}
 
 void Polygon::findBounds() {
@@ -88,6 +65,27 @@ Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
 	}
 
 	return Polygon(vertices);
+}
+
+namespace {
+	// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
+	inline units::Coordinate2D _get_non_normalized_normal(const units::Coordinate2D& first, const units::Coordinate2D& second) {
+		return units::Coordinate2D(first.y - second.y, second.x - first.x);
+	}
+	enum AngleResult {
+		ACUTE,
+		PERPENDICULAR,
+		OBTUSE
+	};
+	// Check what kind of angle the minimum angle between two vectors is.
+	inline AngleResult _check_min_angle(const units::Coordinate2D& vec1, const units::Coordinate2D& vec2) {
+		const units::Coordinate dot = vec1.dot(vec2);
+		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
+			return PERPENDICULAR;
+		if ((dot + polygon::EPSILON_DEGREE_TOLERANCE) > 0)
+			return ACUTE;
+		return OBTUSE;
+	}
 }
 
 // Assumes that dir is not a zero vector.
@@ -264,30 +262,10 @@ void Polygon::draw(Graphics& graphics, bool isColliding) const {
 
 void Polygon::drawEdgeNormals(Graphics& graphics) const {
 	graphics.setRenderColour(0,0,255);
-
-	//std::vector<Coordinate2D> normals;
-	//normals.reserve(vertices_.size());
-
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i==0 ? vertices_.size()-1 : i-1], vertices_[i]).normalize());
 		units::Coordinate2D start( (vertices_[i==0 ? vertices_.size()-1 : i-1] + vertices_[i]) *0.5f);
 		units::Coordinate2D end(start + norm*50.0f);
 		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
-
-		//normals.push_back(norm);
-
 	}
-
-	/*
-	// Draw the vertex normals too.
-	for (std::size_t i = 0; i < vertices_.size(); ++i) {
-		units::Coordinate2D norm( (normals[i==normals.size()-1 ? 0 : i+1] + normals[i]).normalize() );
-		units::Coordinate2D start( vertices_[i] );
-		units::Coordinate2D end(start + norm*50.0f);
-		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
-	}
-	*/
-
-
-
 }

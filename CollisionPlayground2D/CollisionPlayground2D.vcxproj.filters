@@ -27,16 +27,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry\LineSegment.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Geometry\Polygon.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry\Ray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Geometry\Rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Geometry\Shape.cpp">
@@ -54,9 +45,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Constants.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Direction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics.h">
@@ -93,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\CollisionMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Direction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

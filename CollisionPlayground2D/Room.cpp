@@ -21,7 +21,6 @@ Room::Room() {
 		std::vector<Rectangle> row;
 		for (Uint8 c = 0; c < room::width; ++c) {
 			Rectangle r(util::tileToCoord(c), util::tileToCoord(r), util::tileToCoord(1), util::tileToCoord(1));
-			r.setColour(0, 255, 255, 60);
 			row.push_back(r);
 		}
 		background_tiles_.push_back(row);

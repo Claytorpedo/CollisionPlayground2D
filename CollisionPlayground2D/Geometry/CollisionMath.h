@@ -10,22 +10,26 @@ class Polygon;
 class Rectangle;
 
 namespace isect {
-	// Intersections with points. No need to output a point of collision.
+	// Intersections with points. No need to output a point of collision. -------------------------------------------------
+
 	bool intersects(const Rectangle& r, const units::Coordinate2D p);
 	bool intersects(const LineSegment& l, const units::Coordinate2D p);
 	bool intersects(const Ray& r, const units::Coordinate2D p);
 
-	// Intersection functions that return true/false, and do not find the specific point of collision.
+	// Intersection functions that return true/false, and do not find the specific point of collision. --------------------
+
 	// These are optimized for speed, saving math by not calculating exactly where the collision occurred.
 	bool intersects(const LineSegment& a, const LineSegment& b);
 
-	// Intersection functions that also output the point of collision, if a collision occurred.
-	// In cases where an intersection overlaps (say, collinear lines), out_intersection is set to the "closest"
-	// point to the first parameter -- for example the closest point to a line segment's starting point.
+	// Intersection functions that also output the point of collision, if a collision occurred. ----------------------------
+	
+	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to a's start point.
 	bool intersects(const LineSegment& a, const LineSegment& b, units::Coordinate2D& out_intersection);
+	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to the ray's origin.
 	bool intersects(const Ray& r, const LineSegment& l, units::Coordinate2D& out_intersection);
 
-	// Intersections with shapes. No output points of collision.
+	// Intersections with shapes. No output points of collision. -----------------------------------------------------------
+
 	bool intersects(const Rectangle& first, const Rectangle& second);
 	bool intersects(const Rectangle& r, const LineSegment& l);
 	// Uses SAT. Note that this will return false if the polygons "touch" but have no overlap.

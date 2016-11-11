@@ -7,18 +7,18 @@
 
 #include "Shape.h"
 #include "LineSegment.h"
+#include "Polygon.h"
 
 using namespace units;
 
 class Rectangle : public Shape {
 public:
 	Coordinate x, y, w, h;
-	Uint8 r, g, b, a;
 
-	Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f), r(0), g(0), b(255), a(255){}
-	Rectangle(Coordinate x, Coordinate y, Coordinate w, Coordinate h) : x(x), y(y), w(w), h(h), r(0), g(0), b(255), a(255){}
-	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h), r(0), g(0), b(255), a(255){}
-	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h), r(0), g(0), b(255), a(255){}
+	Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {}
+	Rectangle(Coordinate x, Coordinate y, Coordinate w, Coordinate h) : x(x), y(y), w(w), h(h) {}
+	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
+	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
 	inline Coordinate2D position() const { return Coordinate2D(x, y); }
 	inline Coordinate2D center()   const { return Coordinate2D(x + w*0.5f, y + h*0.5f); }
@@ -36,17 +36,29 @@ public:
 	inline Coordinate2D bottomLeft()  const { return Coordinate2D(left(),  bottom()); }
 	inline Coordinate2D bottomRight() const { return Coordinate2D(right(), bottom()); }
 
-	SDL_Rect convertToSDLRect() const;
-	bool isInside(const Rectangle& other) const;
-	bool collides(const Rectangle& other) const;
-	bool collides(const units::Coordinate2D point) const;
-	bool collides(const LineSegment& line) const;
+	inline bool isInside(const Rectangle& o) const {
+		return right() <= o.right() + constants::EPSILON && bottom() <= o.bottom() + constants::EPSILON && 
+		       left() >= o.left() - constants::EPSILON   && top() >= o.top() - constants::EPSILON;
+	}
 
-	virtual void draw(Graphics& graphics, bool isColliding) const;
-	void draw(Graphics& graphics, bool isColliding, Uint8 thickness) const;
-	void setColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
-
-	virtual Polygon toPoly() const;
+	inline SDL_Rect convertToSDLRect() const  {
+		SDL_Rect rect = { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
+		return rect;
+	}
+	inline void draw(Graphics& graphics, bool isColliding, Uint8 thickness=1) const {
+		graphics.setRenderColour(isColliding ? 255 : 0, isColliding ? 0 : 0, isColliding ? 0 : 255);
+		graphics.renderRect(convertToSDLRect(), thickness);
+	}
+	
+	virtual Polygon toPoly() const {
+		std::vector<units::Coordinate2D> vertices;
+		vertices.reserve(4);
+		vertices.push_back(topLeft());
+		vertices.push_back(bottomLeft());
+		vertices.push_back(bottomRight());
+		vertices.push_back(topRight());
+		return Polygon(vertices);
+	}
 };
 
 #endif // RECTANGLE_H_

@@ -102,6 +102,10 @@ int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordin
 	units::Coordinate2D deflectEdge(0,0);
 
 	int depth = 0;
+	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the min
+	// and max deflection angles relative to the origin vector.
+	units::Coordinate deflect_min(0.0f);
+	units::Coordinate deflect_max(0.0f);
 
 	while ( true ) {
 		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
@@ -127,11 +131,15 @@ int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordin
 			return depth;
 		currentDir = projection/remainingDist;
 
+		// Get angle of deflection relative to the original direction.
+		const units::Coordinate angle(originalDir.dot(currentDir));
 		++depth;
-		if (depth > 3) {
-			std::cout << "Depth: " << depth << " rem: " << remainingDist << " dir: " << currentDir.x << "," << currentDir.y << "\n";
+		// See if the deflection vector is oscillating and the mover isn't moving (in a wedge).
+		if (depth >= 2 && moveDist == 0.0f && (deflect_min <= angle && angle <= deflect_max)) {
 			return depth;
-		}
+		} else if (depth > 3) std::cout << "depth: " << depth << "\n";
+		if (angle < deflect_min) deflect_min = angle;
+		if (angle > deflect_max) deflect_max = angle;
 	}
 }
 
@@ -233,8 +241,6 @@ int main (int argc, char* args[]) {
 		for (std::size_t i = 0; i < numMoves; ++i) {
 			move(movers[i], polys, delta);
 		}
-		std::cout << "update time: " << SDL_GetTicks() - previousTime << "\n";
-
 
 		graphics.clear();
 		for (std::size_t i = 0; i < polys.size(); ++i) {

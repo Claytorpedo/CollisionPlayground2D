@@ -14,13 +14,6 @@
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMath.h"
 
-
-
-
-
-
-#include <ctime>
-
 void close() {
 	SDL_Quit();
 }
@@ -98,9 +91,9 @@ bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& poly
 }
 
 // Move the mover polygon by delta.
-int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
+void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
 	if (delta.isZero())
-		return 0; // Nowhere to move.
+		return; // Nowhere to move.
 	const units::Coordinate   originalDist  = delta.magnitude();
 	const units::Coordinate2D originalDir = delta/originalDist; // normalize delta dir.
 	units::Coordinate remainingDist = originalDist;
@@ -118,14 +111,14 @@ int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordin
 		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
 			// No collision. Move the mover and exit.
 			mover = mover.translate(currentDir * remainingDist);
-			return depth;
+			return;
 		}
 		// We collided with something.
 		mover = mover.translate(currentDir*moveDist);
 		// See if we have anywhere left to move.
 		remainingDist -= moveDist;
 		if (remainingDist < constants::EPSILON || deflectEdge.isZero())
-			return depth;
+			return;
 		// Find the projection of the remaining distance along the original direction on the deflection vector.
 		// Note that direction of the edge doesn't matter: it is treated like a line we are projecting against.
 		const units::Coordinate2D projDir = deflectEdge.normalize();
@@ -135,7 +128,7 @@ int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordin
 		// Projection is our new delta. Get new direction and remaining distance to move.
 		remainingDist = projection.magnitude();
 		if (remainingDist < constants::EPSILON)
-			return depth;
+			return;
 		currentDir = projection/remainingDist;
 
 		// Get angle of deflection relative to the original direction.
@@ -143,8 +136,11 @@ int move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordin
 		++depth;
 		// See if the deflection vector is oscillating and the mover isn't moving (in a wedge).
 		if (depth >= 2 && moveDist == 0.0f && (deflect_min <= angle && angle <= deflect_max)) {
-			return depth;
-		} else if (depth > 3) std::cout << "depth: " << depth << "\n";
+			return;
+		} else if (depth >= 10) {
+			// Just for debugging, display if we get into any situation that requires a lot of recursions to resolve.
+			std::cout << "depth: " << depth << "\n";
+		}
 		if (angle < deflect_min) deflect_min = angle;
 		if (angle > deflect_max) deflect_max = angle;
 	}

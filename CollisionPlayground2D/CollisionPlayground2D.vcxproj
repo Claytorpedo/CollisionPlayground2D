@@ -73,7 +73,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="Geometry\CollisionMath.cpp" />
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
@@ -83,7 +82,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Collidable.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Direction.h" />
     <ClInclude Include="Geometry\CollisionMath.h" />

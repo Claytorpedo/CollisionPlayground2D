@@ -1,6 +1,7 @@
 #include "Polygon.h"
 
 #include "Rectangle.h"
+#include <cmath>
 #include <algorithm>
 
 Polygon::Polygon() : vertices_(), x_min_(), x_max_(), y_min_(), y_max_() {}
@@ -61,7 +62,7 @@ Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
 	std::vector<units::Coordinate2D> vertices;
 	vertices.reserve(numVerts);
 	for (std::size_t i = 0; i < numVerts; ++i) {
-		vertices.push_back(cen + units::Coordinate2D(radius * std::cosf(piVec[i]), radius * std::sinf(piVec[i])));
+		vertices.push_back(cen + units::Coordinate2D(radius * std::cos(piVec[i]), radius * std::sin(piVec[i])));
 	}
 
 	return Polygon(vertices);

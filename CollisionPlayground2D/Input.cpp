@@ -1,7 +1,7 @@
 #include "Input.h"
 
 #include <bitset>
-#include <SDL.h>
+#include "SDL2/SDL.h"
 
 bool Input::refresh() {
 	clear();

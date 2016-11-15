@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include <string>
 #include <map>
 #include <iostream>
@@ -38,7 +38,7 @@ void Graphics::setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {
 	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
 }
 
-void Graphics::renderRect(SDL_Rect& rect, Uint8 thickness) const {
+void Graphics::renderRect(const SDL_Rect& rect, Uint8 thickness) const {
 	SDL_RenderDrawRect(renderer_, &rect);
 
 	if (thickness < 2)
@@ -49,7 +49,7 @@ void Graphics::renderRect(SDL_Rect& rect, Uint8 thickness) const {
 	}
 }
 
-void Graphics::renderLine(SDL_Point& start, SDL_Point& end, Uint8 thickness) const {
+void Graphics::renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 thickness) const {
 	SDL_RenderDrawLine(renderer_, start.x, start.y, end.x, end.y);
 
 	if (thickness < 2)
@@ -73,7 +73,7 @@ void Graphics::renderPoly(std::vector<SDL_Point>& points) const {
 	points.push_back(points[0]); // Duplicate the first vertex to close the shape.
 	SDL_RenderDrawLines(renderer_, points.data(), points.size());
 }
-void Graphics::renderPoint(SDL_Point& point, Uint8 pointSize) const {
+void Graphics::renderPoint(const SDL_Point& point, Uint8 pointSize) const {
 	SDL_RenderDrawPoint(renderer_, point.x, point.y);
 
 	if (pointSize < 2)

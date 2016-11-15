@@ -1,6 +1,8 @@
 #ifndef _VECTOR2D_H
 #define _VECTOR2D_H
 
+#include <cmath>
+
 template <typename T>
 
 class Vector2D {

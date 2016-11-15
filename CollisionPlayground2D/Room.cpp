@@ -1,6 +1,6 @@
 #include "Room.h"
 
-#include <SDL.h>
+#include "SDL2/SDL.h"
 #include <vector>
 #include <fstream>
 #include <string>
@@ -20,8 +20,8 @@ Room::Room() {
 	for (Uint8 r = 0; r < room::height; ++r) {
 		std::vector<Rectangle> row;
 		for (Uint8 c = 0; c < room::width; ++c) {
-			Rectangle r(util::tileToCoord(c), util::tileToCoord(r), util::tileToCoord(1), util::tileToCoord(1));
-			row.push_back(r);
+			Rectangle rect(util::tileToCoord(c), util::tileToCoord(r), util::tileToCoord(1), util::tileToCoord(1));
+			row.push_back(rect);
 		}
 		background_tiles_.push_back(row);
 		is_marked_.push_back(std::vector<bool>(room::width));

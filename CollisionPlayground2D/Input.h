@@ -2,7 +2,7 @@
 #define _INPUT_H
 
 #include <bitset>
-#include "SDL2/SDL.h"
+#include <SDL.h>
 
 class Input {
 public:

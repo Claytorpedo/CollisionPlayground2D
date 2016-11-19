@@ -1,7 +1,7 @@
 #ifndef _ROOM_H
 #define _ROOM_H
 
-#include "SDL2/SDL.h"
+#include <SDL.h>
 #include <vector>
 
 #include "Units.h"

@@ -2,7 +2,7 @@
 #define _UTIL_H_
 
 #include <cmath>
-#include "SDL2/SDL.h"
+#include <SDL.h>
 
 #include "Units.h"
 #include "Constants.h"

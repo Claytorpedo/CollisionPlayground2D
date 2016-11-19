@@ -1,7 +1,7 @@
 #ifndef RECTANGLE_H_
 #define RECTANGLE_H_
 
-#include "SDL2/SDL.h"
+#include <SDL.h>
 #include <iostream>
 #include <string>
 

@@ -1,7 +1,7 @@
 #ifndef _GRAPHICS_H
 #define _GRAPHICS_H
 
-#include "SDL2/SDL.h"
+#include <SDL.h>
 #include <vector>
 
 #include "Units.h"

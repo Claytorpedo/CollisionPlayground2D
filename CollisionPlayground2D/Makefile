@@ -1,21 +1,21 @@
 SRCS = main.cpp Graphics.cpp Input.cpp Room.cpp Geometry/CollisionMath.cpp Geometry/Polygon.cpp Geometry/Shape.cpp
 #ODIR = objects
 #OBJS = $(subst .cpp,.o,$(SRCS))
-
-
+ 
 PROG = collisions
 
 CC = g++
 
 COMP_FLAGS = -std=c++11 -Wall
 
-LINK_FLAGS = -lSDL2
+# Find SDL2 include directory in linux.
+INCL_DIR = `pkg-config --cflags sdl2`
+
+# Find SDL2 library in linux.
+LINK_FLAGS = `pkg-config --libs sdl2`
 
 all: $(SRCS)
-	$(CC) $(SRCS) $(COMP_FLAGS) $(LINK_FLAGS) -o $(PROG)
-
-#$(OBJDIR):
-#	mkdir $(OBJDIR)
+	$(CC) ${INCL_DIR} $(SRCS) $(COMP_FLAGS) $(LINK_FLAGS) -o $(PROG)
 
 clean:
 

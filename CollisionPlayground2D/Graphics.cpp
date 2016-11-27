@@ -18,7 +18,7 @@ bool Graphics::init() {
 	if ( !SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1") ) { // Set to linear filtering.
 		std::cout << "Warning: Linear filtering could not be enabled.\n";
 	}
-	window_ = SDL_CreateWindow("Bug Maze!", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(constants::SCREEN_WIDTH), int(constants::SCREEN_HEIGHT), SDL_WINDOW_SHOWN);
+	window_ = SDL_CreateWindow("Collision Playground 2D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(constants::SCREEN_WIDTH), int(constants::SCREEN_HEIGHT), SDL_WINDOW_SHOWN);
 	if (!window_) {
 		std::cerr << "Error: The window could not be created.\nSDL Error: " << SDL_GetError() << "\n";
 		return false;

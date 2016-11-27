@@ -10,7 +10,7 @@ namespace units {
 	typedef int          Tile;
 	typedef unsigned int MS;
 	typedef unsigned int FPS;
-	typedef float        Velocity;      // Coordinate / MS
+	typedef float        Velocity;     // Coordinate / MS
 	typedef float        Acceleration; // Coordinate / MS / MS
 
 	typedef Vector2D<Coordinate>    Coordinate2D;

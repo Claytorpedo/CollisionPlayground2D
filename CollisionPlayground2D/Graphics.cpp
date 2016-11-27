@@ -1,11 +1,11 @@
+#include "Graphics.h"
+
 #include <SDL.h>
 #include <string>
-#include <map>
 #include <iostream>
 
 #include "Geometry/Rectangle.h"
 #include "Constants.h"
-#include "Graphics.h"
 
 Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {};
 Graphics::~Graphics() {

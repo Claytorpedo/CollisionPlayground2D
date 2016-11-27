@@ -4,10 +4,8 @@
 #include "../Units.h"
 #include "../Constants.h"
 #include "../Util.h"
-#include "../Direction.h"
 #include "../Graphics.h"
-
-#include <vector>
+#include "../Direction.h"
 
 class Polygon;
 
@@ -33,8 +31,8 @@ public:
 	// Extend a shape in a direction by projecting along a direciton by delta.
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
 
-	// Get x or y coordinate in a given direction.
-	units::Coordinate side(direction::Direction side) const;
+	// Get x or y coodrinate in a given direction.
+	units::Coordinate Shape::side(direction::Direction side) const;
 };
 
 #endif //_SHAPE_H

@@ -3,14 +3,11 @@
 #include <random>
 #include <vector>
 
-#include "Room.h"
 #include "Input.h"
 #include "Graphics.h"
 #include "Constants.h"
 #include "Units.h"
-#include "Geometry/LineSegment.h"
 #include "Geometry/Rectangle.h"
-#include "Geometry/Ray.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMath.h"
 
@@ -147,7 +144,6 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 }
 
 int main (int argc, char* args[]) {
-	Room room;
 	Input input;
 	Graphics graphics;
 	units::MS currentTime, previousTime, elapsedTime;
@@ -183,7 +179,7 @@ int main (int argc, char* args[]) {
 	//------------------------------------------
 	
 	previousTime = SDL_GetTicks();
-	// start game loop
+	// Start the game loop.
 	while (true) {
 		if (!input.refresh())
 			break; // Window was closed.

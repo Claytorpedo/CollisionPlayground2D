@@ -2,7 +2,6 @@
 #define _RAY_H
 
 #include "../Units.h"
-#include "LineSegment.h"
 
 class Ray {
 public:

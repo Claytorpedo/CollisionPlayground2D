@@ -2,11 +2,8 @@
 #define RECTANGLE_H_
 
 #include <SDL.h>
-#include <iostream>
-#include <string>
 
 #include "Shape.h"
-#include "LineSegment.h"
 #include "Polygon.h"
 
 using namespace units;

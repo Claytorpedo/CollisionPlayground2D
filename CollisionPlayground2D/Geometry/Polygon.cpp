@@ -42,7 +42,7 @@ Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
 	std::uniform_int_distribution<std::size_t> distVerts(min, maxVerts < min ? min : maxVerts);
 	const std::size_t numVerts(distVerts(rando));
 
-	// Generate random numbers between 0 and tau/2pi to make points around a circle.
+	// Generate random numbers between 0 and tau (2pi) to make points around a circle.
 	std::uniform_real_distribution<units::Coordinate> distPI(0.0f, constants::TAU);
 	std::vector<units::Coordinate> piVec;
 	piVec.reserve(numVerts);

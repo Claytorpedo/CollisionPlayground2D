@@ -1,8 +1,8 @@
 #include "Shape.h"
 
-#include "Polygon.h"
-
 #include <iostream>
+
+#include "Polygon.h"
 
 units::Coordinate Shape::side(direction::Direction side) const {
 	if (side == direction::LEFT)

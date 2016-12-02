@@ -64,7 +64,7 @@ void Room::markCollidingTiles(const Shape& collider, const units::Coordinate2D o
 
 	// Determine the slope. This is the m in y = mx + b
 	const units::Coordinate slope = isOuterAxisX ? (std::abs(delta.x) < constants::EPSILON ? 0.0f : delta.y / delta.x) : 
-		                                           (std::abs(delta.y) < constants::EPSILON ? 0.0f : delta.x / delta.y);
+	                                               (std::abs(delta.y) < constants::EPSILON ? 0.0f : delta.x / delta.y);
 
 	// Determine which side of the tiles (in the array) to check for innerAxisStart and innerAxisEnd.
 	// This combined with the tiles from the outer loop lets us determine the p in y = m(p - q) + b, where p - q = x.

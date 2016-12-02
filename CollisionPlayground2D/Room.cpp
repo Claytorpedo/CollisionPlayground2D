@@ -41,10 +41,10 @@ void Room::markCollidingTiles(const Shape& collider, const units::Coordinate2D o
 
 	// Starting value for the outer loop (the side of the bounding box on the opposite side of the delta direction at the origin).
 	const units::Tile outerAxisStart = isOuterAxisX ? util::coordToTile(origin.x + collider.side(oppositeDirection(outerDir))) : 
-		                                              util::coordToTile(origin.y + collider.side(oppositeDirection(outerDir)));
+	                                                  util::coordToTile(origin.y + collider.side(oppositeDirection(outerDir)));
 	// End value for the outer loop (the side of the bounding box on the side of the delta direction at the destination).
 	const units::Tile outerAxisEnd   = isOuterAxisX ? util::coordToTile(destination.x + collider.side(outerDir)) : 
-		                                              util::coordToTile(destination.y + collider.side(outerDir));
+	                                                  util::coordToTile(destination.y + collider.side(outerDir));
 
 	/* To determine where to start and stop for the inner loop, we first find the ultimate starting and stopping values
 	   (where the inner loop will start on the first iteration of the outer loop, and where the inner loop will end on 

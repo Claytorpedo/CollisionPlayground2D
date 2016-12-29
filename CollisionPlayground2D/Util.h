@@ -7,8 +7,6 @@
 #include "Units.h"
 #include "Constants.h"
 
-#include <iostream>
-
 namespace util {
 	const units::Fraction COORD_TO_TILE = static_cast<units::Fraction>(static_cast<units::Fraction>(1) / constants::TILE_SIZE);
 

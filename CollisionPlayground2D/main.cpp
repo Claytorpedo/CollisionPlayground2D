@@ -121,8 +121,7 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 		// Note that direction of the edge doesn't matter: it is treated like a line we are projecting against.
 		const units::Coordinate2D projDir = deflectEdge.normalize();
 		// Project using the original delta direction, to avoid "bouncing" off of corners.
-		const units::Coordinate dot(projDir.dot(originalDir * remainingDist));
-		const units::Coordinate2D projection(dot*projDir.x, dot*projDir.y);
+		const units::Coordinate2D projection(originalDir.project(projDir, remainingDist));
 		// Projection is our new delta. Get new direction and remaining distance to move.
 		remainingDist = projection.magnitude();
 		if (remainingDist < constants::EPSILON)

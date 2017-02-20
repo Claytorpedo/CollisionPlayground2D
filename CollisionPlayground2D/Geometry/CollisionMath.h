@@ -3,11 +3,7 @@
 
 #include "../Units.h"
 
-class LineSegment;
-class Ray;
-class Shape;
 class Polygon;
-class Rectangle;
 
 // Tests for if a colliding shape when moved by delta will collide with another shape.
 namespace collision_math {

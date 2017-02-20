@@ -59,21 +59,15 @@ bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& poly
 	if (dir.isZero() || dist == 0.0f)
 		return false;
 
-	bool wasCollision = false;
-
 	units::Coordinate   moveDist = dist;
-	units::Coordinate2D edge(0,0);
+	units::Coordinate2D edge;
 	const Polygon clippedCollider = mover.clipExtend(dir, dist);
 
 	for (std::size_t i = 0; i < polys.size(); ++i) {
 		units::Coordinate testDist;
 		units::Coordinate2D testEdge;
 		if (collision_math::clippedCollides(clippedCollider, dir, dist, polys[i], testDist, testEdge)) {
-			if (!wasCollision) { // First time getting a collision.
-				moveDist = testDist;
-				edge = testEdge;
-				wasCollision = true;
-			} else if (moveDist > testDist) { // We got a collision before this. Take the closer one.
+			if (moveDist > testDist) {
 				moveDist = testDist;
 				edge = testEdge;
 			}
@@ -81,11 +75,10 @@ bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& poly
 				break;// Can't move any less than not moving!
 		}
 	}
-	// Set our outputs.
 	out_dist = moveDist;
 	out_edge = edge;
 
-	return wasCollision;
+	return !edge.isZero();
 }
 
 // Move the mover polygon by delta.

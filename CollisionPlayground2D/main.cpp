@@ -10,6 +10,7 @@
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMath.h"
+#include "Geometry/IntersectionMath.h"
 
 void close() {
 	SDL_Quit();

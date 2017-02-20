@@ -1,6 +1,8 @@
 #include "Polygon.h"
 
 #include "Rectangle.h"
+
+#include <iostream>
 #include <cmath>
 #include <algorithm>
 

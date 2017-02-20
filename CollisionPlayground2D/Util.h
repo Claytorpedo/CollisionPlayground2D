@@ -7,8 +7,6 @@
 #include "Units.h"
 #include "Constants.h"
 
-#include <iostream>
-
 namespace util {
 	const units::Fraction COORD_TO_TILE = static_cast<units::Fraction>(static_cast<units::Fraction>(1) / constants::TILE_SIZE);
 
@@ -35,11 +33,11 @@ namespace util {
 		return p;
 	}
 	template<typename T>
-	inline bool almostZero(const T t) { // Use for floating point numbers.
-		return -constants::EPSILON < t && t < constants::EPSILON;
+	inline bool almostZero(const T t, const T tolerance=constants::EPSILON) { // Use for floating point numbers.
+		return -tolerance < t && t < tolerance;
 	}
-	inline bool almostEquals(const units::Coordinate& a, const units::Coordinate& b) {
-		return std::abs(a - b) < constants::EPSILON;
+	inline bool almostEquals(const units::Coordinate& a, const units::Coordinate& b, const units::Coordinate tolerance=constants::EPSILON) {
+		return std::abs(a - b) < tolerance;
 	}
 	template<typename T>
 	inline T clamp(const T val, const T min, const T max) {

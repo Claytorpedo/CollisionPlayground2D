@@ -74,6 +74,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Geometry\CollisionMath.cpp" />
+    <ClCompile Include="Geometry\IntersectionMath.cpp" />
+    <ClCompile Include="Geometry\IntersectionMath.h" />
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
     <ClCompile Include="Graphics.cpp" />

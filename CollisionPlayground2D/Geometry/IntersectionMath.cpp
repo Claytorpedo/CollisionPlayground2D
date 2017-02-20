@@ -1,4 +1,4 @@
-#include "CollisionMath.h"
+#include "IntersectionMath.h"
 
 #include "../Units.h"
 #include "../Util.h"

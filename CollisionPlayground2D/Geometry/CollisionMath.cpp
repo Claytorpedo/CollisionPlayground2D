@@ -1,16 +1,12 @@
 #include "CollisionMath.h"
-#include "IntersectionMath.h"
 
 #include <iostream>
 
 #include "../Units.h"
-#include "../Util.h"
-#include "../Constants.h"
 
+#include "IntersectionMath.h"
 #include "LineSegment.h"
 #include "Ray.h"
-#include "Shape.h"
-#include "Rectangle.h"
 #include "Polygon.h"
 
 namespace collision_math {

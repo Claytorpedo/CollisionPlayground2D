@@ -474,13 +474,7 @@ namespace collision_math {
 	// Test for collision, and if they collide find the collision normal and how far along direction vector can be travelled.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist,
 		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
-		if (dir.isZero() || dist == 0.0f)
-			return false; // Should not call this function with zero delta.
-		Polygon clippedCollider(collider.clipExtend(dir, dist));
-		if ( !isect::intersects(clippedCollider, other) )
-			return false;
-		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_edge);
-		return true;
+		return clippedCollides(collider.clipExtend(dir, dist), dir, dist, other, out_dist, out_edge);
 	}
 	// Test for collision with an already clip-extended collider.
 	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,

@@ -32,7 +32,7 @@ public:
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate delta) const;
 
 	// Get x or y coodrinate in a given direction.
-	units::Coordinate Shape::side(direction::Direction side) const;
+	units::Coordinate side(direction::Direction side) const;
 };
 
 #endif //_SHAPE_H

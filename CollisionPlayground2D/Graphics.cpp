@@ -7,7 +7,7 @@
 #include "Geometry/Rectangle.h"
 #include "Constants.h"
 
-Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {};
+Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {}
 Graphics::~Graphics() {
 	// Free renderer and window.
 	SDL_DestroyRenderer(renderer_);

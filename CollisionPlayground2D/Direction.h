@@ -3,7 +3,7 @@
 
 
 namespace direction {
-   typedef enum Direction {
+   enum Direction {
      UP,
 	 DOWN,
 	 LEFT,

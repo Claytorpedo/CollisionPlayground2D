@@ -1,22 +1,38 @@
-SRCS = main.cpp Graphics.cpp Input.cpp Room.cpp Geometry/CollisionMath.cpp Geometry/Polygon.cpp Geometry/Shape.cpp
-#ODIR = objects
-#OBJS = $(subst .cpp,.o,$(SRCS))
+SRCDIR = .
+GEOMDIR = ./Geometry
+SRCS = $(wildcard $(SRCDIR)/*.cpp) $(wildcard $(GEOMDIR)/*.cpp)
+ODIR = build
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
  
 PROG = collisions
 
 CC = g++
 
-COMP_FLAGS = -std=c++11 -Wall
-
-# Find SDL2 include directory in linux.
-INCL_DIR = `pkg-config --cflags sdl2`
-
-# Find SDL2 library in linux.
+COMP_FLAGS = -std=c++11 -Wall -pedantic
+# Any linker flags, such as libraries to link to (pkg-config --libs).
 LINK_FLAGS = `pkg-config --libs sdl2`
 
-all: $(SRCS)
-	$(CC) ${INCL_DIR} $(SRCS) $(COMP_FLAGS) $(LINK_FLAGS) -o $(PROG)
+# Any additional include dirs, such as for libraries (pkg-config --cflags).
+INCL_DIRS = `pkg-config --cflags sdl2`
+
+DEBUG_FLAGS = -DDEBUG -g
+
+.PHONY: all clean dir debug
+
+all: dir $(PROG)
+
+$(PROG): $(OBJS)
+	$(CC) $^ $(LINK_FLAGS) -o $@
+
+$(OBJS): $(ODIR)/%.o : $(SRCDIR)/%.cpp
+	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
+
+debug: COMP_FLAGS += $(DEBUG_FLAGS)
+debug: all
+
+dir:
+	mkdir -p $(ODIR)
+	mkdir -p $(ODIR)/$(GEOMDIR)
 
 clean:
-
-	rm -f $(PROG) $(OBJS)
+	rm -rf $(ODIR) $(PROG)

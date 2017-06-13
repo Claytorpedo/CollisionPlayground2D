@@ -110,10 +110,20 @@ void Room::reset() {
 	}
 }
 
+namespace {
+	inline SDL_Rect _convert_to_SDL_rect(Rectangle r) {
+		SDL_Rect rect = { static_cast<int>(r.x), static_cast<int>(r.y), static_cast<int>(r.w), static_cast<int>(r.h) };
+		return rect;
+	}
+}
 void Room::draw(Graphics& graphics) {
 	for ( std::size_t row = 0 ; row < background_tiles_.size(); ++row ) {
 		for ( std::size_t col = 0; col < background_tiles_[row].size(); ++col ) {
-			background_tiles_[row][col].draw(graphics, is_marked_[row][col]);
+			if (is_marked_[row][col])
+				graphics.setRenderColour(255, 0, 0);
+			else
+				graphics.setRenderColour(0, 0, 255);
+			graphics.renderRect(_convert_to_SDL_rect(background_tiles_[row][col]));
 		}
 	}
 }

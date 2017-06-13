@@ -1,8 +1,6 @@
 #ifndef RECTANGLE_H_
 #define RECTANGLE_H_
 
-#include <SDL.h>
-
 #include "Shape.h"
 #include "Polygon.h"
 
@@ -36,15 +34,6 @@ public:
 	inline bool isInside(const Rectangle& o) const {
 		return right() <= o.right() + constants::EPSILON && bottom() <= o.bottom() + constants::EPSILON && 
 		       left() >= o.left() - constants::EPSILON   && top() >= o.top() - constants::EPSILON;
-	}
-
-	inline SDL_Rect convertToSDLRect() const  {
-		SDL_Rect rect = { static_cast<int>(x), static_cast<int>(y), static_cast<int>(w), static_cast<int>(h) };
-		return rect;
-	}
-	inline void draw(Graphics& graphics, bool isColliding, Uint8 thickness=1) const {
-		graphics.setRenderColour(isColliding ? 255 : 0, isColliding ? 0 : 0, isColliding ? 0 : 255);
-		graphics.renderRect(convertToSDLRect(), thickness);
 	}
 	
 	virtual Polygon toPoly() const {

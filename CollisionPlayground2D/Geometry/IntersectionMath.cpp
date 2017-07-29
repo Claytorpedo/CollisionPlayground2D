@@ -54,12 +54,12 @@ namespace isect {
 		if (std::abs(r.dir.x) < constants::EPSILON) {
 			// Vertical ray.
 			return std::abs(p.x - r.origin.x) < constants::EPSILON && 
-				(r.dir.y > 0 ? (p.y > r.origin.y) : (p.y < r.origin.y) );
+				(r.dir.y > 0 ? (p.y >= r.origin.y) : (p.y <= r.origin.y) );
 		}
 		if (std::abs(r.dir.y) < constants::EPSILON) {
 			// Horizontal ray.
 			return std::abs(p.y - r.origin.y) < constants::EPSILON && 
-				(r.dir.x > 0 ? (p.x > r.origin.x) : (p.x < r.origin.x) );
+				(r.dir.x > 0 ? (p.x >= r.origin.x) : (p.x <= r.origin.x) );
 		}
 		// Check for a point on the line created by the ray.
 		// We've already bounds checked, and checked for division by zero.

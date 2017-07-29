@@ -4,6 +4,7 @@
 #include "../Units.h"
 #include "../Geometry/Rectangle.h"
 #include "../Geometry/LineSegment.h"
+#include "../Geometry/Ray.h"
 
 
 TEST_CASE("Rrectangle and coordinate intersections", "[rect][coord]") {
@@ -119,11 +120,12 @@ TEST_CASE("Line segment and coordinate intersections", "[lineseg][coord]") {
 			REQUIRE(isect::intersects(s, c) == true);
 			c = Coordinate2D(0.5f, 0.5f);
 			REQUIRE(isect::intersects(s, c) == true);
-			s = LineSegment(-1, -1, 10, 10);
+			s = LineSegment(2, 0, -10, 6);
+			c = Coordinate2D(2, 0);
 			REQUIRE(isect::intersects(s, c) == true);
-			c = Coordinate2D(-1, -1);
+			c = Coordinate2D(-10, 6);
 			REQUIRE(isect::intersects(s, c) == true);
-			c = Coordinate2D(10, 10);
+			c = Coordinate2D(-4, 3);
 			REQUIRE(isect::intersects(s, c) == true);
 		}
 		SECTION("Coordinates on vertical line segments") {
@@ -208,5 +210,108 @@ TEST_CASE("Line segment and coordinate intersections", "[lineseg][coord]") {
 			c = Coordinate2D(-3, -9.5f);
 			REQUIRE(isect::intersects(s, c) == false);
 		}
+	}
+}
+
+TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
+	SECTION("Coordinates on a diagonal ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 1).normalize());
+		Coordinate2D c(0, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(1, 1);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(100000.5f, 100000.5f);
+		REQUIRE(isect::intersects(r, c) == true);
+		r = Ray(units::Coordinate2D(10, 5), units::Coordinate2D(-1, -0.5f).normalize());
+		c = Coordinate2D(10, 5);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(9, 4.5f);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(0, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(-60, -30);
+		REQUIRE(isect::intersects(r, c) == true);
+	}
+	SECTION("Coordinates on a vertical ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(0, 1));
+		Coordinate2D c(0, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(0, 1);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(0, 10000000);
+		REQUIRE(isect::intersects(r, c) == true);
+		r = Ray(units::Coordinate2D(10, 2), units::Coordinate2D(0, -1));
+		c = Coordinate2D(10, 2);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(10, 1);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(10, -1000000);
+		REQUIRE(isect::intersects(r, c) == true);
+	}
+	SECTION("Coordinates on a horizontal ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 0));
+		Coordinate2D c(0, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(1, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(10000000, 0);
+		REQUIRE(isect::intersects(r, c) == true);
+		r = Ray(units::Coordinate2D(12, 4), units::Coordinate2D(-1, 0));
+		c = Coordinate2D(12, 4);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(11, 4);
+		REQUIRE(isect::intersects(r, c) == true);
+		c = Coordinate2D(-10000000, 4);
+		REQUIRE(isect::intersects(r, c) == true);
+	}
+	SECTION("Coordinates off a diagonal ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 1).normalize());
+		Coordinate2D c(1, 0);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(0, 1);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(100000, 100000.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		r = Ray(units::Coordinate2D(10, 5), units::Coordinate2D(-1, -0.5f).normalize());
+		c = Coordinate2D(12, 6);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(9, 5);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(9, 3);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(-60.5f, -30);
+		REQUIRE(isect::intersects(r, c) == false);
+	}
+	SECTION("Coordinates off a vertical ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(0, 1));
+		Coordinate2D c(1, 0);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(0, -0.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(0.5f, 10000000);
+		REQUIRE(isect::intersects(r, c) == false);
+		r = Ray(units::Coordinate2D(10, 2), units::Coordinate2D(0, -1));
+		c = Coordinate2D(10, 2.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(10.5f, 1);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(9.5f, -1000000);
+		REQUIRE(isect::intersects(r, c) == false);
+	}
+	SECTION("Coordinates off a horizontal ray") {
+		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 0));
+		Coordinate2D c(-0.5f, 0);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(1, 0.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(10000000, -0.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		r = Ray(units::Coordinate2D(12, 4), units::Coordinate2D(-1, 0));
+		c = Coordinate2D(12.5f, 4);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(12, 3.5f);
+		REQUIRE(isect::intersects(r, c) == false);
+		c = Coordinate2D(-10000000, -4);
+		REQUIRE(isect::intersects(r, c) == false);
 	}
 }

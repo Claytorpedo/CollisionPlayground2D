@@ -21,6 +21,38 @@ void closeWithError() {
 	close();
 }
 
+// ----------------------------- Drawing polygons -------------------------------------
+
+void drawPoly(Polygon& p, Graphics& graphics, bool isColliding) {
+	isColliding ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+	const size_t size = p.size();
+	// Draw the lines of the polygon.
+	for (std::size_t i = 0; i < size - 1; ++i) {
+		graphics.renderLine(util::coord2DToSDLPoint(p[i]), util::coord2DToSDLPoint(p[i + 1]), 1);
+	}
+	// Draw last line.
+	graphics.renderLine(util::coord2DToSDLPoint(p[size - 1]), util::coord2DToSDLPoint(p[0]), 1);
+	// Render the vertices over the lines.
+	graphics.setRenderColour(255, 255, 0);
+	for (std::size_t i = 0; i < size; ++i) {
+		graphics.renderCircle(util::coord2DToSDLPoint(p[i]), 1);
+	}
+}
+void drawPolyEdgeNormals(Polygon& p, Graphics& graphics) {
+	graphics.setRenderColour(0, 0, 255);
+	const size_t size = p.size();
+	for (std::size_t i = 0; i < size; ++i) {
+		const units::Coordinate2D prev = p[i == 0 ? size - 1 : i - 1];
+		const units::Coordinate2D curr = p[i];
+		units::Coordinate2D edgeNormal(units::Coordinate2D(prev.y - curr.y, curr.x - prev.x).normalize());
+		units::Coordinate2D start((prev + curr) *0.5f);
+		units::Coordinate2D end(start + edgeNormal*50.0f);
+		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
+	}
+}
+
+// -------------------------------------------------------------------------------------
+
 Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSegs=15) {
 	// Approximate a circle with line segments.
 	std::vector<units::Coordinate2D> vertices(numSegs);
@@ -52,6 +84,8 @@ Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectan
 	std::cout << "Mover has entered the level.\n";
 	return mover;
 }
+
+// --------------------------------- Collision Handling -------------------------
 
 // Returns true if there was a collision, false if none was found.
 bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& dir, const units::Coordinate dist,
@@ -135,6 +169,8 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 		if (angle > deflect_max) deflect_max = angle;
 	}
 }
+
+// -------------------------------------------------------------------------------
 
 int main (int argc, char* args[]) {
 	Input input;
@@ -242,10 +278,10 @@ int main (int argc, char* args[]) {
 				if (isCollision)
 					break;
 			}
-			polys[i].draw(graphics, isCollision);
+			drawPoly(polys[i], graphics, isCollision);
 		}
 		for (std::size_t i = 0; i < movers.size(); ++i) {
-			movers[i].draw(graphics, true);
+			drawPoly(movers[i], graphics, true);
 		}
 		
 		graphics.present();

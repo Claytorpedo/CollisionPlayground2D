@@ -80,10 +80,6 @@ public:
 	inline std::size_t size() const { return vertices_.size(); }
 	// Check if the polygon has any vertices.
 	inline bool isEmpty() const { return vertices_.empty(); }
-
-
-	void draw(Graphics& graphics, bool isColliding) const;
-	void drawEdgeNormals(Graphics& graphics) const;
 };
 
 #endif //_POLYGON_H

@@ -247,28 +247,3 @@ Polygon Polygon::translate(const units::Coordinate2D& delta) const {
 Polygon Polygon::toPoly() const {
 	return Polygon(*this);
 }
-
-void Polygon::draw(Graphics& graphics, bool isColliding) const {
-	isColliding ? graphics.setRenderColour(255,0,0) : graphics.setRenderColour(0,100,255);
-	// Draw the lines of the polygon.
-	for (std::size_t i = 0; i < vertices_.size() - 1; ++i) {
-		graphics.renderLine(util::coord2DToSDLPoint(vertices_[i]), util::coord2DToSDLPoint(vertices_[i+1]), 1);
-	}
-	// Draw last line.
-	graphics.renderLine(util::coord2DToSDLPoint(vertices_[vertices_.size()-1]), util::coord2DToSDLPoint(vertices_[0]), 1);
-	// Render the vertices over the lines.
-	graphics.setRenderColour(255,255,0);
-	for (std::size_t i = 0; i < vertices_.size(); ++i) {
-		graphics.renderCircle(util::coord2DToSDLPoint(vertices_[i]), 1);
-	}
-}
-
-void Polygon::drawEdgeNormals(Graphics& graphics) const {
-	graphics.setRenderColour(0,0,255);
-	for (std::size_t i = 0; i < vertices_.size(); ++i) {
-		units::Coordinate2D norm(_get_non_normalized_normal(vertices_[i==0 ? vertices_.size()-1 : i-1], vertices_[i]).normalize());
-		units::Coordinate2D start( (vertices_[i==0 ? vertices_.size()-1 : i-1] + vertices_[i]) *0.5f);
-		units::Coordinate2D end(start + norm*50.0f);
-		graphics.renderLine(util::coord2DToSDLPoint(start), util::coord2DToSDLPoint(end), 2);
-	}
-}

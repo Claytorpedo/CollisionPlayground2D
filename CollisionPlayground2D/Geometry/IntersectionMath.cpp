@@ -15,10 +15,10 @@ namespace isect {
 	// ------------------------------- Point intersections --------------------------------------------------
 
 	bool intersects(const Rectangle& r, const units::Coordinate2D p) {
-		return (p.x >= r.left()   - constants::EPSILON && 
-			p.x <= r.right()  + constants::EPSILON && 
-			p.y >= r.bottom() - constants::EPSILON && 
-			p.y <= r.top()    + constants::EPSILON);
+		return (p.x >= (r.left()   - constants::EPSILON) && 
+			    p.x <= (r.right()  + constants::EPSILON) && 
+			    p.y >= (r.top()    - constants::EPSILON) && 
+			    p.y <= (r.bottom() + constants::EPSILON));
 	}
 	bool intersects(const LineSegment& l, const units::Coordinate2D p) {
 		// Check bounding box.

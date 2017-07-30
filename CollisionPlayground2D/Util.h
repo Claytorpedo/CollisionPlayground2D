@@ -39,6 +39,9 @@ namespace util {
 	inline bool almostEquals(const units::Coordinate& a, const units::Coordinate& b, const units::Coordinate tolerance=constants::EPSILON) {
 		return std::abs(a - b) < tolerance;
 	}
+	inline bool almostEquals(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate tolerance = constants::EPSILON) {
+		return almostEquals(a.x, b.x, tolerance) && almostEquals(a.y, b.y, tolerance);
+	}
 	template<typename T>
 	inline T clamp(const T val, const T min, const T max) {
 		return val < min ? min : val > max ? max : val;

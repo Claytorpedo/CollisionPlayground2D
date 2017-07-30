@@ -315,3 +315,247 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == false);
 	}
 }
+
+TEST_CASE("Line segment intersections", "[lineseg]") {
+	SECTION("Intersecting line segments") {
+		SECTION("Zero-length line segments") {
+			LineSegment s1(0, 0, 0, 0);
+			LineSegment s2(0, 0, 0, 0);
+			REQUIRE(isect::intersects(s1, s2) == true);
+			s2 = LineSegment(0, 0, 1, 1);
+			REQUIRE(isect::intersects(s1, s2) == true);
+		}
+		SECTION("Diagonal line segments") {
+			LineSegment s1(1, 1, 0, 0);
+			LineSegment s2(1, 1, 0, 0);
+			REQUIRE(isect::intersects(s1, s2) == true);
+			s2 = LineSegment(0, 0, 1, 1);
+			REQUIRE(isect::intersects(s1, s2) == true);
+			s1 = LineSegment(-1, -1, 0, 0);
+			REQUIRE(isect::intersects(s1, s2) == true);
+			s1 = LineSegment(0, 1, 1, 0);
+			REQUIRE(isect::intersects(s1, s2) == true);
+		}
+		SECTION("Horizontal and vertical line segments") {
+			LineSegment v(0, -10, 0, 10);
+			LineSegment s(0, -10, 0, 10);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(0, 10, 0, 20);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(0, -10, 0, -20);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, -10, 0, -10);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, -10, 50, -10);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, 10, 0, 10);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, 10, 50, 10);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, 5, 0, 5);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-50, 5, 50, 5);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(-10, 10, 10, -10);
+			REQUIRE(isect::intersects(v, s) == true);
+			v = LineSegment(30.5f, 20, 30.5f, 10);
+			s = LineSegment(30.5f, 9, 30.5f, 11);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(30.5f, 10, 30.5f, 20);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(30.5f, -10, 30.5f, 20);
+			REQUIRE(isect::intersects(v, s) == true);
+			s = LineSegment(0, 20, 40, 10);
+			REQUIRE(isect::intersects(v, s) == true);
+		}
+	}
+	SECTION("Non-intersecting line segments") {
+		SECTION("Zero-length line segments") {
+			LineSegment s1(0, 0, 0, 0);
+			LineSegment s2(1, 0, 1, 0);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s2 = LineSegment(1, 1, 1, 1);
+			REQUIRE(isect::intersects(s1, s2) == false);
+		}
+		SECTION("Diagonal line segments") {
+			LineSegment s1(1, 1, 0, 0);
+			LineSegment s2(1, 2, 0, 1);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s2 = LineSegment(0, -0.5f, 1, 0.5f);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s2 = LineSegment(2, 2, 1.5f, 1.5f);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s1 = LineSegment(-1.5f, -1, 0.5f, 0);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s2 = LineSegment(0, -0.5f, 1.5f, 0.5f);
+			REQUIRE(isect::intersects(s1, s2) == false);
+			s2 = LineSegment(10, 0, 11, 1);
+			REQUIRE(isect::intersects(s1, s2) == false);
+		}
+		SECTION("Horizontal and vertical line segments") {
+			LineSegment v(0, -10, 0, 10);
+			LineSegment s(0, -11, 0, -12);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(0, 11, 0, 20);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(0.5f, -10, 0.5f, -20);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(-50, -10, -0.5f, -10);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(-50, -10.5f, 50, -10.5f);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(-50, 10.5f, 0, 10.5f);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(-50, 10.5f, 50, 10.5f);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(0.5f, 5, 50, 5);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(-10, 10, 10, -50);
+			REQUIRE(isect::intersects(v, s) == false);
+			v = LineSegment(30.5f, 20, 30.5f, 10);
+			s = LineSegment(30.5f, 9, 30.5f, 9.5f);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(30.5f, 20.5f, 30.5f, 25);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(30, -10, 30, 20);
+			REQUIRE(isect::intersects(v, s) == false);
+			s = LineSegment(0, 20, 40, -10);
+			REQUIRE(isect::intersects(v, s) == false);
+		}
+	}
+}
+
+TEST_CASE("Line segment intersections with coordinate of intersection output", "[lineseg]") {
+	SECTION("Intersecting line segments") {
+		SECTION("Zero-length line segments") {
+			LineSegment s1(0, 0, 0, 0);
+			LineSegment s2(0, 0, 0, 0);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			s2 = LineSegment(0, 0, 1, 1);
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+		}
+		SECTION("Diagonal line segments") {
+			LineSegment s1(1, 1, 0, 0);
+			LineSegment s2(1, 1, 0, 0);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(1, 1)));
+			s2 = LineSegment(0, 0, 1, 1);
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(1, 1)));
+			s1 = LineSegment(-1, -1, 0, 0);
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			s1 = LineSegment(0, 1, 1, 0);
+			REQUIRE(isect::intersects(s1, s2, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0.5f, 0.5f)));
+		}
+		SECTION("Horizontal and vertical line segments") {
+			LineSegment v(0, -10, 0, 10);
+			LineSegment s(0, -10, 0, 10);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			s = LineSegment(0, 10, 0, 20);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			s = LineSegment(0, -10, 0, -20);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			s = LineSegment(-50, -10, 0, -10);
+			REQUIRE(isect::intersects(v, s) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			s = LineSegment(-50, -10, 50, -10);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			s = LineSegment(-50, 10, 0, 10);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			s = LineSegment(-50, 10, 50, 10);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			s = LineSegment(-50, 5, 0, 5);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 5)));
+			s = LineSegment(-50, 5, 50, 5);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 5)));
+			s = LineSegment(-10, 10, 10, -10);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			v = LineSegment(30.5f, 20, 30.5f, 10);
+			s = LineSegment(30.5f, 9, 30.5f, 11);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 11)));
+			s = LineSegment(30.5f, 10, 30.5f, 20);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 20)));
+			s = LineSegment(30.5f, -10, 30.5f, 20);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 20)));
+			s = LineSegment(0, 20, 40, 10);
+			REQUIRE(isect::intersects(v, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 12.375f)));
+		}
+	}
+	SECTION("Non-intersecting line segments") {
+		SECTION("Zero-length line segments") {
+			LineSegment s1(0, 0, 0, 0);
+			LineSegment s2(1, 0, 1, 0);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s2 = LineSegment(1, 1, 1, 1);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+		}
+		SECTION("Diagonal line segments") {
+			LineSegment s1(1, 1, 0, 0);
+			LineSegment s2(1, 2, 0, 1);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s2 = LineSegment(0, -0.5f, 1, 0.5f);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s2 = LineSegment(2, 2, 1.5f, 1.5f);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s1 = LineSegment(-1.5f, -1, 0.5f, 0);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s2 = LineSegment(0, -0.5f, 1.5f, 0.5f);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+			s2 = LineSegment(10, 0, 11, 1);
+			REQUIRE(isect::intersects(s1, s2, out_p) == false);
+		}
+		SECTION("Horizontal and vertical line segments") {
+			LineSegment v(0, -10, 0, 10);
+			LineSegment s(0, -11, 0, -12);
+			units::Coordinate2D out_p;
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(0, 11, 0, 20);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(0.5f, -10, 0.5f, -20);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(-50, -10, -0.5f, -10);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(-50, -10.5f, 50, -10.5f);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(-50, 10.5f, 0, 10.5f);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(-50, 10.5f, 50, 10.5f);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(0.5f, 5, 50, 5);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(-10, 10, 10, -50);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			v = LineSegment(30.5f, 20, 30.5f, 10);
+			s = LineSegment(30.5f, 9, 30.5f, 9.5f);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(30.5f, 20.5f, 30.5f, 25);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(30, -10, 30, 20);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+			s = LineSegment(0, 20, 40, -10);
+			REQUIRE(isect::intersects(v, s, out_p) == false);
+		}
+	}
+}

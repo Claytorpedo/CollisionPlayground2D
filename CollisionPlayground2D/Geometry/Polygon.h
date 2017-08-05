@@ -16,7 +16,7 @@ namespace polygon {
 	// Because we don't normalize the edge vectors, the choice of epsilon is even more important.
 	// Choosing an epsilon that fits the scale of the polygons being used is important, or
 	// there will be errors when dealing with near-perpendicular lines.
-	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.001f;
+	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.00001f;
 }
 
 class Polygon : public Shape {

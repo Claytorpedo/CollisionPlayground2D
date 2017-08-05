@@ -85,7 +85,7 @@ namespace {
 		const units::Coordinate dot = vec1.dot(vec2);
 		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
 			return PERPENDICULAR;
-		if ((dot + polygon::EPSILON_DEGREE_TOLERANCE) > 0)
+		if (dot > 0)
 			return ACUTE;
 		return OBTUSE;
 	}

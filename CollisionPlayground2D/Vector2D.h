@@ -33,7 +33,7 @@ public:
 
 	inline T cross(const Vector2D& o) const { return x*o.y - y*o.x; }
 	inline T dot(const Vector2D& o)   const { return x*o.x + y*o.y; }
-
+	// Squared magnitude.
 	inline T magnitude2() const { return x*x + y*y; }
 	inline T magnitude()  const { return std::sqrt(magnitude2()); }
 

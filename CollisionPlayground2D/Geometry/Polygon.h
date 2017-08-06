@@ -72,7 +72,7 @@ public:
 		const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const;
 
 	// Move the polygon by delta.
-	Polygon translate(const units::Coordinate2D& delta) const;
+	void translate(const units::Coordinate2D& delta);
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

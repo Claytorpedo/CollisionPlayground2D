@@ -232,16 +232,14 @@ Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordin
 	return Polygon(newVertices);
 }
 
-Polygon Polygon::translate(const units::Coordinate2D& delta) const {
-	Polygon poly(*this); // Copy self.
-	for (std::size_t i = 0; i < poly.vertices_.size(); ++i) {
-		poly.vertices_[i] = poly.vertices_[i] + delta;
+void Polygon::translate(const units::Coordinate2D& delta) {
+	for (std::size_t i = 0; i < vertices_.size(); ++i) {
+		vertices_[i] += delta;
 	}
-	poly.x_min_ += delta.x;
-	poly.x_max_ += delta.x;
-	poly.y_min_ += delta.y;
-	poly.y_max_ += delta.y;
-	return poly;
+	x_min_ += delta.x;
+	x_max_ += delta.x;
+	y_min_ += delta.y;
+	y_max_ += delta.y;
 }
 
 Polygon Polygon::toPoly() const {

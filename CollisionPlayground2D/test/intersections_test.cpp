@@ -6,6 +6,7 @@
 #include "../Geometry/LineSegment.h"
 #include "../Geometry/Ray.h"
 
+using namespace units;
 
 TEST_CASE("Rrectangle and coordinate intersections", "[rect][coord]") {
 	SECTION("A 0-sized rectangle is a coordinate, and should collide with one") {
@@ -215,14 +216,14 @@ TEST_CASE("Line segment and coordinate intersections", "[lineseg][coord]") {
 
 TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 	SECTION("Coordinates on a diagonal ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 1).normalize());
+		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
 		Coordinate2D c(0, 0);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(1, 1);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(100000.5f, 100000.5f);
 		REQUIRE(isect::intersects(r, c) == true);
-		r = Ray(units::Coordinate2D(10, 5), units::Coordinate2D(-1, -0.5f).normalize());
+		r = Ray(Coordinate2D(10, 5), Coordinate2D(-1, -0.5f).normalize());
 		c = Coordinate2D(10, 5);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(9, 4.5f);
@@ -233,14 +234,14 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == true);
 	}
 	SECTION("Coordinates on a vertical ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(0, 1));
+		Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1));
 		Coordinate2D c(0, 0);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(0, 1);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(0, 10000000);
 		REQUIRE(isect::intersects(r, c) == true);
-		r = Ray(units::Coordinate2D(10, 2), units::Coordinate2D(0, -1));
+		r = Ray(Coordinate2D(10, 2), Coordinate2D(0, -1));
 		c = Coordinate2D(10, 2);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(10, 1);
@@ -249,14 +250,14 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == true);
 	}
 	SECTION("Coordinates on a horizontal ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 0));
+		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0));
 		Coordinate2D c(0, 0);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(1, 0);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(10000000, 0);
 		REQUIRE(isect::intersects(r, c) == true);
-		r = Ray(units::Coordinate2D(12, 4), units::Coordinate2D(-1, 0));
+		r = Ray(Coordinate2D(12, 4), Coordinate2D(-1, 0));
 		c = Coordinate2D(12, 4);
 		REQUIRE(isect::intersects(r, c) == true);
 		c = Coordinate2D(11, 4);
@@ -265,14 +266,14 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == true);
 	}
 	SECTION("Coordinates off a diagonal ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 1).normalize());
+		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
 		Coordinate2D c(1, 0);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(0, 1);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(100000, 100000.5f);
 		REQUIRE(isect::intersects(r, c) == false);
-		r = Ray(units::Coordinate2D(10, 5), units::Coordinate2D(-1, -0.5f).normalize());
+		r = Ray(Coordinate2D(10, 5), Coordinate2D(-1, -0.5f).normalize());
 		c = Coordinate2D(12, 6);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(9, 5);
@@ -283,14 +284,14 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == false);
 	}
 	SECTION("Coordinates off a vertical ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(0, 1));
+		Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1));
 		Coordinate2D c(1, 0);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(0, -0.5f);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(0.5f, 10000000);
 		REQUIRE(isect::intersects(r, c) == false);
-		r = Ray(units::Coordinate2D(10, 2), units::Coordinate2D(0, -1));
+		r = Ray(Coordinate2D(10, 2), Coordinate2D(0, -1));
 		c = Coordinate2D(10, 2.5f);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(10.5f, 1);
@@ -299,14 +300,14 @@ TEST_CASE("Ray and coordinate intersections", "[ray][coord]") {
 		REQUIRE(isect::intersects(r, c) == false);
 	}
 	SECTION("Coordinates off a horizontal ray") {
-		Ray r(units::Coordinate2D(0, 0), units::Coordinate2D(1, 0));
+		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0));
 		Coordinate2D c(-0.5f, 0);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(1, 0.5f);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(10000000, -0.5f);
 		REQUIRE(isect::intersects(r, c) == false);
-		r = Ray(units::Coordinate2D(12, 4), units::Coordinate2D(-1, 0));
+		r = Ray(Coordinate2D(12, 4), Coordinate2D(-1, 0));
 		c = Coordinate2D(12.5f, 4);
 		REQUIRE(isect::intersects(r, c) == false);
 		c = Coordinate2D(12, 3.5f);
@@ -430,82 +431,82 @@ TEST_CASE("Line segment intersections with coordinate of intersection output", "
 		SECTION("Zero-length line segments") {
 			LineSegment s1(0, 0, 0, 0);
 			LineSegment s2(0, 0, 0, 0);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)));
 			s2 = LineSegment(0, 0, 1, 1);
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)));
 		}
 		SECTION("Diagonal line segments") {
 			LineSegment s1(1, 1, 0, 0);
 			LineSegment s2(1, 1, 0, 0);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(1, 1)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(1, 1)));
 			s2 = LineSegment(0, 0, 1, 1);
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(1, 1)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(1, 1)));
 			s1 = LineSegment(-1, -1, 0, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)));
 			s1 = LineSegment(0, 1, 1, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0.5f, 0.5f)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0.5f, 0.5f)));
 		}
 		SECTION("Horizontal and vertical line segments") {
 			LineSegment v(0, -10, 0, 10);
 			LineSegment s(0, -10, 0, 10);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, -10)));
 			s = LineSegment(0, 10, 0, 20);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 10)));
 			s = LineSegment(0, -10, 0, -20);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, -10)));
 			s = LineSegment(-50, -10, 0, -10);
 			REQUIRE(isect::intersects(v, s) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, -10)));
 			s = LineSegment(-50, -10, 50, -10);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, -10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, -10)));
 			s = LineSegment(-50, 10, 0, 10);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 10)));
 			s = LineSegment(-50, 10, 50, 10);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 10)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 10)));
 			s = LineSegment(-50, 5, 0, 5);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 5)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 5)));
 			s = LineSegment(-50, 5, 50, 5);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 5)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 5)));
 			s = LineSegment(-10, 10, 10, -10);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(0, 0)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)));
 			v = LineSegment(30.5f, 20, 30.5f, 10);
 			s = LineSegment(30.5f, 9, 30.5f, 11);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 11)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(30.5f, 11)));
 			s = LineSegment(30.5f, 10, 30.5f, 20);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 20)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(30.5f, 20)));
 			s = LineSegment(30.5f, -10, 30.5f, 20);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 20)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(30.5f, 20)));
 			s = LineSegment(0, 20, 40, 10);
 			REQUIRE(isect::intersects(v, s, out_p) == true);
-			REQUIRE(util::almostEquals(out_p, units::Coordinate2D(30.5f, 12.375f)));
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(30.5f, 12.375f)));
 		}
 	}
 	SECTION("Non-intersecting line segments") {
 		SECTION("Zero-length line segments") {
 			LineSegment s1(0, 0, 0, 0);
 			LineSegment s2(1, 0, 1, 0);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(s1, s2, out_p) == false);
 			s2 = LineSegment(1, 1, 1, 1);
 			REQUIRE(isect::intersects(s1, s2, out_p) == false);
@@ -513,7 +514,7 @@ TEST_CASE("Line segment intersections with coordinate of intersection output", "
 		SECTION("Diagonal line segments") {
 			LineSegment s1(1, 1, 0, 0);
 			LineSegment s2(1, 2, 0, 1);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(s1, s2, out_p) == false);
 			s2 = LineSegment(0, -0.5f, 1, 0.5f);
 			REQUIRE(isect::intersects(s1, s2, out_p) == false);
@@ -529,7 +530,7 @@ TEST_CASE("Line segment intersections with coordinate of intersection output", "
 		SECTION("Horizontal and vertical line segments") {
 			LineSegment v(0, -10, 0, 10);
 			LineSegment s(0, -11, 0, -12);
-			units::Coordinate2D out_p;
+			Coordinate2D out_p;
 			REQUIRE(isect::intersects(v, s, out_p) == false);
 			s = LineSegment(0, 11, 0, 20);
 			REQUIRE(isect::intersects(v, s, out_p) == false);
@@ -556,6 +557,253 @@ TEST_CASE("Line segment intersections with coordinate of intersection output", "
 			REQUIRE(isect::intersects(v, s, out_p) == false);
 			s = LineSegment(0, 20, 40, -10);
 			REQUIRE(isect::intersects(v, s, out_p) == false);
+		}
+	}
+}
+
+TEST_CASE("Ray and line segment intersections with coordinate of intersection output", "[ray][lineseg]") {
+	SECTION("Ray and a point") {
+		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 2).normalize());
+		LineSegment s(1, 2, 1, 2);
+		Coordinate2D out_p;
+		REQUIRE(isect::intersects(r, s, out_p) == true);
+		REQUIRE(util::almostEquals(out_p, Coordinate2D(1, 2)) == true);
+		s = LineSegment(0, 0, 0, 0);
+		REQUIRE(isect::intersects(r, s, out_p) == true);
+		REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+		s = LineSegment(1, 1.5f, 1, 1.5f);
+		REQUIRE(isect::intersects(r, s, out_p) == false);
+	}
+	SECTION("Parallel line segments and rays") {
+		SECTION("Horizontal line segments and rays") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
+			LineSegment s(0, 0, -1, 0);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(-0.1f, 0, -10, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(5, 0, 1, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(1, 0)) == true);
+			s = LineSegment(50, 0, 100, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(50, 0)) == true);
+			s = LineSegment(50, 0.1f, 100, 0.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			r = Ray(Coordinate2D(-10, 10), Coordinate2D(-1, 0).normalize());
+			s = LineSegment(10, 10, -100, 10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, 10)) == true);
+			s = LineSegment(-100, 10, -1000, 10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-100, 10)) == true);
+			s = LineSegment(-100, 10.1f, -1000, 10.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+		}
+		SECTION("Vertical line segments and rays") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
+			LineSegment s(0, 0, 0, 1);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(0, -0.1f, -10, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(0, 5, 0, 1);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 1)) == true);
+			s = LineSegment(0, 50, 0, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 50)) == true);
+			s = LineSegment(0.1f, 50, 0.1f, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			r = Ray(Coordinate2D(10, -10), Coordinate2D(0, -1).normalize());
+			s = LineSegment(10, 10, 10, -100);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(10, -10)) == true);
+			s = LineSegment(10, -100, 10, -1000);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(10, -100)) == true);
+			s = LineSegment(10.1f, -100, 10.1f, -1000);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+		}
+		SECTION("Diagonal line segments and rays") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
+			LineSegment s(0, 0, -1, -1);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(-0.1f, -0.1f, -10, -10);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(5, 5, 1, 1);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(1, 1)) == true);
+			s = LineSegment(50, 50, 100, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(50, 50)) == true);
+			s = LineSegment(50.1f, 50, 100.1f, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			r = Ray(Coordinate2D(10, 10), Coordinate2D(-1, 2).normalize());
+			s = LineSegment(15, 0, 0, 30);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(10, 10)) == true);
+			s = LineSegment(0, 30, -35, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 30)) == true);
+			s = LineSegment(0.1f, 30, -34.9, 100);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+		}
+	}
+	SECTION("Perpendicular line segments and rays") {
+		SECTION("Horizontal ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
+			LineSegment s(0, 0, 0, -1);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(0, 10, 0, -10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(-0.1f, 10, -0.1f, 10);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(1000, 10, 1000, -10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(1000, 0)) == true);
+			r = Ray(Coordinate2D(-10, -10), Coordinate2D(-1, 0).normalize());
+			s = LineSegment(-10, -10, -10, 10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, -10)) == true);
+			s = LineSegment(-9.9f, -10, -9.9f, 10);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(-1000, 10, -1000, -20);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-1000, -10)) == true);
+		}
+		SECTION("Vertical ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
+			LineSegment s(0, 0, -1, 0);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(10, 0, -10, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(10, -0.1f, 10, -0.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(10, 1000, -10, 1000);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 1000)) == true);
+			r = Ray(Coordinate2D(-10, -10), Coordinate2D(0, -1).normalize());
+			s = LineSegment(10, -10, -10, -10);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, -10)) == true);
+			s = LineSegment(10, -9.9f, -10, -9.9f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(10, -1000, -10, -1000);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, -1000)) == true);
+		}
+		SECTION("Diagonal ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
+			LineSegment s(0, 0, -5, 5);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(5, -5, -5, 5);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(5, -5, 0.1f, -0.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(-5, 4.9f, 5, 5.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(0, 1000, 1000, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(500, 500)) == true);
+			r = Ray(Coordinate2D(-10, 10), Coordinate2D(1, -2).normalize());
+			s = LineSegment(-10, -5, 0, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-4, -2)) == true);
+			s = LineSegment(-20, 5.1f, 0, 15.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(0, -2000, 4000, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(796, -1602)) == true);
+		}
+	}
+	SECTION("Diagonal line segment and ray intersections") {
+		SECTION("Horizontal ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
+			LineSegment s(0, -1, 1000, 1);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(500, 0)) == true);
+			s = LineSegment(1000, 1, 0, -1);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(500, 0)) == true);
+			s = LineSegment(0, -4000, 1, 4000);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0.5f, 0)) == true);
+			s = LineSegment(-2, -4000, 1, 4000);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			r = Ray(Coordinate2D(10, -10), Coordinate2D(-1, 0).normalize());
+			s = LineSegment(0, 20, -20, -40);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, -10)) == true);
+			s = LineSegment(-65, 140, 15, -20);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(10, -10)) == true);
+			s = LineSegment(-64.9f, 140, 15.1f, -20);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+		}
+		SECTION("Vertical ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
+			LineSegment s(-1, 0, 1, 1000);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 500)) == true);
+			s = LineSegment(1, 1000, -1, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 500)) == true);
+			s = LineSegment(-4000, 0, 4000, 1);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0.5f)) == true);
+			s = LineSegment(-4000, -2, 4000, 1);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			r = Ray(Coordinate2D(10, -10), Coordinate2D(-1, 0).normalize());
+			s = LineSegment(20, 0, -40, -20);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-10, -10)) == true);
+			s = LineSegment(100, -85, -20, 15);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(10, -10)) == true);
+			s = LineSegment(140, -64.9f, -20, 15.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+		}
+		SECTION("Diagonal ray") {
+			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
+			LineSegment s(-10, 0, 10, 0);
+			Coordinate2D out_p;
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(0, 0)) == true);
+			s = LineSegment(800, 0, 800, 1000);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(800, 800)) == true);
+			s = LineSegment(-0.1f, -10, -0.1f, -10);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(-20, 50, 20, 50.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(10, 100, 100, 55);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(70, 70)) == true);
+			r = Ray(Coordinate2D(-10, 10), Coordinate2D(1, -2).normalize());
+			s = LineSegment(-10, -5, 0, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(-4, -2)) == true);
+			s = LineSegment(-20, 5.1f, 0, 15.1f);
+			REQUIRE(isect::intersects(r, s, out_p) == false);
+			s = LineSegment(0, -2000, 4000, 0);
+			REQUIRE(isect::intersects(r, s, out_p) == true);
+			REQUIRE(util::almostEquals(out_p, Coordinate2D(796, -1602)) == true);
 		}
 	}
 }

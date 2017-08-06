@@ -875,3 +875,77 @@ TEST_CASE("Rectangle intersections", "[rect]") {
 	o = Rectangle(-10, -5.1f, 1, 1);
 	REQUIRE(isect::intersects(r, o) == true);
 }
+
+TEST_CASE("Polygon intersections", "[poly]") {
+	SECTION("Triangles") {
+		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
+		Polygon p(points);
+		std::vector<Coordinate2D> points2 = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
+		Polygon o(points2);
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(0, 1));
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(1.9f, 1.5f));
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(0.1f, 0));
+		REQUIRE(isect::intersects(p, o) == false);
+		o = Polygon(points);
+		REQUIRE(isect::intersects(p, o) == true);
+		for (size_t i = 0; i < points.size(); ++i) points[i] *= 0.5f;
+		o = Polygon(points);
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(0.5f, 0.5f));
+		REQUIRE(isect::intersects(p, o) == true);
+	}
+	SECTION("Triangle and rectangle") {
+		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
+		Polygon p(points);
+		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(1, 0));
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(-0.5f, 1));
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(0, -0.1f));
+		REQUIRE(isect::intersects(p, o) == true);
+		o = Rectangle(0, 0, 2, 2).toPoly();
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(-0.5f, -0.5f));
+		REQUIRE(isect::intersects(p, o) == true);
+		p.translate(Coordinate2D(0, -1.5f));
+		REQUIRE(isect::intersects(p, o) == false);
+	}
+	SECTION("Convex polygons") {
+		// Arbitrary convex polygon.
+		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
+		Polygon p(points);
+		// Octagon.
+		std::vector<Coordinate2D> points2 = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+			                                  Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+		Polygon o(points2);
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(-1.9f, 0));
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(-0.1f, 0));
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(7, 0));
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(-0.1f, 0));
+		REQUIRE(isect::intersects(p, o) == true);
+		o = Polygon(points2); // Rreset it.
+		o.translate(Coordinate2D(1, -3.9f));
+		REQUIRE(isect::intersects(p, o) == true);
+		o.translate(Coordinate2D(-0.33f, 0));
+		REQUIRE(isect::intersects(p, o) == false);
+		o.translate(Coordinate2D(0.33f, -0.1f));
+		REQUIRE(isect::intersects(p, o) == false);
+		SECTION("Polygon in polygon") {
+			o = Polygon(points2); // Reset it again.
+			for (size_t i = 0; i < points2.size(); ++i) points2[i] *= 0.5f; // Half-size octagon.
+			p = Polygon(points2);
+			REQUIRE(isect::intersects(p, o) == true);
+			o.translate(Coordinate2D(-0.5f, -0.5f));
+			REQUIRE(isect::intersects(p, o) == true);
+		}
+	}
+}

@@ -127,14 +127,15 @@ namespace isect {
 		const units::Coordinate2D qp = b.start - a.start;
 		const units::Coordinate rxs = r.cross(s);
 		const units::Coordinate qpxr = qp.cross(r);
-		if (rxs == 0 && qpxr == 0) {
+		if (rxs == 0) {
+			if (qpxr != 0)
+				return false; // Parallel and non-intersecting.
 			// Lines are colinear. Test for overlap.
 			// Don't have to worry about r being zero, since we tested for points already.
-			const units::Coordinate recip = 1/r.dot(r); // Save a division.
-			const units::Coordinate t0 = qp.dot(r) * recip;
+			const units::Coordinate r2 = r.magnitude2();
+			const units::Coordinate t0 = qp.dot(r) / r2;
 			const units::Coordinate s_dot_r = s.dot(r);
-			const units::Coordinate t1 = t0 + s_dot_r * recip;
-			// See if the lines overlap.
+			const units::Coordinate t1 = t0 + s_dot_r / r2;
 			if (s_dot_r < 0) {
 				if (0 <= t0 && t1 <= 1) {
 					// Get closest intersect (to start point) for the segment this is called on.
@@ -150,22 +151,15 @@ namespace isect {
 					return true;
 				}
 			}			
-			return false;
+			return false; // Colinear with no overlap.
 		}
-		if (rxs == 0 && qpxr != 0) {
-			// Parallel and non-intersecting.
-			return false;
-		}
-		// Guaranteed that rxs != 0 here.
-		const units::Coordinate recip = 1/rxs; // Save a division.
-		const units::Coordinate t = qp.cross(s) * recip;
-		const units::Coordinate u = qpxr * recip;
+		// Guaranteed that rxs != 0 here: lines are not parallel.
+		const units::Coordinate t = qp.cross(s) / rxs;
+		const units::Coordinate u = qpxr / rxs;
 		if (0 <= t && t <= 1 && 0 <= u && u <= 1) {
-			// They intersect.
 			out_intersection = a.start + t*r;
 			return true;
 		}
-		// No intersection.
 		return false;
 	}
 	bool intersects(const Ray& r, const LineSegment& l, units::Coordinate2D& out_intersection) {
@@ -177,7 +171,7 @@ namespace isect {
 			}
 			return false;
 		}
-		// Bounds test. Either start or end of line must be either at origin, or past origin in the direction of the ray.
+		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
 		if ( (r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) || 
 			 (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
 				return false;
@@ -186,44 +180,38 @@ namespace isect {
 		const units::Coordinate2D qp = l.start - r.origin;
 		const units::Coordinate rxs = r.dir.cross(s);
 		const units::Coordinate qpxr = qp.cross(r.dir);
-		if (rxs == 0 && qpxr == 0) {
-			// Lines are colinear. Test for overlap.
-			const units::Coordinate recip = 1/r.dir.dot(r.dir); // Save a division.
-			const units::Coordinate t0 = qp.dot(r.dir) * recip;
+		if (rxs == 0) {
+			if (qpxr != 0)
+				return false; // Parallel and non-intersecting.
+			// They are colinear. Test for overlap.
+			const units::Coordinate r2 = r.dir.magnitude2();
+			const units::Coordinate t0 = qp.dot(r.dir) / r2;
 			const units::Coordinate s_dot_r = s.dot(r.dir);
-			// See if the lines overlap.
 			if (s_dot_r < 0) {
 				if (0 <= t0) {
-					// Get closest intersect (to origin) for the ray.
+					// Get closest intersept (to origin) for the ray.
 					// Either the interval of overlap happens somewhere after origin, or at origin.
-					const units::Coordinate t1 = t0 + s_dot_r * recip;
+					const units::Coordinate t1 = t0 + s_dot_r / r2;
 					out_intersection = t1 > 0.0f ? r.origin + t1*r.dir : r.origin;
 					return true;
 				}
 			} else {
-				if (0 <= (t0 + s_dot_r * recip)) {
+				if (0 <= (t0 + s_dot_r / r2)) {
 					// Get closest intersect (to origin) for the ray.
 					// Either the interval of overlap happens somewhere after origin, or at origin.
 					out_intersection = t0 > 0.0f ? r.origin + t0*r.dir : r.origin;
 					return true;
 				}
-			}			
-			return false;
+			}
+			return false; // Colinear with no overlap.
 		}
-		if (rxs == 0 && qpxr != 0) {
-			// Parallel and non-intersecting.
-			return false;
-		}
-		// Guaranteed that rxs != 0 here.
-		const units::Coordinate recip = 1/rxs; // Save a division.
-		const units::Coordinate t = qp.cross(s) * recip;
-		const units::Coordinate u = qpxr * recip;
+		// Guaranteed that rxs != 0 here: they are not parallel.
+		const units::Coordinate t = qp.cross(s) / rxs;
+		const units::Coordinate u = qpxr / rxs;
 		if (0 <= t && 0 <= u && u <= 1) {
-			// They intersect.
 			out_intersection = r.origin + t*r.dir;
 			return true;
 		}
-		// No intersection.
 		return false;
 	}
 

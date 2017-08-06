@@ -232,6 +232,10 @@ Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordin
 	return Polygon(newVertices);
 }
 
+void Polygon::translate(const units::Coordinate x, const units::Coordinate y) {
+	this->translate(units::Coordinate2D(x, y));
+}
+
 void Polygon::translate(const units::Coordinate2D& delta) {
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		vertices_[i] += delta;

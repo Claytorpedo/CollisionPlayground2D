@@ -71,6 +71,8 @@ public:
 	Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist,
 		const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const;
 
+	// Move the polygon by given x and y.
+	void translate(const units::Coordinate x, const units::Coordinate y);
 	// Move the polygon by delta.
 	void translate(const units::Coordinate2D& delta);
 

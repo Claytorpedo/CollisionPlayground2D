@@ -807,3 +807,71 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 		}
 	}
 }
+
+TEST_CASE("Rectangle line segment intersections", "[rect][lineseg]") {
+	Rectangle r(5, 5, 2, 2);
+	LineSegment s(5, 5, 5, 5);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, 6, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(7, 7, 7, 7);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(0, 0, 5, 5);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(7, 6, 8, 8);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 5.5f, 6, 6.5f);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(4, 6, 6, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(4, 6, 8, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(4, 5, 8, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, 9, 10);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(4, 8, 8, 4);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, 6, 8);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, 6, -8);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, 8, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(6, 6, -8, 6);
+	REQUIRE(isect::intersects(r, s) == true);
+	s = LineSegment(7.1f, 6, 8, 6);
+	REQUIRE(isect::intersects(r, s) == false);
+	s = LineSegment(4.9f, -7, 4.9f, 10);
+	REQUIRE(isect::intersects(r, s) == false);
+	s = LineSegment(6, 7.1f, 8, 8);
+	REQUIRE(isect::intersects(r, s) == false);
+	s = LineSegment(7.1f, 7, 8, 6);
+	REQUIRE(isect::intersects(r, s) == false);
+	s = LineSegment(6, 4.9f, 6, 4.9f);
+	REQUIRE(isect::intersects(r, s) == false);
+}
+
+TEST_CASE("Rectangle intersections", "[rect]") {
+	Rectangle r(0, 0, 1, 1);
+	Rectangle o(0, 0, 1, 1);
+	REQUIRE(isect::intersects(r, o) == true);
+	o = Rectangle(-1, 0, 1, 1);
+	REQUIRE(isect::intersects(r, o) == false);
+	o = Rectangle(-10, 0, 10, 1);
+	REQUIRE(isect::intersects(r, o) == false);
+	o = Rectangle(-10, 0, 10.1f, 1);
+	REQUIRE(isect::intersects(r, o) == true);
+	o = Rectangle(0.9f, -0.9f, 1, 1);
+	REQUIRE(isect::intersects(r, o) == true);
+	o = Rectangle(0.5f, -1, 1, 1);
+	REQUIRE(isect::intersects(r, o) == false);
+	o = Rectangle(0.5f, 0.5f, 0.25f, 0.25f);
+	REQUIRE(isect::intersects(r, o) == true);
+	r = Rectangle(-10, -10, 5, 5);
+	REQUIRE(isect::intersects(r, o) == false);
+	o = Rectangle(-10, -5, 1, 1);
+	REQUIRE(isect::intersects(r, o) == false);
+	o = Rectangle(-10, -5.1f, 1, 1);
+	REQUIRE(isect::intersects(r, o) == true);
+}

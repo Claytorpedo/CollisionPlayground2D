@@ -215,21 +215,14 @@ namespace isect {
 		return false;
 	}
 
-	// ------------------------------- Shape intersections --------------------------------------------------
-
-	bool intersects(const Rectangle& first, const Rectangle& second) {
-		return first.left()   < second.right()  &&
-			first.right()  > second.left()   &&
-			first.top()    < second.bottom() &&
-			first.bottom() > second.top();
-	}
+	// ------------------------------- Shape/primative intersections ----------------------------------------
 	bool intersects(const Rectangle& r, const LineSegment& l) {
-		// Bounds test for early out.
-		if (!intersects(r, Rectangle(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
-			return false;
 		// Check if either endpoints are inside/touching the rectangle.
 		if (intersects(r, l.start) || intersects(r, l.end))
 			return true;
+		// Bounds test for early out.
+		if (!intersects(r, Rectangle(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
+			return false;
 		// Test l against 4 line segments that make up the rectangle.
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.left(), r.top())))     // Left side.
 			return true;
@@ -240,6 +233,15 @@ namespace isect {
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.right(), r.bottom()))) // Bottom side.
 			return true;
 		return false;
+	}
+
+	// ------------------------------- Shape intersections --------------------------------------------------
+
+	bool intersects(const Rectangle& first, const Rectangle& second) {
+		return first.left()   < second.right()  &&
+			   first.right()  > second.left()   &&
+			   first.top()    < second.bottom() &&
+			   first.bottom() > second.top();
 	}
 
 	// ------------------------------ Separating Axis Theorem test ---------------------------------

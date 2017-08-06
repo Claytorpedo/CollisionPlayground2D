@@ -28,13 +28,14 @@ namespace isect {
 	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to the ray's origin.
 	bool intersects(const Ray& r, const LineSegment& l, units::Coordinate2D& out_intersection);
 
+	// Intersections of shapes with primatives -----------------------------------------------------------------------------
+	bool intersects(const Rectangle& r, const LineSegment& l);
+
 	// Intersections with shapes. No output points of collision. -----------------------------------------------------------
+	// Note that "touching" shapes are not considered intersecting if they have no overlap.
 
 	bool intersects(const Rectangle& first, const Rectangle& second);
-	bool intersects(const Rectangle& r, const LineSegment& l);
-	// Uses SAT. Note that this will return false if the polygons "touch" but have no overlap.
 	bool intersects(const Polygon& first, const Polygon& second);
-	// Uses SAT. Note that this will return false if the shapes "touch" but have no overlap.
 	bool intersects(const Shape& first, const Shape& second);
 }
 

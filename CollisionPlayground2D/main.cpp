@@ -135,11 +135,11 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 	while ( true ) {
 		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
 			// No collision. Move the mover and exit.
-			mover = mover.translate(currentDir * remainingDist);
+			mover.translate(currentDir * remainingDist);
 			return;
 		}
 		// We collided with something.
-		mover = mover.translate(currentDir*moveDist);
+		mover.translate(currentDir*moveDist);
 		// See if we have anywhere left to move.
 		remainingDist -= moveDist;
 		if (remainingDist < constants::EPSILON || deflectEdge.isZero())
@@ -206,7 +206,6 @@ int main (int argc, char* args[]) {
 	units::Velocity2D velocity;
 	units::Acceleration2D acceleration;
 	//------------------------------------------
-	
 	previousTime = SDL_GetTicks();
 	// Start the game loop.
 	while (true) {
@@ -283,7 +282,6 @@ int main (int argc, char* args[]) {
 		for (std::size_t i = 0; i < movers.size(); ++i) {
 			drawPoly(movers[i], graphics, true);
 		}
-		
 		graphics.present();
 	}
 	close();

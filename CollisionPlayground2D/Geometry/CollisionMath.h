@@ -13,8 +13,10 @@ namespace collision_math {
 	// enough that it is invisible under most circumstances.
 	const units::Coordinate COLLISION_PUSHOUT_DISTANCE = 0.1f;
 
-	// Just check whether or not they collide. dir is the direction the collider is moving (normalized vector), and delta is by how much.
-	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate delta, const Polygon& other);
+	// Test for collision. dir is the direction the collider is moving (normalized vector), and dist is by how much.
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist, const Polygon& other);
+	// Test for collision. The colliding polygon must already be clip-extended by the delta vector (dir*dist).
+	bool clippedCollides(const Polygon& clippedCollider, const Polygon& other);
 
 	// Test for collision (returns true if there is one).
 	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
@@ -24,7 +26,7 @@ namespace collision_math {
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
 		units::Coordinate& out_dist, units::Coordinate2D& out_edge);
 	// Test for collision (returns true if there is one).
-	// This function assumes that the collider has already been clip-extended by the delta.
+	// This function assumes that the collider has already been clip-extended by the delta vector (dir*dist).
 	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
 	// If there is a collision:
 	// out_dist: how far the collider can move along dir before reaching the other polygon (how far it is safe to move along dir).

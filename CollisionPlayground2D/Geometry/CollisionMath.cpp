@@ -10,8 +10,11 @@
 #include "Polygon.h"
 
 namespace collision_math {
-	bool collides(const Polygon& collider, const units::Coordinate2D dir, const units::Coordinate delta, const Polygon& other) {
-		return isect::intersects(collider.clipExtend(dir, delta), other);
+	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist, const Polygon& other) {
+		return clippedCollides(collider.clipExtend(dir, dist), other);
+	}
+	bool clippedCollides(const Polygon& clippedCollider, const Polygon& other) {
+		return isect::intersects(clippedCollider, other);
 	}
 
 	namespace {

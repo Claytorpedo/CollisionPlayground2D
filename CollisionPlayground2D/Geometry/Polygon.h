@@ -49,10 +49,11 @@ public:
 	virtual units::Coordinate top()    const { return y_min_; }
 	virtual units::Coordinate bottom() const { return y_max_; }
 
+	// Returns a copy of itself.
+	virtual Polygon toPoly() const;
+
 	// Extend a polygon by projecting it along a direction by dist.
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
-
-	virtual Polygon toPoly() const; // Returns a copy of itself.
 
 	// Find the first and last vertices in the range to extend from in the direction of the given direction vector.
 	// Also finds whether the first and last vertices need to be duplicated when extending.

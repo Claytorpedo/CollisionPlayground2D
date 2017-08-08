@@ -125,12 +125,13 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 	units::Coordinate2D currentDir = originalDir;
 	units::Coordinate moveDist(0);
 	units::Coordinate2D deflectEdge(0,0);
-
+#ifdef DEBUG
 	int depth = 0;
-	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the min
-	// and max deflection angles relative to the origin vector.
-	units::Coordinate deflect_min(0.0f);
-	units::Coordinate deflect_max(0.0f);
+#endif
+	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
+	// deflection angle relative to the original direction.
+	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
+	units::Coordinate prevAngle = 0;
 
 	while ( true ) {
 		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
@@ -155,18 +156,23 @@ void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordi
 			return;
 		currentDir = projection/remainingDist;
 
-		// Get angle of deflection relative to the original direction.
-		const units::Coordinate angle(originalDir.dot(currentDir));
-		++depth;
-		// See if the deflection vector is oscillating and the mover isn't moving (in a wedge).
-		if (depth >= 2 && moveDist == 0.0f && (deflect_min <= angle && angle <= deflect_max)) {
-			return;
-		} else if (depth >= 10) {
-			// Just for debugging, display if we get into any situation that requires a lot of recursions to resolve.
-			std::cout << "depth: " << depth << "\n";
+		// Detect wedges/oscillating deflections.
+		units::Coordinate currAngle = 0;
+		if (moveDist == 0) {
+			// Get signed angle of deflection relative to the original direction.
+			const units::Coordinate dot(originalDir.dot(currentDir));
+			currAngle = originalDir.cross(currentDir) < 0 ? -dot : dot;
+			// If the previous angle is farther away from the original direction than the current angle, (and
+			// we're still not moving), then we've begun to oscillate (we're getting more stuck, rather than "escaping").
+			if (prevAngle != 0 && (prevAngle < 0 ? (prevAngle <= currAngle) : (prevAngle >= currAngle)))
+				return; // If the deflection vector is oscillating and the mover isn't moving (in a wedge), stop.
 		}
-		if (angle < deflect_min) deflect_min = angle;
-		if (angle > deflect_max) deflect_max = angle;
+		prevAngle = currAngle;
+#ifdef DEBUG
+		++depth;
+		if (depth >= 10)
+			std::cout << "depth: " << depth << std::endl; // Check for large amounts of recursion.
+#endif
 	}
 }
 
@@ -192,6 +198,7 @@ int main (int argc, char* args[]) {
 	for (std::size_t i = 0; i < numPolys; ++i) {
 		polys.push_back(Polygon::generate(twister, region));
 	}
+
 	std::size_t numMovers = 1;
 	std::vector<Polygon> movers;
 	movers.reserve(numMovers);

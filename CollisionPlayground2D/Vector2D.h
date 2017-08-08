@@ -31,6 +31,7 @@ public:
 	inline bool operator==(const Vector2D& o) const { return x == o.x && y == o.y; }
 	inline bool isZero() const { return x == static_cast<T>(0) && y == static_cast<T>(0); }
 
+	// Determine whether vector o is to the left (> 0) or right (< 0) of the first vector.
 	inline T cross(const Vector2D& o) const { return x*o.y - y*o.x; }
 	inline T dot(const Vector2D& o)   const { return x*o.x + y*o.y; }
 	// Squared magnitude.

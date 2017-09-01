@@ -51,6 +51,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -74,13 +75,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Geometry\Collidable.cpp" />
     <ClCompile Include="Geometry\CollisionMath.cpp" />
     <ClCompile Include="Geometry\IntersectionMath.cpp" />
+    <ClInclude Include="Geometry\Collidable.h" />
     <ClInclude Include="Geometry\IntersectionMath.h" />
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Mover.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
@@ -95,6 +99,7 @@
     <ClInclude Include="Geometry\Shape.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="Mover.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="Units.h" />
     <ClInclude Include="Util.h" />

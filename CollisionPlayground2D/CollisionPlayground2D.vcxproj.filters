@@ -39,6 +39,12 @@
     <ClCompile Include="Geometry\IntersectionMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Geometry\Collidable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h">
@@ -85,6 +91,12 @@
     </ClInclude>
     <ClInclude Include="Geometry\IntersectionMath.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Collidable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mover.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

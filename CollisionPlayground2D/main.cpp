@@ -7,9 +7,9 @@
 #include "Graphics.h"
 #include "Constants.h"
 #include "Units.h"
+#include "Mover.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"
-#include "Geometry/CollisionMath.h"
 #include "Geometry/IntersectionMath.h"
 
 void close() {
@@ -65,118 +65,29 @@ Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSe
 	return Polygon(vertices);
 }
 
-Polygon getMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangle& region) {
-	Polygon mover = Polygon::generate(twister, region);
+Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangle& region) {
+	Polygon collider = Polygon::generate(twister, Rectangle());
+	std::uniform_real_distribution<units::Coordinate> distX(region.left(), region.right());
+	std::uniform_real_distribution<units::Coordinate> distY(region.top(), region.bottom());
+	units::Coordinate2D position(distX(twister), distY(twister));
 	// Ensure that the moving polygon doesn't start inside another polygon (do collision tests until it is put down cleanly).
-	while (true) {
+	while(true) {
 		bool isOccupied = false;
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			if (isect::intersects(mover, polys[i])) {
-				isOccupied = true; // Mover is in an occupied spot.
-				mover = Polygon::generate(twister, region); // Try another spot.
+			if (isect::intersects(Polygon::translate(collider, position), polys[i])) {
+				isOccupied = true;
+				collider = Polygon::generate(twister, Rectangle());
+				position = units::Coordinate2D(distX(twister), distY(twister));
 				std::cout << "Spot occupied. Trying somewhere else...\n";
 				break;
 			}
 		}
 		if (!isOccupied)
-			break; // Mover is on a spot free of other polygons.
+			break;
 	}
 	std::cout << "Mover has entered the level.\n";
-	return mover;
+	return Mover(position, collider);
 }
-
-// --------------------------------- Collision Handling -------------------------
-
-// Returns true if there was a collision, false if none was found.
-bool findClosestCollision(const Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& dir, const units::Coordinate dist,
-	units::Coordinate &out_dist, units::Coordinate2D& out_edge) {
-	if (dir.isZero() || dist == 0.0f)
-		return false;
-
-	units::Coordinate   moveDist = dist;
-	units::Coordinate2D edge;
-	const Polygon clippedCollider = mover.clipExtend(dir, dist);
-
-	for (std::size_t i = 0; i < polys.size(); ++i) {
-		units::Coordinate testDist;
-		units::Coordinate2D testEdge;
-		if (collision_math::clippedCollides(clippedCollider, dir, dist, polys[i], testDist, testEdge)) {
-			if (moveDist > testDist) {
-				moveDist = testDist;
-				edge = testEdge;
-			}
-			if (moveDist == 0.0f)
-				break;// Can't move any less than not moving!
-		}
-	}
-	out_dist = moveDist;
-	out_edge = edge;
-
-	return !edge.isZero();
-}
-
-// Move the mover polygon by delta.
-void move(Polygon& mover, const std::vector<Polygon>& polys, const units::Coordinate2D& delta) {
-	if (delta.isZero())
-		return; // Nowhere to move.
-	const units::Coordinate   originalDist  = delta.magnitude();
-	const units::Coordinate2D originalDir = delta/originalDist; // normalize delta dir.
-	units::Coordinate remainingDist = originalDist;
-	units::Coordinate2D currentDir = originalDir;
-	units::Coordinate moveDist(0);
-	units::Coordinate2D deflectEdge(0,0);
-#ifdef DEBUG
-	int depth = 0;
-#endif
-	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
-	// deflection angle relative to the original direction.
-	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
-	units::Coordinate prevAngle = 0;
-
-	while ( true ) {
-		if ( !findClosestCollision(mover, polys, currentDir, remainingDist, moveDist, deflectEdge) ) {
-			// No collision. Move the mover and exit.
-			mover.translate(currentDir * remainingDist);
-			return;
-		}
-		// We collided with something.
-		mover.translate(currentDir*moveDist);
-		// See if we have anywhere left to move.
-		remainingDist -= moveDist;
-		if (remainingDist < constants::EPSILON || deflectEdge.isZero())
-			return;
-		// Find the projection of the remaining distance along the original direction on the deflection vector.
-		// Note that direction of the edge doesn't matter: it is treated like a line we are projecting against.
-		const units::Coordinate2D projDir = deflectEdge.normalize();
-		// Project using the original delta direction, to avoid "bouncing" off of corners.
-		const units::Coordinate2D projection(originalDir.project(projDir, remainingDist));
-		// Projection is our new delta. Get new direction and remaining distance to move.
-		remainingDist = projection.magnitude();
-		if (remainingDist < constants::EPSILON)
-			return;
-		currentDir = projection/remainingDist;
-
-		// Detect wedges/oscillating deflections.
-		units::Coordinate currAngle = 0;
-		if (moveDist == 0) {
-			// Get signed angle of deflection relative to the original direction.
-			const units::Coordinate dot(originalDir.dot(currentDir));
-			currAngle = originalDir.cross(currentDir) < 0 ? -dot : dot;
-			// If the previous angle is farther away from the original direction than the current angle, (and
-			// we're still not moving), then we've begun to oscillate (we're getting more stuck, rather than "escaping").
-			if (prevAngle != 0 && (prevAngle < 0 ? (prevAngle <= currAngle) : (prevAngle >= currAngle)))
-				return; // If the deflection vector is oscillating and the mover isn't moving (in a wedge), stop.
-		}
-		prevAngle = currAngle;
-#ifdef DEBUG
-		++depth;
-		if (depth >= 10)
-			std::cout << "depth: " << depth << std::endl; // Check for large amounts of recursion.
-#endif
-	}
-}
-
-// -------------------------------------------------------------------------------
 
 int main (int argc, char* args[]) {
 	Input input;
@@ -199,20 +110,8 @@ int main (int argc, char* args[]) {
 		polys.push_back(Polygon::generate(twister, region));
 	}
 
-	std::size_t numMovers = 1;
-	std::vector<Polygon> movers;
-	movers.reserve(numMovers);
-	for (std::size_t i = 0; i < numMovers; ++i) {
-		movers.push_back(getMover(polys, twister, region));
-	}
+	Mover mover = genMover(polys, twister, region);
 
-	// Some variables for our moving polygon.
-	const units::Velocity MAX_SPEED = 0.3f;
-	const units::Acceleration ACCELERATION = 0.0025f;
-	const units::Acceleration DECELERATION = 0.004f;
-	units::Velocity2D velocity;
-	units::Acceleration2D acceleration;
-	//------------------------------------------
 	previousTime = SDL_GetTicks();
 	// Start the game loop.
 	while (true) {
@@ -223,72 +122,46 @@ int main (int argc, char* args[]) {
 
 		// Horizontal movement.
 		if (input.isKeyHeld( Input::LEFT ) && input.isKeyHeld( Input::RIGHT )) {
-			acceleration.x = 0.0f;
+			mover.stopMovingHorizontal();
 		} else if (input.isKeyHeld( Input::LEFT )) {
-			acceleration.x = -ACCELERATION;
+			mover.moveLeft();
 		} else if (input.isKeyHeld( Input::RIGHT )) {
-			acceleration.x = ACCELERATION;
+			mover.moveRight();
 		} else {
-			acceleration.x = 0.0f;
+			mover.stopMovingHorizontal();
 		}
 		// Vertical movement.
-		if (input.isKeyHeld( Input::UP ) && input.isKeyHeld(Input::DOWN)) {
-			acceleration.y = 0.0f;
+		if (input.isKeyHeld( Input::UP ) && input.isKeyHeld( Input::DOWN )) {
+			mover.stopMovingVertical();
 		} else if (input.isKeyHeld( Input::UP )) {
-			acceleration.y = -ACCELERATION;
+			mover.moveUp();
 		} else if (input.isKeyHeld( Input::DOWN )) {
-			acceleration.y = ACCELERATION;
+			mover.moveDown();
 		} else {
-			acceleration.y = 0.0f;
+			mover.stopMovingVertical();
 		}
 		if (input.wasKeyPressed( Input::R ) ) {
 			for (std::size_t i = 0; i < numPolys; ++i) {
 				polys[i] = Polygon::generate(twister, region);
 			}
-			//mover = getMover(polys, twister, region);
-			for (std::size_t i = 0; i < movers.size(); ++i) {
-				movers[i] = getMover(polys, twister, region);
-			}
+			mover = genMover(polys, twister, region);
 		}
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 
-		// Update mover here.
-		// Control acceleration.
-		velocity += acceleration * elapsedTime;
-		velocity.x = util::clamp(velocity.x, -MAX_SPEED, MAX_SPEED);
-		velocity.y = util::clamp(velocity.y, -MAX_SPEED, MAX_SPEED);
-		// Control deceleration.
-		if (acceleration.x == 0 && velocity.x != 0) {
-			bool isPos(velocity.x > 0);
-			velocity.x += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
-			velocity.x = isPos ? (velocity.x < 0 ? 0.0f : velocity.x) : (velocity.x > 0 ? 0.0f : velocity.x);
-		}
-		if (acceleration.y == 0 && velocity.y != 0) {
-			bool isPos(velocity.y > 0);
-			velocity.y += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
-			velocity.y = isPos ? (velocity.y < 0 ? 0.0f : velocity.y) : (velocity.y > 0 ? 0.0f : velocity.y);
-		}
-		// Get delta.
-		const units::Coordinate2D delta (velocity * elapsedTime);
-		for (std::size_t i = 0; i < movers.size(); ++i) {
-			move(movers[i], polys, delta);
-		}
+		mover.update(elapsedTime, polys);
 
 		graphics.clear();
+		Polygon collider = mover.getCollider();
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			bool isCollision = false;
-			for (std::size_t k = 0; k < movers.size(); ++k) {
-				isCollision = isect::intersects(movers[k], polys[i]);
-				if (isCollision)
-					break;
-			}
-			drawPoly(polys[i], graphics, isCollision);
+#ifdef DEBUG
+			drawPoly(polys[i], graphics, isect::intersects(collider, polys[i]));
+#else
+			drawPoly(polys[i], graphics, false);
+#endif
 		}
-		for (std::size_t i = 0; i < movers.size(); ++i) {
-			drawPoly(movers[i], graphics, true);
-		}
+		drawPoly(collider, graphics, true);
 		graphics.present();
 	}
 	close();

@@ -246,6 +246,12 @@ void Polygon::translate(const units::Coordinate2D& delta) {
 	y_max_ += delta.y;
 }
 
+Polygon Polygon::translate(const Polygon& p, const units::Coordinate2D& delta) {
+	Polygon t(p);
+	t.translate(delta);
+	return t;
+}
+
 Polygon Polygon::toPoly() const {
 	return Polygon(*this);
 }

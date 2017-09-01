@@ -39,7 +39,8 @@ public:
 	// minRad and maxRad control how large the generated polygon will be.
 	// minVerts and maxVerts control how many vertices the generated polygon can have.
 	static Polygon generate(std::mt19937& rando, const Rectangle& region,
-		const units::Coordinate minRad=0.1f, const units::Coordinate maxRad=100.0f,  const std::size_t minVerts=3, const std::size_t maxVerts=20);
+		const units::Coordinate minRad=0.1f, const units::Coordinate maxRad=100.0f,
+		const std::size_t minVerts=3, const std::size_t maxVerts=20);
 
 	// Rather than recompute the bounds every call, the bounds
 	// are computed when the polygon is constructed or changed,
@@ -76,6 +77,8 @@ public:
 	void translate(const units::Coordinate x, const units::Coordinate y);
 	// Move the polygon by delta.
 	void translate(const units::Coordinate2D& delta);
+	// Create a polygon by translating an existing polygon by a delta vector.
+	static Polygon translate(const Polygon& p, const units::Coordinate2D& delta);
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
 	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }

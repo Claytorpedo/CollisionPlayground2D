@@ -42,8 +42,17 @@ namespace util {
 	inline bool almostEquals(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate tolerance = constants::EPSILON) {
 		return almostEquals(a.x, b.x, tolerance) && almostEquals(a.y, b.y, tolerance);
 	}
+	// Check if a value is between two bounds.
 	template<typename T>
-	inline T clamp(const T val, const T min, const T max) {
+	inline T clamp(const T val, const T bound_one, const T bound_two) {
+		T min, max;
+		if (bound_one <= bound_two) {
+			min = bound_one;
+			max = bound_two;
+		} else {
+			max = bound_two;
+			min = bound_one;
+		}
 		return val < min ? min : val > max ? max : val;
 	}
 }

@@ -957,4 +957,14 @@ TEST_CASE("Polygon intersections.", "[poly]") {
 			REQUIRE(isect::intersects(p, o));
 		}
 	}
+	SECTION("Large triangles.") {
+		std::vector<Coordinate2D> points3 = { Coordinate2D(0,0), Coordinate2D(1000000,1000000), Coordinate2D(1000000,0) };
+		Polygon q(points3);
+		std::vector<Coordinate2D> points4 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
+		Polygon r(points4);
+		REQUIRE_FALSE(isect::intersects(q, r));
+		std::vector<Coordinate2D> points5 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
+		r = Polygon(points5);
+		REQUIRE(isect::intersects(q, r));
+	}
 }

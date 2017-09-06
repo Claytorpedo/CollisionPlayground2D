@@ -4,114 +4,158 @@
 
 #include "../Units.h"
 #include "../Util.h"
+#include "../Constants.h"
 #include "../Geometry/Rectangle.h"
 #include "../Geometry/Polygon.h"
 
 using namespace units;
 
-TEST_CASE("Polygon translation.", "[poly]") {
-	// Octagon.
-	std::vector<Coordinate2D> points = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-		                                 Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-	Polygon p(points);
-	CHECK(p.left()   == -2);
-	CHECK(p.right()  ==  2);
-	CHECK(p.top()    == -2);
-	REQUIRE(p.bottom() == 2);
-	p.translate(5, 0);
-	for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(5, 0);
-	for (std::size_t i = 0; i < p.size(); ++i)
-		CHECK(util::almostEquals(p[i], points[i]));
-	CHECK(p.left()   ==  3);
-	CHECK(p.right()  ==  7);
-	CHECK(p.top()    == -2);
-	REQUIRE(p.bottom() == 2);
-	p.translate(0, 5);
-	for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(0, 5);
-	for (std::size_t i = 0; i < p.size(); ++i)
-		CHECK(util::almostEquals(p[i], points[i]));
-	CHECK(p.left()   == 3);
-	CHECK(p.right()  == 7);
-	CHECK(p.top()    == 3);
-	REQUIRE(p.bottom() == 7);
-	p.translate(Coordinate2D(-10.5f, -12.5f));
-	for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(-10.5f, -12.5f);
-	for (std::size_t i = 0; i < p.size(); ++i)
-		CHECK(util::almostEquals(p[i], points[i]));
-	CHECK(p.left()   == -7.5f);
-	CHECK(p.right()  == -3.5f);
-	CHECK(p.top()    == -9.5f);
-	REQUIRE(p.bottom() == -5.5f);
-}
-
-TEST_CASE("Polygon findExtendRange.", "[poly]") {
-	SECTION("Extending a triangle.") {
-		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
-		Polygon p(points);
-		std::size_t first, last;
-		bool should_dupe_first, should_dupe_last;
-		p.findExtendRange(Coordinate2D(0, 1), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 0);
-		CHECK(last == 2);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(0, -1), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 2);
-		CHECK(last == 0);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(1, 0), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 1);
-		CHECK(last == 2);
-		CHECK(should_dupe_first);
-		REQUIRE_FALSE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(-1, 0), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 0);
-		CHECK(last == 1);
-		CHECK_FALSE(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(1, -1).normalize(), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 2);
-		CHECK(last == 0);
-		CHECK_FALSE(should_dupe_first);
-		REQUIRE(should_dupe_last);
-	}
-	SECTION("Extending an octagon.") {
+SCENARIO("Translate a polygon.", "[poly]") {
+	GIVEN("An octogon.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
 			                                 Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-		Polygon p(points);
-		std::size_t first, last;
-		bool should_dupe_first, should_dupe_last;
-		p.findExtendRange(Coordinate2D(0, 1), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 6);
-		CHECK(last == 2);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(0, -1), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 2);
-		CHECK(last == 6);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(1, 0), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 0);
-		CHECK(last == 4);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(-1, 0), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 4);
-		CHECK(last == 0);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(1, 1).normalize(), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 7);
-		CHECK(last == 3);
-		CHECK(should_dupe_first);
-		REQUIRE(should_dupe_last);
-		p.findExtendRange(Coordinate2D(-1.5f, 0.5f).normalize(), first, last, should_dupe_first, should_dupe_last);
-		CHECK(first == 5);
-		CHECK(last == 0);
-		CHECK_FALSE(should_dupe_first);
-		REQUIRE_FALSE(should_dupe_last);
+		Polygon oct(points);
+		THEN("Its bounding box is created from the min/max x and y coordinates.") {
+			CHECK(oct.left()   == -2);
+			CHECK(oct.right()  ==  2);
+			CHECK(oct.top()    == -2);
+			CHECK(oct.bottom() ==  2);
+		}
+		WHEN("The polygon is translated 5 units left.") {
+			oct.translate(5, 0);
+			THEN("Its bounding box and all its points are translated 5 units left.") {
+				CHECK(oct.left()   ==  3);
+				CHECK(oct.right()  ==  7);
+				CHECK(oct.top()    == -2);
+				CHECK(oct.bottom() ==  2);
+				for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(5, 0);
+				for (std::size_t i = 0; i < oct.size(); ++i) {
+					CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
+					CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+				}
+				AND_WHEN("The polygon is now translated 5 units down.") {
+					oct.translate(0, 5);
+					THEN("Its boundinb box and all its points are also translated 5 units down.") {
+						for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(0, 5);
+						for (std::size_t i = 0; i < oct.size(); ++i) {
+							CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
+							CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+						}
+						CHECK(oct.left()   == 3);
+						CHECK(oct.right()  == 7);
+						CHECK(oct.top()    == 3);
+						CHECK(oct.bottom() == 7);
+					}
+				}
+			}
+		}
+		WHEN("The polygon is translated diagonally by floating point numbers.") {
+			oct.translate(Coordinate2D(-10.5f, -12.5f));
+			THEN("Its bounding box and all its points are translated diagonally by the same amount.") {
+				for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(-10.5f, -12.5f);
+				for (std::size_t i = 0; i < oct.size(); ++i) {
+					CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
+					CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+				}
+				CHECK(oct.left()   == -12.5f);
+				CHECK(oct.right()  == -8.5f);
+				CHECK(oct.top()    == -14.5f);
+				CHECK(oct.bottom() == -10.5f);
+			}
+		}
+	}
+}
+
+SCENARIO("Finding the points to extend a polygon from in a given direction.", "[poly]") {
+	std::size_t first, last;
+	bool should_dupe_first, should_dupe_last;
+	GIVEN("A triangle.") {
+		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
+		Polygon tri(points);
+		WHEN("Extending down.") {
+			tri.findExtendRange(Coordinate2D(0, 1), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 0);
+			CHECK(last == 2);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending up.") {
+			tri.findExtendRange(Coordinate2D(0, -1), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 2);
+			CHECK(last == 0);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending right.") {
+			tri.findExtendRange(Coordinate2D(1, 0), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 1);
+			CHECK(last == 2);
+			CHECK(should_dupe_first);
+			REQUIRE_FALSE(should_dupe_last);
+		}
+		WHEN("Extending left.") {
+			tri.findExtendRange(Coordinate2D(-1, 0), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 0);
+			CHECK(last == 1);
+			CHECK_FALSE(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending diagonally.") {
+			tri.findExtendRange(Coordinate2D(1, -1).normalize(), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 2);
+			CHECK(last == 0);
+			CHECK_FALSE(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+	}
+	GIVEN("An octagon.") {
+		std::vector<Coordinate2D> points = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+			                                 Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+		Polygon oct(points);
+		WHEN("Extending down.") {
+			oct.findExtendRange(Coordinate2D(0, 1), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 6);
+			CHECK(last == 2);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending up.") {
+			oct.findExtendRange(Coordinate2D(0, -1), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 2);
+			CHECK(last == 6);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending right.") {
+			oct.findExtendRange(Coordinate2D(1, 0), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 0);
+			CHECK(last == 4);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending left.") {
+			oct.findExtendRange(Coordinate2D(-1, 0), first, last, should_dupe_first, should_dupe_last);
+			CHECK(first == 4);
+			CHECK(last == 0);
+			CHECK(should_dupe_first);
+			REQUIRE(should_dupe_last);
+		}
+		WHEN("Extending diagonally.") {
+			THEN("Extending non-parallel to edges requires vertex duplication.") {
+				oct.findExtendRange(Coordinate2D(1, 1).normalize(), first, last, should_dupe_first, should_dupe_last);
+				CHECK(first == 7);
+				CHECK(last == 3);
+				CHECK(should_dupe_first);
+				REQUIRE(should_dupe_last);
+			}
+			THEN("Extending parallel to edges avoids vertex duplication.") {
+				oct.findExtendRange(Coordinate2D(-1.5f, 0.5f).normalize(), first, last, should_dupe_first, should_dupe_last);
+				CHECK(first == 5);
+				CHECK(last == 0);
+				CHECK_FALSE(should_dupe_first);
+				REQUIRE_FALSE(should_dupe_last);
+			}
+		}
 	}
 }
 
@@ -143,100 +187,140 @@ bool _polygons_equal(Polygon p, Polygon o) {
 	return true;
 }
 
-TEST_CASE("Polygon extend.", "[poly]") {
-	SECTION("Extending a triangle.") {
+SCENARIO("Extending a polygon.", "[poly]") {
+	GIVEN("A triangle.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
-		Polygon p(points);
-		Polygon t = p.extend(Coordinate2D(0, 1), 5);
-		std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(0, 5), Coordinate2D(1, 6), Coordinate2D(2, 5), Coordinate2D(2, 0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(0, -1), 5); 
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0), Coordinate2D(2, -5), Coordinate2D(0, -5) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(11, 1), Coordinate2D(12, 0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(-1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(-10,0), Coordinate2D(-9, 1), Coordinate2D(1, 1), Coordinate2D(2, 0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(1, -1).normalize(), 10);
-		Coordinate2D delta = Coordinate2D(1, -1).normalize() * 10;
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) + delta, Coordinate2D(0, 0) + delta };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		Polygon tri(points);
+		WHEN("Extended downwards.") {
+			Polygon t = tri.extend(Coordinate2D(0, 1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(0, 5), Coordinate2D(1, 6), Coordinate2D(2, 5), Coordinate2D(2, 0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended upwards.") {
+			Polygon t = tri.extend(Coordinate2D(0, -1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0), Coordinate2D(2, -5), Coordinate2D(0, -5) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended rightwards, parallel to one side of the triangle.") {
+			Polygon t = tri.extend(Coordinate2D(1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(11, 1), Coordinate2D(12, 0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended leftwards, parallel to one side of the triangle.") {
+			Polygon t = tri.extend(Coordinate2D(-1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(-10,0), Coordinate2D(-9, 1), Coordinate2D(1, 1), Coordinate2D(2, 0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended diagonally, parallel to one side of the triangle.") {
+			Polygon t = tri.extend(Coordinate2D(1, -1).normalize(), 10);
+			const Coordinate2D delta = Coordinate2D(1, -1).normalize() * 10;
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) + delta, Coordinate2D(0, 0) + delta };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
 	}
-	SECTION("Extending an octagon.") {
+	GIVEN("An octagon.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
 			                                 Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-		Polygon p(points);
-		Polygon t = p.extend(Coordinate2D(0, 1), 5);
-		std::vector<Coordinate2D> extendSet = { Coordinate2D(0,7), Coordinate2D(1.5f,6.5f), Coordinate2D(2,5), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-			                                    Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-2,5), Coordinate2D(-1.5f,6.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(0, -1), 5);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(2,-5), Coordinate2D(1.5f,-6.5f),
-			                                   Coordinate2D(0,-7), Coordinate2D(-1.5f,-6.5f), Coordinate2D(-2,-5), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,2), Coordinate2D(10,2), Coordinate2D(11.5f,1.5f), Coordinate2D(12,0), Coordinate2D(11.5f,-1.5f),
-			                                   Coordinate2D(10,-2), Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(-1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(-10, 2), Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-			                                   Coordinate2D(0,-2), Coordinate2D(-10, -2), Coordinate2D(-11.5f,-1.5f), Coordinate2D(-12,0), Coordinate2D(-11.5f,1.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.extend(Coordinate2D(-1.5f, 0.5f).normalize(), 10);
-		Coordinate2D delta = Coordinate2D(-1.5f, 0.5f).normalize() * 10;
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,2) + delta, Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-											   Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f) + delta, Coordinate2D(-2,0) + delta , Coordinate2D(-1.5f,1.5f) + delta };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		Polygon oct(points);
+		WHEN("Extended downwards.") {
+			Polygon t = oct.extend(Coordinate2D(0, 1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,7), Coordinate2D(1.5f,6.5f), Coordinate2D(2,5), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+				                                    Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-2,5), Coordinate2D(-1.5f,6.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended upwards.") {
+			Polygon t = oct.extend(Coordinate2D(0, -1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(2,-5), Coordinate2D(1.5f,-6.5f),
+				                                    Coordinate2D(0,-7), Coordinate2D(-1.5f,-6.5f), Coordinate2D(-2,-5), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended leftwards.") {
+			Polygon t = oct.extend(Coordinate2D(1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,2), Coordinate2D(10,2), Coordinate2D(11.5f,1.5f), Coordinate2D(12,0), Coordinate2D(11.5f,-1.5f),
+				                                    Coordinate2D(10,-2), Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended rightwards.") {
+			Polygon t = oct.extend(Coordinate2D(-1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(-10, 2), Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+				                                    Coordinate2D(0,-2), Coordinate2D(-10, -2), Coordinate2D(-11.5f,-1.5f), Coordinate2D(-12,0), Coordinate2D(-11.5f,1.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Extended diagonally, parallel to two sides of the octogon.") {
+			Polygon t = oct.extend(Coordinate2D(-1.5f, 0.5f).normalize(), 10);
+			const Coordinate2D delta = Coordinate2D(-1.5f, 0.5f).normalize() * 10;
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,2) + delta, Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+				                                    Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f) + delta, Coordinate2D(-2,0) + delta , Coordinate2D(-1.5f,1.5f) + delta };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
 	}
 }
 
-TEST_CASE("Polygon clipExtend.", "[poly]") {
-	SECTION("Clip-extending a triangle.") {
+SCENARIO("A polygon is clip-extended: extended in a direction, and only the extended part is kept.", "[poly]") {
+	GIVEN("A triangle.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
-		Polygon p(points);
-		Polygon t = p.clipExtend(Coordinate2D(0, 1), 5);
-		std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(0, 5), Coordinate2D(1, 6), Coordinate2D(2, 5), Coordinate2D(2, 0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(0, -1), 5);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,0), Coordinate2D(2, 0), Coordinate2D(2, -5), Coordinate2D(0, -5) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(1, 1), Coordinate2D(11, 1), Coordinate2D(12, 0), Coordinate2D(2,0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(-1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(-10,0), Coordinate2D(-9, 1), Coordinate2D(1, 1), Coordinate2D(0, 0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(1, -1).normalize(), 10);
-		Coordinate2D delta = Coordinate2D(1, -1).normalize() * 10;
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,0), Coordinate2D(2, 0), Coordinate2D(2, 0) + delta, Coordinate2D(0, 0) + delta };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		Polygon tri(points);
+		WHEN("Clip-extended downwards.") {
+			Polygon t = tri.clipExtend(Coordinate2D(0, 1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(0, 5), Coordinate2D(1, 6), Coordinate2D(2, 5), Coordinate2D(2, 0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extended upwards.") {
+			Polygon t = tri.clipExtend(Coordinate2D(0, -1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(2, 0), Coordinate2D(2, -5), Coordinate2D(0, -5) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extended rightwards.") {
+			Polygon t = tri.clipExtend(Coordinate2D(1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(1, 1), Coordinate2D(11, 1), Coordinate2D(12, 0), Coordinate2D(2,0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extended leftwards.") {
+			Polygon t = tri.clipExtend(Coordinate2D(-1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(-10,0), Coordinate2D(-9, 1), Coordinate2D(1, 1), Coordinate2D(0, 0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extended diagonally.") {
+			Polygon t = tri.clipExtend(Coordinate2D(1, -1).normalize(), 10);
+			const Coordinate2D delta = Coordinate2D(1, -1).normalize() * 10;
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,0), Coordinate2D(2, 0), Coordinate2D(2, 0) + delta, Coordinate2D(0, 0) + delta };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
 	}
-	SECTION("Clip-extending an octagon.") {
+	GIVEN("An octagon.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-			Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-		Polygon p(points);
-		Polygon t = p.clipExtend(Coordinate2D(0, 1), 5);
-		std::vector<Coordinate2D> extendSet = { Coordinate2D(0,7), Coordinate2D(1.5f,6.5f), Coordinate2D(2,5), Coordinate2D(2,0), 
-			                                    Coordinate2D(-2,0), Coordinate2D(-2,5), Coordinate2D(-1.5f,6.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(0, -1), 5);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(2,0), Coordinate2D(2,-5), Coordinate2D(1.5f,-6.5f),
-			                                   Coordinate2D(0,-7), Coordinate2D(-1.5f,-6.5f), Coordinate2D(-2,-5), Coordinate2D(-2,0) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,2), Coordinate2D(10,2), Coordinate2D(11.5f,1.5f), Coordinate2D(12,0), Coordinate2D(11.5f,-1.5f),
-			                                   Coordinate2D(10,-2), Coordinate2D(0,-2) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(-1, 0), 10);
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(-10, 2), Coordinate2D(0,2),
-			                                   Coordinate2D(0,-2), Coordinate2D(-10, -2), Coordinate2D(-11.5f,-1.5f), Coordinate2D(-12,0), Coordinate2D(-11.5f,1.5f) };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
-		t = p.clipExtend(Coordinate2D(-1.5f, 0.5f).normalize(), 10);
-		Coordinate2D delta = Coordinate2D(-1.5f, 0.5f).normalize() * 10;
-		extendSet = std::vector<Coordinate2D>{ Coordinate2D(0,2) + delta, Coordinate2D(0,2),
-			                                   Coordinate2D(-1.5f,-1.5f), Coordinate2D(-1.5f,-1.5f) + delta, Coordinate2D(-2,0) + delta , Coordinate2D(-1.5f,1.5f) + delta };
-		REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+			                                 Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+		Polygon oct(points);
+		WHEN("Clip-extneded downwards.") {
+			Polygon t = oct.clipExtend(Coordinate2D(0, 1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,7), Coordinate2D(1.5f,6.5f), Coordinate2D(2,5), Coordinate2D(2,0),
+				                                    Coordinate2D(-2,0), Coordinate2D(-2,5), Coordinate2D(-1.5f,6.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extneded upwards.") {
+			Polygon t = oct.clipExtend(Coordinate2D(0, -1), 5);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(2,0), Coordinate2D(2,-5), Coordinate2D(1.5f,-6.5f),
+				                                    Coordinate2D(0,-7), Coordinate2D(-1.5f,-6.5f), Coordinate2D(-2,-5), Coordinate2D(-2,0) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extneded rightwards.") {
+			Polygon t = oct.clipExtend(Coordinate2D(1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,2), Coordinate2D(10,2), Coordinate2D(11.5f,1.5f), Coordinate2D(12,0), Coordinate2D(11.5f,-1.5f),
+				                                    Coordinate2D(10,-2), Coordinate2D(0,-2) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extneded leftwards.") {
+			Polygon t = oct.clipExtend(Coordinate2D(-1, 0), 10);
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(-10, 2), Coordinate2D(0,2), Coordinate2D(0,-2),
+				                                    Coordinate2D(-10, -2), Coordinate2D(-11.5f,-1.5f), Coordinate2D(-12,0), Coordinate2D(-11.5f,1.5f) };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
+		WHEN("Clip-extneded diagonally.") {
+			Polygon t = oct.clipExtend(Coordinate2D(-1.5f, 0.5f).normalize(), 10);
+			Coordinate2D delta = Coordinate2D(-1.5f, 0.5f).normalize() * 10;
+			std::vector<Coordinate2D> extendSet = { Coordinate2D(0,2) + delta, Coordinate2D(0,2), Coordinate2D(-1.5f,-1.5f),
+				                                    Coordinate2D(-1.5f,-1.5f) + delta, Coordinate2D(-2,0) + delta , Coordinate2D(-1.5f,1.5f) + delta };
+			REQUIRE(_polygons_equal(t, Polygon(extendSet)));
+		}
 	}
 }

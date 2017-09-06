@@ -881,7 +881,7 @@ TEST_CASE("Rectangle intersections.", "[rect]") {
 }
 
 TEST_CASE("Polygon intersections.", "[poly]") {
-	SECTION("Triangles") {
+	SECTION("Triangles.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
 		Polygon p(points);
 		std::vector<Coordinate2D> points2 = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
@@ -900,6 +900,11 @@ TEST_CASE("Polygon intersections.", "[poly]") {
 		REQUIRE(isect::intersects(p, o));
 		o.translate(0.5f, 0.5f);
 		REQUIRE(isect::intersects(p, o));
+		SECTION("Sharing an edge.") {
+			std::vector<Coordinate2D> points3 = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
+			Polygon q(points3);
+			REQUIRE_FALSE(isect::intersects(p, q));
+		}
 	}
 	SECTION("Triangle and rectangle.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };

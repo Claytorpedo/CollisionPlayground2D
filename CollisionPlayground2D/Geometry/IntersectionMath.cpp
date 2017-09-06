@@ -272,16 +272,11 @@ namespace isect {
 			for (std::size_t i = 0; i < size; ++i) {
 				// Find the edge normal. This is the axis we're projecting along.
 				const std::size_t next = i+1 >= size ? 0 : i+1;
-				axis = units::Coordinate2D(first[i].y - first[next].y, first[next].x - first[i].x);
-				// Note that we don't have to normalize the edge normal, since we only care
-				// whether or not there is any overlap, not calculating how much there is.
-
+				axis = units::Coordinate2D(first[i].y - first[next].y, first[next].x - first[i].x).normalize();
 				// Get the projection on of both polygons with the found axis.
 				projFirst = _get_projection(first, axis);
 				projSecond = _get_projection(second, axis);
-
-				// Test if the projections overlap. If they don't, return false.
-				if (projFirst.min > projSecond.max || projFirst.max < projSecond.min)
+				if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
 					return false;
 			}
 			return true;
@@ -296,12 +291,10 @@ namespace isect {
 	bool intersects(const Polygon& first, const Polygon& second) {
 		if (first.isEmpty() || second.isEmpty())
 			return false;
-
 		// Bounds test for quick out.
 		if (!intersects(Rectangle(first.left(), first.top(), first.right()-first.left(), first.bottom()-first.top()), 
 			            Rectangle(second.left(), second.top(), second.right()-second.left(), second.bottom()-second.top())))
 			return false;
-
 		return _perform_SAT(first, second);
 	}
 	bool intersects(const Shape& first, const Shape& second) {

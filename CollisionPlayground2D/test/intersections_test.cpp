@@ -1069,22 +1069,22 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
 			}
-			WHEN("The octogon is nearly out the left side.") {
+			WHEN("The octagon is nearly out the left side.") {
 				o.translate(-1.9f, 0);
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
 			}
-			WHEN("The octogon is nearly out of the right side.") {
+			WHEN("The octagon is nearly out of the right side.") {
 				o.translate(4.9f, 0);
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
 			}
-			WHEN("The octogon is only touching the left side.") {
+			WHEN("The octagon is only touching the left side.") {
 				o.translate(-2, 0);
 				THEN("Touching polygons are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
-			WHEN("The octogon is only touching the right side.") {
+			WHEN("The octagon is only touching the right side.") {
 				o.translate(5, 0);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
@@ -1094,23 +1094,23 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 				THEN("They do not intersect.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
-			WHEN("The octogon is nearly out of the bottom.") {
+			WHEN("The octagon is nearly out of the bottom.") {
 				o.translate(1, -3.9f);
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
 			}
-			WHEN("The octogon is only touching the bottom.") {
+			WHEN("The octagon is only touching the bottom.") {
 				o.translate(1, -4);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
-			WHEN("The octogon is edged ouf of the bottom left.") {
+			WHEN("The octagon is edged ouf of the bottom left.") {
 				o.translate(-0.66f, -3.9f);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
 		}
-		GIVEN("An octogon and a smaller octogon.") {
+		GIVEN("An octagon and a smaller octagon.") {
 			Polygon p(octagon);
 			for (std::size_t i = 0; i < octagon.size(); ++i) octagon[i] *= 0.5f; // Half-size octagon.
 			Polygon o(octagon);

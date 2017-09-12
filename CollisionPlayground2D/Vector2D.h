@@ -26,8 +26,6 @@ public:
 	inline Vector2D& operator-=(const Vector2D& o) { x -= o.x; y -= o.y; return *this; }
 	inline Vector2D& operator*=(T t) {	x *= t; y *= t;	return *this; }
 	inline Vector2D& operator/=(T t) {	x /= t; y /= t;	return *this; }
-
-	inline Vector2D neg() const { return Vector2D(-x, -y); }
 	
 	inline bool operator==(const Vector2D& o) const { return x == o.x && y == o.y; }
 	inline bool isZero() const { return x == static_cast<T>(0) && y == static_cast<T>(0); }
@@ -43,6 +41,10 @@ public:
 		T mag = magnitude();
 		return mag == 0 ? Vector2D() : Vector2D(x/mag, y/mag);
 	}
+	// Counter-clockwise (non-normalized) normal to the vector (rotate 90 degrees counter-clockwise).
+	inline Vector2D perpCCW() const { return Vector2D(-y, x); }
+	// Clockwise (non-normalized) normal to the vector (rotate 90 degrees clockwise).
+	inline Vector2D perpCW()  const { return Vector2D(y, -x); }
 
 	// Project along projDir by dist (use dist if this is a unit vector).
 	inline Vector2D project(const Vector2D& projDir, const T dist=static_cast<T>(0)) const {

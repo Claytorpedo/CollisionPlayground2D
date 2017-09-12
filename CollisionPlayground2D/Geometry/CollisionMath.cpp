@@ -21,10 +21,10 @@ namespace collision_math {
 		// Info about depth tests.
 		struct DepthTestInfo {
 			bool isValid;                   // Whether the the over values are valid or not.
-			units::Coordinate2D edge;	    // The vector that makes up the edge that should be deflected along.
+			units::Coordinate2D norm;	    // Collision normal.
 			units::Coordinate depthSquared; // The squared depth of the test.
-			DepthTestInfo() : isValid(false), edge(), depthSquared(0) {}
-			DepthTestInfo(const units::Coordinate2D& edge, units::Coordinate depthSquared) : isValid(true), edge(edge), depthSquared(depthSquared) {}
+			DepthTestInfo() : isValid(false), norm(), depthSquared(0) {}
+			DepthTestInfo(const units::Coordinate2D& norm, units::Coordinate depthSquared) : isValid(true), norm(norm), depthSquared(depthSquared) {}
 		};
 		// Trace rays from the relevant vertices in the other polygon towards the relevant edges of the clipped collider.
 		// firstInRange and lastInRange are the results from findExtendRange() on the other polygon using the opposite of the delta direction.
@@ -48,10 +48,10 @@ namespace collision_math {
 					if (isect::intersects(r, edge, out_point)) {
 						const units::Coordinate mag2 = (other[i] - out_point).magnitude2();
 						if (!deepest.isValid) {
-							deepest = DepthTestInfo(edge.end - edge.start, mag2); // First time finding one.
+							deepest = DepthTestInfo(-edge.getNormalCCW(), mag2); // First time finding one.
 							foundRange = true;
 						} else if (deepest.depthSquared < mag2) {
-							deepest = DepthTestInfo(edge.end - edge.start, mag2); // Found a better one.
+							deepest = DepthTestInfo(-edge.getNormalCCW(), mag2); // Found a better one.
 						} else {
 							return deepest; // The distance has started decreasing (or stayed the same, and therefore can only decrease from here).
 						}
@@ -92,10 +92,10 @@ namespace collision_math {
 					if (isect::intersects(r, edge, out_point)) {
 						const units::Coordinate mag2 = (clippedCollider[i] - out_point).magnitude2();
 						if (!deepest.isValid) {
-							deepest = DepthTestInfo(edge.end - edge.start, mag2); // First time finding one.
+							deepest = DepthTestInfo(edge.getNormalCCW(), mag2); // First time finding one.
 							foundRange = true;
 						} else if (deepest.depthSquared < mag2) {
-							deepest = DepthTestInfo(edge.end - edge.start, mag2); // Found a better one.
+							deepest = DepthTestInfo(edge.getNormalCCW(), mag2); // Found a better one.
 						} else {
 							return deepest; // The distance has started decreasing (or stayed the same, and therefore can only decrease from here).
 						}
@@ -115,15 +115,15 @@ namespace collision_math {
 		// Find how much the colliding polygon penetrated the other polygon along the delta vector.
 		// In doing so, also determine the edge to deflect along.
 		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D& dir, const units::Coordinate dist,
-			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
-			const units::Coordinate2D oppDir(dir.neg()); // Delta in the opposite direction.
+			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
+			const units::Coordinate2D oppDir(-dir); // Delta in the opposite direction.
 			// Find the range of vertices (and edges) that the collider may have entered from.
 			std::size_t firstInRange, lastInRange;
 			bool a,b; // Don't care about these.
 			if ( !other.findExtendRange(oppDir, firstInRange, lastInRange, a, b) ) {
 				std::cerr << "Failed to find max penetration distance, due to invalid polygons.\n";
 				out_dist = 0;
-				out_edge = units::Coordinate2D(0,0);
+				out_norm = units::Coordinate2D(0,0);
 				return false;
 			}
 
@@ -138,7 +138,7 @@ namespace collision_math {
 				// Avoid the collider getting stuck. Push it back a bit just in case (we don't want to move the collider to a location where the SAT test is true).
 				const units::Coordinate newDist(dist - collision_math::COLLISION_PUSHOUT_DISTANCE);
 				out_dist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
-				out_edge = units::Coordinate2D(0,0);        // There is no edge to deflect along.
+				out_norm = units::Coordinate2D(0,0);        // There is no edge to deflect along.
 				return false; // Still indicate that we didn't actually complete the test succesfully.
 			}
 			DepthTestInfo deepest;
@@ -157,7 +157,7 @@ namespace collision_math {
 			newDist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
 
 			out_dist = newDist;
-			out_edge = deepest.edge;
+			out_norm = deepest.norm;
 
 			return true;
 		}
@@ -165,17 +165,17 @@ namespace collision_math {
 
 	// Test for collision, and if they collide find the collision normal and how far along direction vector can be travelled.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist,
-		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
-		return clippedCollides(collider.clipExtend(dir, dist), dir, dist, other, out_dist, out_edge);
+		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
+		return clippedCollides(collider.clipExtend(dir, dist), dir, dist, other, out_dist, out_norm);
 	}
 	// Test for collision with an already clip-extended collider.
 	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
-		units::Coordinate& out_dist, units::Coordinate2D& out_edge) {
+		units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
 		if (dir.isZero() || dist == 0.0f)
 			return false; // Should not call this function with zero delta.
 		if ( !isect::intersects(clippedCollider, other) )
 			return false;
-		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_edge);
+		_find_max_penetration(clippedCollider, dir, dist, other, out_dist, out_norm);
 		return true;
 	}
 }

@@ -23,10 +23,10 @@ public:
 		units::Coordinate remainingDist;       // Distance left for the collider to move.
 		units::Coordinate moveDist;            // Distance collidable can move before a collision occurs.
 		units::Coordinate2D currentPosition;   // The collider's current position.
-		units::Coordinate2D deflectEdge;       // Edge of deflection of the collision (not normalized).
+		units::Coordinate2D normal;            // Collision normal. Not necessarily normalized.
 		CollisionInfo(const Polygon* const collider, units::Coordinate2D position, units::Coordinate2D dir, units::Coordinate dist) :
 			isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
-			moveDist(0), currentPosition(position), deflectEdge(0,0) {}
+			moveDist(0), currentPosition(position), normal(0,0) {}
 	};
 	Collidable() : type(DEFLECTION) {}
 	Collidable(CollisionType type) : type(type) {}

@@ -15,12 +15,12 @@ void Collidable::find_closest_collision(const Polygon& collider, const std::vect
 	info.moveDist = info.remainingDist;
 	for (std::size_t i = 0; i < polys.size(); ++i) {
 		units::Coordinate testDist;
-		units::Coordinate2D testEdge;
-		if (collision_math::clippedCollides(clippedCollider, info.currentDir, info.remainingDist, polys[i], testDist, testEdge)) {
+		units::Coordinate2D testNorm;
+		if (collision_math::clippedCollides(clippedCollider, info.currentDir, info.remainingDist, polys[i], testDist, testNorm)) {
 			info.isCollision = true;
 			if (info.moveDist > testDist) {
 				info.moveDist = testDist;
-				info.deflectEdge = testEdge;
+				info.normal = testNorm;
 			}
 			if (info.moveDist == 0.0f)
 				return; // Can't move any less than not moving!
@@ -60,7 +60,6 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const std::vec
 	units::Coordinate prevAngle = 0;
 	while (true) {
 		find_closest_collision(collider, polys, info);
-		//std::cout << "info: " << info.currentDir.x << " " << info.currentDir.y << " di " << info.moveDist << std::endl;
 		info.currentPosition += info.currentDir*info.moveDist;
 		if (!info.isCollision)
 			return;
@@ -68,11 +67,11 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const std::vec
 			return; // Signaled to stop.
 		collider = Polygon::translate(*info.collider, info.currentPosition);
 		info.remainingDist -= info.moveDist;
-		if (info.remainingDist < constants::EPSILON || info.deflectEdge.isZero())
+		if (info.remainingDist < constants::EPSILON || info.normal.isZero())
 			return;
 		// Find the projection of the remaining distance along the original direction on the deflection vector.
-		// Note that direction of the edge doesn't matter: it is treated like a line we are projecting against.
-		const units::Coordinate2D projDir = info.deflectEdge.normalize();
+		// Get the edge vector to project along by rotating clockwise.
+		const units::Coordinate2D projDir = info.normal.perpCW().normalize();
 		// Project using the original delta direction, to avoid "bouncing" off of corners.
 		const units::Coordinate2D projection(info.originalDir.project(projDir, info.remainingDist));
 		// Projection is our new delta. Get new direction and remaining distance to move.

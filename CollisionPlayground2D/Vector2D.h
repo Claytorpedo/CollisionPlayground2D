@@ -16,10 +16,11 @@ public:
 	static Vector2D<T> zero() { return Vector2D<T>(static_cast<T>(0), static_cast<T>(0)); }
 	static Vector2D<T> one()  { return Vector2D<T>(static_cast<T>(1), static_cast<T>(1)); }
 
-	inline Vector2D operator+(const Vector2D& o) const { return Vector2D( x + o.x, y + o.y); }
-	inline Vector2D operator-(const Vector2D& o) const { return Vector2D( x - o.x, y - o.y); }
-	inline Vector2D operator*(T t) const { return Vector2D( x * t, y * t); }
-	inline Vector2D operator/(T t) const { return Vector2D( x / t, y / t); }
+	inline Vector2D operator+(const Vector2D& o) const { return Vector2D(x + o.x, y + o.y); }
+	inline Vector2D operator-(const Vector2D& o) const { return Vector2D(x - o.x, y - o.y); }
+	inline Vector2D operator-() const { return Vector2D(-x, -y); }
+	inline Vector2D operator*(T t) const { return Vector2D(x * t, y * t); }
+	inline Vector2D operator/(T t) const { return Vector2D(x / t, y / t); }
 
 	inline Vector2D& operator+=(const Vector2D& o) { x += o.x; y += o.y; return *this; }
 	inline Vector2D& operator-=(const Vector2D& o) { x -= o.x; y -= o.y; return *this; }

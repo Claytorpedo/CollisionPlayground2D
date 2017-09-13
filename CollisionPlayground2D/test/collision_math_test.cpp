@@ -397,30 +397,45 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 	}
 }
 
+#define ApproxEps(x) Approx(x).margin(constants::EPSILON)
 // Approx for collision resolution. Only use if the distance to move is >= collision_math::COLLISION_PUSHOUT_DISTANCE.
-#define ApproxCollide(x) Approx(x - collision_math::COLLISION_PUSHOUT_DISTANCE).margin(constants::EPSILON)
+#define ApproxCollide(x) ApproxEps(x - collision_math::COLLISION_PUSHOUT_DISTANCE)
+
+// Test the results of a collision, checking both the collision normal and the movement distance.
+inline void _test_collision_output(std::string testName, bool was_collision, Coordinate2D expected_norm,
+	                               Coordinate2D out_norm, Approx expected_dist, Coordinate out_dist) {
+	SECTION(testName) {
+		REQUIRE(was_collision);
+		out_norm = out_norm.normalize();
+		expected_norm = expected_norm.normalize();
+		CHECK(out_norm.x == ApproxEps(expected_norm.x));
+		CHECK(out_norm.y == ApproxEps(expected_norm.y));
+		REQUIRE(out_dist == expected_dist);
+	}
+}
 
 TEST_CASE("Collision detection and resolution for two polygons; one moving and one stationary.", "[poly]") {
 	Coordinate out_dist;
-	Coordinate2D out_edge;
+	Coordinate2D out_norm, expected_normal;
 	SECTION("Vertex to vertex collisions.") {
 		Polygon collider(rightTri);
+		// What normal to use is not particularily clear with these cases. Should the collider stop, or deflect off a side?
 		SECTION("When moving the collider towards a polygon it is already touching, it should collide immediately and not move at all.") {
 			Polygon stationary(tri);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(0, -1), 10, stationary, out_dist, out_edge));
+			REQUIRE(collision_math::collides(collider, Coordinate2D(0, -1), 10, stationary, out_dist, out_norm));
 			REQUIRE(out_dist == 0);
 			stationary = Rectangle(-1, 0, 1, 1).toPoly();
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_edge));
+			REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_norm));
 			REQUIRE(out_dist == 0);
 		}
 		SECTION("When moving the collider towards a distant polygon, it should move the distance between them.") {
 			Polygon stationary = Polygon(oct);
 			stationary.translate(10, 0);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_edge));
+			REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_norm));
 			REQUIRE(out_dist == ApproxCollide(7));
 			stationary = Polygon(tri);
 			stationary.translate(3, -4);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(3, -4).normalize(), 10, stationary, out_dist, out_edge));
+			REQUIRE(collision_math::collides(collider, Coordinate2D(3, -4).normalize(), 10, stationary, out_dist, out_norm));
 			REQUIRE(out_dist == ApproxCollide(5));
 		}
 	}
@@ -430,31 +445,31 @@ TEST_CASE("Collision detection and resolution for two polygons; one moving and o
 			SECTION("Moving collider into the edge of a triangle immediately above and to the right of it.") {
 				Polygon stationary(tri);
 				stationary.translate(1, 1);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(0, -1), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(1, -1).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
+				bool r = collision_math::collides(collider, Coordinate2D(0, -1), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving up into the triangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving right into the triangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(1, -1).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving up-right into the triangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
 			}
 			SECTION("Moving collider into a rectangle immediately to the left of it.") {
 				Polygon stationary(Rectangle(-1, -1, 1, 2).toPoly());
-				REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 1).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(-1, -100).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
+				bool r = collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving left into the rectangle.", r, (stationary[3] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(-1, 1).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving down-left into the rectangle.", r, (stationary[3] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(-1, -100).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving up-left into the rectangle.", r, (stationary[3] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
 			}
 		}
 		SECTION("When moving the collider towards a distant polygon, it should move the distance between them.") {
 			Polygon stationary(Rectangle(-10, -1, 1, 2).toPoly());
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(9));
+			bool r = collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving left into the rectangle.", r, (stationary[3] - stationary[2]).perpCCW(), out_norm, ApproxCollide(9), out_dist);
 			stationary = Polygon(tri);
 			stationary.translate(4, -3);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(3, -4).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(5));
+			r = collision_math::collides(collider, Coordinate2D(3, -4).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving up-right into the triangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxCollide(5), out_dist);
 		}
 	}
 	SECTION("Edge to vertex collisions.") {
@@ -463,63 +478,63 @@ TEST_CASE("Collision detection and resolution for two polygons; one moving and o
 			SECTION("Moving collider's edge into the vertex of a triangle immediately above and to the left of it.") {
 				Polygon stationary(tri);
 				stationary.translate(-2.5f, 1.5f);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(0, 1), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 1).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
+				bool r = collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving left into the triangle.", r, (collider[1] - collider[0]).perpCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(0, 1), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving down into the triangle.", r, (collider[1] - collider[0]).perpCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(-1, 1).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving down-left into the triangle.", r, (collider[1] - collider[0]).perpCW(), out_norm, ApproxEps(0), out_dist);
 			}
 			SECTION("Moving collider into an octagon immediately to the right of it.") {
 				Polygon stationary(oct);
 				stationary.translate(3, 0.5f);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(1, 1).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
-				REQUIRE(collision_math::collides(collider, Coordinate2D(1, -100).normalize(), 10, stationary, out_dist, out_edge));
-				REQUIRE(out_dist == 0);
+				bool r = collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving right into the octagon.", r, (collider[2] - collider[1]).perpCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(1, 1).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving down-right into the octagon.", r, (collider[2] - collider[1]).perpCW(), out_norm, ApproxEps(0), out_dist);
+				r = collision_math::collides(collider, Coordinate2D(1, -100).normalize(), 10, stationary, out_dist, out_norm);
+				_test_collision_output("Moving up-right into the octagon.", r, (collider[2] - collider[1]).perpCW(), out_norm, ApproxEps(0), out_dist);
 			}
 		}
 		SECTION("When moving the collider towards a distant polygon, it should move the distance between them.") {
 			Polygon stationary(tri);
 			stationary.translate(-5.5f, 5.5f);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-3, 4).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(5));
+			bool r = collision_math::collides(collider, Coordinate2D(-3, 4).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down-left into the triangle.", r, (collider[1] - collider[0]).perpCW(), out_norm, ApproxCollide(5), out_dist);
 		}
 	}
 	SECTION("Matching edges collisions / edge to edge.") {
 		std::vector<Coordinate2D> newtri = { Coordinate2D(-1, -2), Coordinate2D(-1, 0), Coordinate2D(1, 0) };
-		SECTION("When already touching, they shoudl collide immediately and not move at all.") {
+		SECTION("When already touching, they should collide immediately and not move at all.") {
 			Polygon collider(rightTri);
 			Polygon stationary(Rectangle(1, 0, 1, 1).toPoly());
-			REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(1, 1).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(1, -100).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
+			bool r = collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving right into the rectangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+			r = collision_math::collides(collider, Coordinate2D(1, 1).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down-right into the rectangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+			r = collision_math::collides(collider, Coordinate2D(1, -100).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving up-right into the rectangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxEps(0), out_dist);
 			collider = Polygon(tri);
 			stationary = Polygon(newtri);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(0, 1), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-1, 100).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == 0);
+			r = collision_math::collides(collider, Coordinate2D(-1, 0), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving left into the triangle.", r, (stationary[0] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+			r = collision_math::collides(collider, Coordinate2D(0, 1), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down into the triangle.", r, (stationary[0] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
+			r = collision_math::collides(collider, Coordinate2D(-1, 100).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down-left into the triangle.", r, (stationary[0] - stationary[2]).perpCCW(), out_norm, ApproxEps(0), out_dist);
 		}
 		SECTION("When moving the collider towards a distant polygon, it should move the distance between them.") {
 			Polygon collider(rightTri);
 			Polygon stationary(Rectangle(5, 0, 1, 10).toPoly());
-			REQUIRE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(4));
-			REQUIRE(collision_math::collides(collider, Coordinate2D(4, 3).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(5));
+			bool r = collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving right into the rectangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxCollide(4), out_dist);
+			r = collision_math::collides(collider, Coordinate2D(4, 3).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down-right into the rectangle.", r, (stationary[1] - stationary[0]).perpCCW(), out_norm, ApproxCollide(5), out_dist);
 			collider = Polygon(tri);
 			stationary = Polygon(newtri);
 			stationary.translate(-4, 3);
-			REQUIRE(collision_math::collides(collider, Coordinate2D(-4, 3).normalize(), 10, stationary, out_dist, out_edge));
-			REQUIRE(out_dist == ApproxCollide(5));
+			r = collision_math::collides(collider, Coordinate2D(-4, 3).normalize(), 10, stationary, out_dist, out_norm);
+			_test_collision_output("Moving down-left into the triangle.", r, (stationary[0] - stationary[2]).perpCCW(), out_norm, ApproxCollide(5), out_dist);
 		}
 	}
 }

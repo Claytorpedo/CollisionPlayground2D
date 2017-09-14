@@ -2,10 +2,10 @@
 #ifndef _COLLIDABLE_H
 #define _COLLIDABLE_H
 
-#include <vector>
-
 #include "../Units.h"
 #include "Polygon.h"
+
+class CollisionMap;
 
 class Collidable {
 public:
@@ -36,7 +36,7 @@ public:
 	// Calls onCollision when collisions occur, if any special action is to be taken.
 	// Returns the final position of the collider.
 	units::Coordinate2D move(const units::Coordinate2D& origin, const Polygon& collider,
-		                     const units::Coordinate2D& delta, const std::vector<Polygon>& polys);
+		                     const units::Coordinate2D& delta, const CollisionMap& collisionMap);
 protected:
 	CollisionType type;
 
@@ -47,9 +47,9 @@ protected:
 
 private:
 	// Find the nearest collision from a list of polygons.
-	void find_closest_collision(const Polygon& collider, const std::vector<Polygon>& polys, CollisionInfo& info) const;
+	void find_closest_collision(const Polygon& collider, const CollisionMap& collisionMap, CollisionInfo& info) const;
 
-	void move_deflection(CollisionInfo& info, const std::vector<Polygon>& polys);
+	void move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
 };
 
 #endif //_COLLIDABLE_H

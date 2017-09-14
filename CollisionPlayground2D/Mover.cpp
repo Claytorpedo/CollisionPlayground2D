@@ -1,16 +1,15 @@
 #include "Mover.h"
 
-#include <vector>
-
 #include "Geometry/Polygon.h"
+#include "Geometry/CollisionMap.h"
 #include "Util.h"
 
-void Mover::update(const units::MS elapsedTime, const std::vector<Polygon> polys) {
+void Mover::update(const units::MS elapsedTime, const CollisionMap& polys) {
 	const units::Velocity maxSpeed = (!util::almostZero(acceleration_.x) && !util::almostZero(acceleration_.y)) ? mover::MAX_DIAGONAL_SPEED : mover::MAX_SPEED;
 	update_position(elapsedTime, maxSpeed, polys);
 }
 
-void Mover::update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const std::vector<Polygon> polys) {
+void Mover::update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap& polys) {
 	velocity_ += acceleration_ * (units::Coordinate)(elapsedTime);
 	velocity_.x = util::clamp(velocity_.x, -maxSpeed, maxSpeed);
 	velocity_.y = util::clamp(velocity_.y, -maxSpeed, maxSpeed);

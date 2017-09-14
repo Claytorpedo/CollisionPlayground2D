@@ -79,6 +79,7 @@
     <ClCompile Include="Geometry\CollisionMath.cpp" />
     <ClCompile Include="Geometry\IntersectionMath.cpp" />
     <ClInclude Include="Geometry\Collidable.h" />
+    <ClInclude Include="Geometry\CollisionMap.h" />
     <ClInclude Include="Geometry\IntersectionMath.h" />
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />

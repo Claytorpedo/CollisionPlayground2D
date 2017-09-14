@@ -2,11 +2,11 @@
 #ifndef _MOVER_H
 #define _MOVER_H
 
-#include <vector>
-
 #include "Geometry/Collidable.h"
 #include "Geometry/Polygon.h"
 #include "Units.h"
+
+class CollisionMap;
 
 namespace mover {
 	const units::Velocity     MAX_SPEED =          0.3f;
@@ -22,7 +22,7 @@ public:
 	Mover(units::Coordinate2D position, Polygon collider) : position_(position), collider_(collider) {}
 	~Mover() {}
 
-	void update(const units::MS elapsedTime, const std::vector<Polygon> polys);
+	void update(const units::MS elapsedTime, const CollisionMap& polys);
 
 	void setPosition(const units::Coordinate2D position);
 
@@ -42,7 +42,7 @@ private:
 	units::Acceleration2D acceleration_;
 	units::Velocity2D velocity_;
 
-	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const std::vector<Polygon> polys);
+	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap& polys);
 };
 
 #endif // _MOVER_H

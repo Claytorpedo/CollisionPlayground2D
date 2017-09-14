@@ -7,16 +7,19 @@
 #include "Shape.h"
 #include "Polygon.h"
 #include "CollisionMath.h"
+#include "CollisionMap.h"
 
 Collidable::~Collidable() {}
 
-void Collidable::find_closest_collision(const Polygon& collider, const std::vector<Polygon>& polys, Collidable::CollisionInfo& info) const {
+void Collidable::find_closest_collision(const Polygon& collider, const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
 	const Polygon clippedCollider = collider.clipExtend(info.currentDir, info.remainingDist);
 	info.moveDist = info.remainingDist;
-	for (std::size_t i = 0; i < polys.size(); ++i) {
+	info.isCollision = false;
+	std::vector<Polygon> objs = collisionMap.getColliding(clippedCollider, info.currentDir*info.remainingDist);
+	for (std::size_t i = 0; i < objs.size(); ++i) {
 		units::Coordinate testDist;
 		units::Coordinate2D testNorm;
-		if (collision_math::clippedCollides(clippedCollider, info.currentDir, info.remainingDist, polys[i], testDist, testNorm)) {
+		if (collision_math::clippedCollides(clippedCollider, info.currentDir, info.remainingDist, objs[i], testDist, testNorm)) {
 			info.isCollision = true;
 			if (info.moveDist > testDist) {
 				info.moveDist = testDist;
@@ -29,14 +32,14 @@ void Collidable::find_closest_collision(const Polygon& collider, const std::vect
 }
 
 units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Polygon& collider,
-	                                 const units::Coordinate2D& delta, const std::vector<Polygon>& polys) {
+	                                 const units::Coordinate2D& delta, const CollisionMap& collisionMap) {
 	const units::Coordinate originalDist = delta.magnitude();
 	CollisionInfo info(&collider, origin, delta/originalDist, originalDist);
 	if (delta.isZero())
 		return origin; // Nowhere to move.
 	switch (type) {
 	case DEFLECTION:
-		move_deflection(info, polys);
+		move_deflection(info, collisionMap);
 		break;
 	case REVERSE:
 
@@ -48,7 +51,7 @@ units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Po
 	return info.currentPosition;
 }
 
-void Collidable::move_deflection(Collidable::CollisionInfo& info, const std::vector<Polygon>& polys) {
+void Collidable::move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
 	Polygon collider(*info.collider);
 	collider.translate(info.currentPosition);
 #ifdef DEBUG
@@ -59,7 +62,7 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const std::vec
 	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 	units::Coordinate prevAngle = 0;
 	while (true) {
-		find_closest_collision(collider, polys, info);
+		find_closest_collision(collider, collisionMap, info);
 		info.currentPosition += info.currentDir*info.moveDist;
 		if (!info.isCollision)
 			return;

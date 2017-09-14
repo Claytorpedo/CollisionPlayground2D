@@ -113,7 +113,7 @@ namespace collision_math {
 		}
 
 		// Find how much the colliding polygon penetrated the other polygon along the delta vector.
-		// In doing so, also determine the edge to deflect along.
+		// In doing so, also determine the collision normal.
 		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D& dir, const units::Coordinate dist,
 			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
 			const units::Coordinate2D oppDir(-dir); // Delta in the opposite direction.
@@ -138,7 +138,7 @@ namespace collision_math {
 				// Avoid the collider getting stuck. Push it back a bit just in case (we don't want to move the collider to a location where the SAT test is true).
 				const units::Coordinate newDist(dist - collision_math::COLLISION_PUSHOUT_DISTANCE);
 				out_dist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
-				out_norm = units::Coordinate2D(0,0);        // There is no edge to deflect along.
+				out_norm = units::Coordinate2D(0,0);        // There is no collision normal.
 				return false; // Still indicate that we didn't actually complete the test succesfully.
 			}
 			DepthTestInfo deepest;

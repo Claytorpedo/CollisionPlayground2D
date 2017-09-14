@@ -22,17 +22,17 @@ namespace collision_math {
 	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
 	// If there is a collision:
 	// out_dist: how far the collider can move along dir before reaching the other polygon (how far it is safe to move along dir).
-	// out_edge: The edge to deflect along.
+	// out_norm: The collision normal.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
-		units::Coordinate& out_dist, units::Coordinate2D& out_edge);
+		units::Coordinate& out_dist, units::Coordinate2D& out_norm);
 	// Test for collision (returns true if there is one).
 	// This function assumes that the collider has already been clip-extended by the delta vector (dir*dist).
 	// dir is the direction the collider is moving (normalized vector), and dist is by how much (delta = dir*dist).
 	// If there is a collision:
 	// out_dist: how far the collider can move along dir before reaching the other polygon (how far it is safe to move along dir).
-	// out_edge: The edge to deflect along.
+	// out_norm: The collision normal.
 	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
-		units::Coordinate& out_dist, units::Coordinate2D& out_edge);
+		units::Coordinate& out_dist, units::Coordinate2D& out_norm);
 }
 
 #endif // _COLLISION_MATH_H

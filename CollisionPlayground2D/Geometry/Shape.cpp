@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Polygon.h"
+#include "Rectangle.h"
 
 units::Coordinate Shape::side(direction::Direction side) const {
 	if (side == direction::LEFT)
@@ -17,7 +18,11 @@ units::Coordinate Shape::side(direction::Direction side) const {
 	return 0;
 }
 
-Polygon Shape::extend(const units::Coordinate2D& dir, const units::Coordinate delta) const {
+Polygon Shape::extend(const units::Coordinate2D& dir, const units::Coordinate dist) const {
 	Polygon p(this->toPoly());
-	return p.extend(dir, delta);
+	return p.extend(dir, dist);
+}
+
+Rectangle Shape::getAABB() const {
+	return Rectangle(left(), top(), right() - left(), bottom() - top());
 }

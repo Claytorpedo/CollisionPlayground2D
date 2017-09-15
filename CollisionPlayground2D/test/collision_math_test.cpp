@@ -67,7 +67,7 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 					REQUIRE_FALSE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary));
 			}
 		}
-		GIVEN("The stationary polygon is an octogon.") {
+		GIVEN("The stationary polygon is an octagon.") {
 			Polygon stationary(oct);
 			WHEN("The collider and stationary polygons are touching.") {
 				stationary.translate(-2, 0);
@@ -160,7 +160,7 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 					REQUIRE_FALSE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary));
 			}
 		}
-		GIVEN("The stationary polygon is an octogon.") {
+		GIVEN("The stationary polygon is an octagon.") {
 			Polygon stationary(oct);
 			WHEN("The collider and stationary polygons are touching.") {
 				stationary.translate(-2, 0);
@@ -207,7 +207,7 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 			}
 		}
 	}
-	GIVEN("The collider is an octogon.") {
+	GIVEN("The collider is an octagon.") {
 		Polygon collider(smallOct);
 		GIVEN("The stationary polygon is a triangle.") {
 			std::vector<Coordinate2D> newtri = { Coordinate2D(-1, -2), Coordinate2D(0.5f, 0), Coordinate2D(3, -1) };
@@ -254,7 +254,7 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 					REQUIRE_FALSE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary));
 			}
 		}
-		GIVEN("The stationary polygon is an octogon.") {
+		GIVEN("The stationary polygon is an octagon.") {
 			Polygon stationary(oct);
 			WHEN("The collider and stationary polygons are touching.") {
 				stationary.translate(-2, 0.5f);
@@ -348,7 +348,7 @@ SCENARIO("A moving polygon may collide with a stationary one.", "[poly][collisio
 					REQUIRE_FALSE(collision_math::collides(collider, Coordinate2D(1, 0), 10, stationary));
 			}
 		}
-		GIVEN("The stationary polygon is an octogon.") {
+		GIVEN("The stationary polygon is an octagon.") {
 			Polygon stationary(oct);
 			WHEN("The collider and stationary polygons are touching.") {
 				stationary.translate(-2, 0);

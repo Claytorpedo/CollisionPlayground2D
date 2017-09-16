@@ -414,7 +414,7 @@ inline void _test_collision_output(std::string testName, bool was_collision, Coo
 	}
 }
 
-TEST_CASE("Collision detection and resolution for two polygons; one moving and one stationary.", "[poly]") {
+TEST_CASE("Collision detection and resolution for two polygons; one moving and one stationary.", "[poly][collision]") {
 	Coordinate out_dist;
 	Coordinate2D out_norm, expected_normal;
 	SECTION("Vertex to vertex collisions.") {

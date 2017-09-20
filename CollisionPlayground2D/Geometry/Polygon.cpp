@@ -7,13 +7,17 @@
 #include <algorithm>
 
 Polygon::Polygon() : vertices_(), x_min_(), x_max_(), y_min_(), y_max_() {}
-Polygon::Polygon(std::vector<units::Coordinate2D> vertices) : vertices_(vertices), x_min_(), x_max_(), y_min_(), y_max_() {
-	findBounds();
+Polygon::Polygon(std::vector<units::Coordinate2D> vertices) : vertices_(vertices), edge_normals_(vertices.size(), units::Coordinate2D(0,0)), x_min_(), x_max_(), y_min_(), y_max_() {
+	_find_bounds();
 }
-Polygon::Polygon(const Polygon& poly) : vertices_(poly.vertices_), x_min_(poly.left()), x_max_(poly.right()), y_min_(poly.top()), y_max_(poly.bottom()) {}
+Polygon::Polygon(std::vector<units::Coordinate2D> vertices, std::vector<units::Coordinate2D> edgeNormals)
+	             : vertices_(vertices), edge_normals_(edgeNormals), x_min_(), x_max_(), y_min_(), y_max_() {
+	_find_bounds();
+}
+Polygon::Polygon(const Polygon& poly) : vertices_(poly.vertices_), edge_normals_(poly.edge_normals_), x_min_(poly.left()), x_max_(poly.right()), y_min_(poly.top()), y_max_(poly.bottom()) {}
 Polygon::~Polygon() {}
 
-void Polygon::findBounds() {
+void Polygon::_find_bounds() {
 	if (vertices_.empty()) {
 		x_min_ = 0; x_max_ = 0; y_min_ = 0; y_max_ = 0;
 		return;
@@ -68,6 +72,48 @@ Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
 	}
 
 	return Polygon(vertices);
+}
+
+units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) {
+	if (!edge_normals_[index].isZero())
+		return edge_normals_[index];
+	const units::Coordinate2D first = vertices_[index];
+	const units::Coordinate2D second = vertices_[index + 1 >= vertices_.size() ? 0 : index + 1];
+	edge_normals_[index] = units::Coordinate2D(first.y - second.y, second.x - first.x).normalize();
+	return edge_normals_[index];
+}
+units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) const {
+	if (!edge_normals_[index].isZero())
+		return edge_normals_[index];
+	const units::Coordinate2D first = vertices_[index];
+	const units::Coordinate2D second = vertices_[index + 1 >= vertices_.size() ? 0 : index + 1];
+	return units::Coordinate2D(first.y - second.y, second.x - first.x).normalize();
+}
+
+void Polygon::computeNormals() {
+	for (std::size_t i = 0; i < edge_normals_.size(); ++i)
+		getEdgeNorm(i);
+}
+
+void Polygon::expand(const units::Coordinate expandAmount) {
+	if (expandAmount < 0) {
+		std::cerr << "Error: Cannot expand a polygon by negative amounts.\n";
+		return;
+	}
+	std::vector<units::Coordinate2D> newVertices;
+	newVertices.reserve(vertices_.size());
+	for (std::size_t i = 0; i < vertices_.size(); ++i) {
+		units::Coordinate2D vertexNorm = (getEdgeNorm(i == 0 ? vertices_.size()-1 : i-1) + getEdgeNorm(i)).normalize();
+		newVertices.push_back(vertices_[i] + vertexNorm*expandAmount);
+	}
+	for (std::size_t i = 0; i < vertices_.size(); ++i)
+		vertices_[i] = newVertices[i];
+	_find_bounds();
+}
+Polygon Polygon::expand(const Polygon& p, const units::Coordinate expandAmount) {
+	Polygon s(p);
+	s.expand(expandAmount);
+	return s;
 }
 
 namespace {
@@ -191,45 +237,61 @@ Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordin
 
 Polygon Polygon::extend(const units::Coordinate2D& dir, const units::Coordinate dist,
 						const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const {
-	std::vector<units::Coordinate2D> newVertices;
-	newVertices.reserve(vertices_.size() + (shouldDupeFirst ? 1 : 0) + (shouldDupeLast ? 1 : 0) );
+	std::vector<units::Coordinate2D> newVertices, newEdgeNorms;
+	const std::size_t numVerts = vertices_.size() + (shouldDupeFirst ? 1 : 0) + (shouldDupeLast ? 1 : 0);
+	newVertices.reserve(numVerts);
+	newEdgeNorms.reserve(numVerts);
 	const units::Coordinate2D translation(dir*dist);
 	for (std::size_t i = 0; i < vertices_.size(); ++i) {
 		// Extend vertices in the region first-to-last inclusive. Duplicate first/last vertices if required.
 		if (i == rangeFirst && shouldDupeFirst) {
 			newVertices.push_back(vertices_[i]);
 			newVertices.push_back(vertices_[i] + translation);
+			newEdgeNorms.push_back(dir.perpCCW());
+			newEdgeNorms.push_back(edge_normals_[i]);
 		} else if (i == rangeLast && shouldDupeLast) {
 			newVertices.push_back(vertices_[i] + translation);
 			newVertices.push_back(vertices_[i]);
+			newEdgeNorms.push_back(dir.perpCW());
+			newEdgeNorms.push_back(edge_normals_[i]);
 		} else {
 			newVertices.push_back( rangeFirst > rangeLast ? // Determine which range to use.
 				( (i <= rangeLast || i >= rangeFirst) ? vertices_[i] + translation : vertices_[i] ) : // Range overlaps end/start of the array.
 				( (i <= rangeLast && i >= rangeFirst) ? vertices_[i] + translation : vertices_[i] )); // Range is somewhere in the middle of the array.
+			newEdgeNorms.push_back(edge_normals_[i]);
 		}
 	}
-	return Polygon(newVertices);
+	return Polygon(newVertices, newEdgeNorms);
 }
 Polygon Polygon::clipExtend(const units::Coordinate2D& dir, const units::Coordinate dist, const std::size_t rangeFirst, const std::size_t rangeLast) const {
-	std::vector<units::Coordinate2D> newVertices;
+	std::vector<units::Coordinate2D> newVertices, newEdgeNorms;
 	// Since we always duplicate when clipping, we will have last-to-first inclusive + 2x duplicates.
-	newVertices.reserve(std::abs(static_cast<int>(rangeLast) - static_cast<int>(rangeFirst)) + 3);
+	const std::size_t numVerts = std::abs(static_cast<int>(rangeLast) - static_cast<int>(rangeFirst)) + 3;
+	newVertices.reserve(numVerts);
+	newEdgeNorms.reserve(numVerts);
 	newVertices.push_back(vertices_[rangeFirst]); // First vertex gets duplicated.
+	newEdgeNorms.push_back(dir.perpCCW());
 	const units::Coordinate2D translation(dir*dist);
 	if ( rangeFirst < rangeLast ) {
-		for (std::size_t i = rangeFirst; i <= rangeLast; ++i) {
+		for (std::size_t i = rangeFirst; i < rangeLast; ++i) {
 			newVertices.push_back(vertices_[i] + translation);
+			newEdgeNorms.push_back(edge_normals_[i]);
 		}
 	} else { // Range between first and last overlaps start/end of the array.
 		for (std::size_t i = rangeFirst; i < vertices_.size(); ++i) {
 			newVertices.push_back(vertices_[i] + translation);
+			newEdgeNorms.push_back(edge_normals_[i]);
 		}
-		for (std::size_t i = 0; i <= rangeLast; ++i) {
+		for (std::size_t i = 0; i < rangeLast; ++i) {
 			newVertices.push_back(vertices_[i] + translation);
+			newEdgeNorms.push_back(edge_normals_[i]);
 		}
 	}
+	newVertices.push_back(vertices_[rangeLast] + translation);
 	newVertices.push_back(vertices_[rangeLast]); // Last vertex gets duplicated.
-	return Polygon(newVertices);
+	newEdgeNorms.push_back(dir.perpCW());
+	newEdgeNorms.push_back(units::Coordinate2D(0,0)); // Space for last edge normal, but not computed.
+	return Polygon(newVertices, newEdgeNorms);
 }
 
 void Polygon::translate(const units::Coordinate x, const units::Coordinate y) {

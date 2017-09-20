@@ -18,16 +18,17 @@ namespace polygon {
 
 class Polygon : public Shape {
 private:
-	std::vector<units::Coordinate2D> vertices_;
+	std::vector<units::Coordinate2D> vertices_, edge_normals_;
 	units::Coordinate x_min_, x_max_, y_min_, y_max_;
 	
 	// Find the bounding box for the polygon and cache the values.
-	void findBounds();
+	void _find_bounds();
 public:
 	Polygon();
 	// Vertices should be in counterclockwise order.
 	// The final vertex connects with the first vertex.
 	Polygon(std::vector<units::Coordinate2D> vertices);
+	Polygon(std::vector<units::Coordinate2D> vertices, std::vector<units::Coordinate2D> edgeNormals);
 	Polygon(const Polygon& poly);
 	~Polygon();
 
@@ -52,6 +53,21 @@ public:
 
 	// Extend a polygon by projecting it along a direction by dist.
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
+
+	// Get normalized edge normal for a specified edge -- if it isn't known, compute it.
+	// Assumes counter-clockwise winding.
+	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
+	units::Coordinate2D getEdgeNorm(std::size_t index);
+	// Get counter-clockwise edge normal for the polygon at a given index.
+	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
+	units::Coordinate2D getEdgeNorm(std::size_t index) const;
+	// Compute all normals for the polygon.
+	void computeNormals();
+
+	// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
+	void expand(const units::Coordinate expandAmount);
+	// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
+	static Polygon expand(const Polygon& p, const units::Coordinate expandAmount);
 
 	// Find the first and last vertices in the range to extend from in the direction of the given direction vector.
 	// Also finds whether the first and last vertices need to be duplicated when extending.

@@ -74,7 +74,7 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const Collisio
 			return;
 		// Find the projection of the remaining distance along the original direction on the deflection vector.
 		// Get the edge vector to project along by rotating clockwise.
-		const units::Coordinate2D projDir = info.normal.perpCW().normalize();
+		const units::Coordinate2D projDir = info.normal.perpCW();
 		// Project using the original delta direction, to avoid "bouncing" off of corners.
 		const units::Coordinate2D projection(info.originalDir.project(projDir, info.remainingDist));
 		// Projection is our new delta. Get new direction and remaining distance to move.

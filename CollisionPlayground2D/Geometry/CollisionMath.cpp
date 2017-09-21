@@ -115,7 +115,7 @@ namespace collision_math {
 		// Find how much the colliding polygon penetrated the other polygon along the delta vector.
 		// In doing so, also determine the collision normal.
 		inline bool _find_max_penetration(const Polygon& clippedCollider, const units::Coordinate2D& dir, const units::Coordinate dist,
-			const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
+			                              const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
 			const units::Coordinate2D oppDir(-dir); // Delta in the opposite direction.
 			// Find the range of vertices (and edges) that the collider may have entered from.
 			std::size_t firstInRange, lastInRange;
@@ -133,7 +133,7 @@ namespace collision_math {
 			if (!testVertices.isValid && !testEdges.isValid) {
 				// Are the polygons really colliding?
 				// This indicates that the SAT test says these polygons collide, but the penetartion test says they aren't penetrating at all.
-				// This may happen on rare occasions due to floating point errors. How to handle this may differ by implementation.
+				// This may happen on rare occasions due to floating point errors.
 
 				// Avoid the collider getting stuck. Push it back a bit just in case (we don't want to move the collider to a location where the SAT test is true).
 				const units::Coordinate newDist(dist - collision_math::COLLISION_PUSHOUT_DISTANCE);
@@ -157,7 +157,7 @@ namespace collision_math {
 			newDist = newDist > 0.0f ? newDist : 0.0f; // Avoid pushing the collider further back than where it started.
 
 			out_dist = newDist;
-			out_norm = deepest.norm;
+			out_norm = deepest.norm.normalize();
 
 			return true;
 		}
@@ -165,12 +165,12 @@ namespace collision_math {
 
 	// Test for collision, and if they collide find the collision normal and how far along direction vector can be travelled.
 	bool collides(const Polygon& collider, const units::Coordinate2D& dir, const units::Coordinate dist,
-		const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
+		          const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
 		return clippedCollides(collider.clipExtend(dir, dist), dir, dist, other, out_dist, out_norm);
 	}
 	// Test for collision with an already clip-extended collider.
-	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist, const Polygon& other,
-		units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
+	bool clippedCollides(const Polygon& clippedCollider, const units::Coordinate2D& dir, units::Coordinate dist,
+		                 const Polygon& other, units::Coordinate& out_dist, units::Coordinate2D& out_norm) {
 		if (dir.isZero() || dist == 0.0f)
 			return false; // Should not call this function with zero delta.
 		if ( !isect::intersects(clippedCollider, other) )

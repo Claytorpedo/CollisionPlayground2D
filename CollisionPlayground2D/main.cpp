@@ -11,6 +11,19 @@
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/IntersectionMath.h"
+#include "Geometry/CollisionMap.h"
+
+// Extremely simple CollisionMap implementation: no data structure speedup at all.
+class SimpleCollisionMap : public CollisionMap {
+private:
+	std::vector<Polygon> polys_;
+public:
+	SimpleCollisionMap(std::vector<Polygon> polys) : polys_(polys) {}
+	~SimpleCollisionMap() {}
+	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& delta) const {
+		return polys_;
+	}
+};
 
 void close() {
 	SDL_Quit();
@@ -23,8 +36,7 @@ void closeWithError() {
 
 // ----------------------------- Drawing polygons -------------------------------------
 
-void drawPoly(Polygon& p, Graphics& graphics, bool isColliding) {
-	isColliding ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+void drawPoly(Polygon& p, Graphics& graphics) {
 	const size_t size = p.size();
 	// Draw the lines of the polygon.
 	for (std::size_t i = 0; i < size - 1; ++i) {
@@ -110,7 +122,8 @@ int main (int argc, char* args[]) {
 		polys.push_back(Polygon::generate(twister, region));
 	}
 
-	Mover mover = genMover(polys, twister, region);
+	Mover mover(genMover(polys, twister, region));
+	SimpleCollisionMap objs(polys);
 
 	previousTime = SDL_GetTicks();
 	// Start the game loop.
@@ -145,23 +158,28 @@ int main (int argc, char* args[]) {
 				polys[i] = Polygon::generate(twister, region);
 			}
 			mover = genMover(polys, twister, region);
+			objs = SimpleCollisionMap(polys);
 		}
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 
-		mover.update(elapsedTime, polys);
+		mover.update(elapsedTime, objs);
 
 		graphics.clear();
 		Polygon collider = mover.getCollider();
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 #ifdef DEBUG
-			drawPoly(polys[i], graphics, isect::intersects(collider, polys[i]));
+			isect::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+			drawPoly(polys[i], graphics);
 #else
-			drawPoly(polys[i], graphics, false);
+			graphics.setRenderColour(0, 100, 255);
+			drawPoly(polys[i], graphics);
 #endif
 		}
-		drawPoly(collider, graphics, true);
+
+		graphics.setRenderColour(255, 0, 0);
+		drawPoly(collider, graphics);
 		graphics.present();
 	}
 	close();

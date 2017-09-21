@@ -270,10 +270,7 @@ namespace isect {
 			units::Coordinate2D axis;
 			Projection projFirst, projSecond;
 			for (std::size_t i = 0; i < size; ++i) {
-				// Find the edge normal. This is the axis we're projecting along.
-				const std::size_t next = i+1 >= size ? 0 : i+1;
-				axis = units::Coordinate2D(first[i].y - first[next].y, first[next].x - first[i].x).normalize();
-				// Get the projection on of both polygons with the found axis.
+				axis = first.getEdgeNorm(i); // Axis to project along.
 				projFirst = _get_projection(first, axis);
 				projSecond = _get_projection(second, axis);
 				if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)

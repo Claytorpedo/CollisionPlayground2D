@@ -4,6 +4,13 @@
 #include "Geometry/CollisionMap.h"
 #include "Util.h"
 
+Mover::Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider) : Collidable(type), position_(position), collider_(collider) {
+	collider_.computeNormals();
+}
+Mover::Mover(units::Coordinate2D position, Polygon collider) : position_(position), collider_(collider) {
+	collider_.computeNormals();
+}
+
 void Mover::update(const units::MS elapsedTime, const CollisionMap& polys) {
 	const units::Velocity maxSpeed = (!util::almostZero(acceleration_.x) && !util::almostZero(acceleration_.y)) ? mover::MAX_DIAGONAL_SPEED : mover::MAX_SPEED;
 	update_position(elapsedTime, maxSpeed, polys);

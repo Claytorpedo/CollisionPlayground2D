@@ -18,8 +18,8 @@ namespace mover {
 class Mover : public Collidable {
 public:
 	Mover() {}
-	Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider) : Collidable(type), position_(position), collider_(collider) {}
-	Mover(units::Coordinate2D position, Polygon collider) : position_(position), collider_(collider) {}
+	Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider);
+	Mover(units::Coordinate2D position, Polygon collider);
 	~Mover() {}
 
 	void update(const units::MS elapsedTime, const CollisionMap& polys);

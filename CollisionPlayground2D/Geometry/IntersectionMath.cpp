@@ -9,6 +9,7 @@
 #include "Shape.h"
 #include "Rectangle.h"
 #include "Polygon.h"
+#include "SAT.h"
 
 namespace isect {
 
@@ -244,55 +245,15 @@ namespace isect {
 			   first.bottom() > second.top();
 	}
 
-	// ------------------------------ Separating Axis Theorem test ---------------------------------
-	namespace {
-		struct Projection {
-			units::Coordinate min, max;
-			Projection() : min(0), max(0) {}
-			Projection(units::Coordinate min, units::Coordinate max) : min(min), max(max) {}
-		};
-		inline Projection _get_projection(const Polygon& poly, units::Coordinate2D axis) {
-			units::Coordinate min(poly[0].dot(axis));
-			units::Coordinate max(min);
-			units::Coordinate proj;
-			for (std::size_t i = 1; i < poly.size(); ++i) {
-				proj = poly[i].dot(axis);
-				if (proj < min)
-					min = proj;
-				else if (proj > max)
-					max = proj;
-			}
-			return Projection(min, max);
-		}
-		// Tests the axes of one polygon against the other using SAT.
-		inline bool _SAT(const Polygon& first, const Polygon& second) {
-			const std::size_t size = first.size();
-			units::Coordinate2D axis;
-			Projection projFirst, projSecond;
-			for (std::size_t i = 0; i < size; ++i) {
-				axis = first.getEdgeNorm(i); // Axis to project along.
-				projFirst = _get_projection(first, axis);
-				projSecond = _get_projection(second, axis);
-				if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
-					return false;
-			}
-			return true;
-		}
-		// Perform SAT against both polygons (full test). Returns true on collision.
-		inline bool _perform_SAT(const Polygon& first, const Polygon& second) {
-			return _SAT(first, second) && _SAT(second, first);
-		}
-	}
-	// ---------------------------------------------------------------------------------------------
-
 	bool intersects(const Polygon& first, const Polygon& second) {
-		if (first.isEmpty() || second.isEmpty())
+		if (!intersects(first.getAABB(), second.getAABB())) // Bounds test for quick out.
 			return false;
-		// Bounds test for quick out.
-		if (!intersects(Rectangle(first.left(), first.top(), first.right()-first.left(), first.bottom()-first.top()), 
-			            Rectangle(second.left(), second.top(), second.right()-second.left(), second.bottom()-second.top())))
+		return sat::performSAT(first, second);
+	}
+	bool intersects(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos) {
+		if (!intersects(first.getAABB() + firstPos, second.getAABB() + secondPos)) // Bounds test for quick out.
 			return false;
-		return _perform_SAT(first, second);
+		return sat::performSAT(first, firstPos, second, secondPos);
 	}
 	bool intersects(const Shape& first, const Shape& second) {
 		return intersects(first.toPoly(), second.toPoly());

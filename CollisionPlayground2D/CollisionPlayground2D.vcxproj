@@ -82,6 +82,7 @@
     <ClInclude Include="Geometry\CollisionMap.h" />
     <ClInclude Include="Geometry\IntersectionMath.h" />
     <ClCompile Include="Geometry\Polygon.cpp" />
+    <ClCompile Include="Geometry\SAT.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Geometry\Polygon.h" />
     <ClInclude Include="Geometry\Ray.h" />
     <ClInclude Include="Geometry\Rectangle.h" />
+    <ClInclude Include="Geometry\SAT.h" />
     <ClInclude Include="Geometry\Shape.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />

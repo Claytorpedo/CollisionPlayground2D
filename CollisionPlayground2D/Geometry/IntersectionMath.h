@@ -36,6 +36,7 @@ namespace isect {
 
 	bool intersects(const Rectangle& first, const Rectangle& second);
 	bool intersects(const Polygon& first, const Polygon& second);
+	bool intersects(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos);
 	bool intersects(const Shape& first, const Shape& second);
 }
 

@@ -15,6 +15,11 @@ public:
 	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
 	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
+	// Translate by a vector.
+	inline Rectangle& operator+=(const units::Coordinate2D& c) { x += c.x; y += c.y; return *this; }
+	// Translate by a vector.
+	inline Rectangle operator+(const units::Coordinate2D& c) { return Rectangle(x + c.x, y + c.y, w, h); }
+
 	inline Coordinate2D position() const { return Coordinate2D(x, y); }
 	inline Coordinate2D center()   const { return Coordinate2D(x + w*0.5f, y + h*0.5f); }
 	inline Coordinate center_x() const { return x + w*0.5f; }

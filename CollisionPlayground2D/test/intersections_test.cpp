@@ -993,13 +993,22 @@ TEST_CASE("Rectangle intersections.", "[rect]") {
 	CHECK(isect::intersects(r, o));
 }
 
+namespace { // Some shapes we'll use.
+	const std::vector<Coordinate2D> rightTri = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
+	const std::vector<Coordinate2D> edgeTri = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
+	const std::vector<Coordinate2D> tri = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
+	const std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+		Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+	// An arbitrary polygon.
+	const std::vector<Coordinate2D> arb = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
+}
+
 SCENARIO("Testing two polygons for intersection.", "[poly]") {
 	GIVEN("A triangle.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
-		Polygon p(points);
+		Polygon p(rightTri);
 		GIVEN("A second triangle.") {
-			std::vector<Coordinate2D> points2 = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
-			Polygon o(points2);
+			Polygon o(tri);
 			THEN("They don't intersect until we move them together.") {
 				CHECK_FALSE(isect::intersects(p, o));
 				o.translate(0, 1);
@@ -1011,13 +1020,14 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 			}
 		}
 		GIVEN("An identical triangle.") {
-			Polygon o(points);
+			Polygon o(rightTri);
 			THEN("They intersect.")
 				CHECK(isect::intersects(p, o));
 		}
 		GIVEN("A triangle inside the first one.") {
-			for (std::size_t i = 0; i < points.size(); ++i) points[i] *= 0.5f;
-			Polygon o(points);
+			std::vector<Coordinate2D> inside;
+			for (std::size_t i = 0; i < rightTri.size(); ++i) inside.push_back(rightTri[i] * 0.5f);
+			Polygon o(inside);
 			THEN("They intersect.") {
 				CHECK(isect::intersects(p, o));
 				o.translate(0.5f, 0.5f);
@@ -1025,24 +1035,22 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
-			std::vector<Coordinate2D> points2 = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
-			Polygon o(points2);
+			Polygon o(edgeTri);
 			CHECK_FALSE(isect::intersects(p, o));
 		}
 	}
 	GIVEN("Two large triangles.") {
-		std::vector<Coordinate2D> points3 = { Coordinate2D(0,0), Coordinate2D(1000000,1000000), Coordinate2D(1000000,0) };
-		Polygon q(points3);
-		std::vector<Coordinate2D> points4 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
-		Polygon r(points4);
+		std::vector<Coordinate2D> points1 = { Coordinate2D(0,0), Coordinate2D(1000000,1000000), Coordinate2D(1000000,0) };
+		Polygon q(points1);
+		std::vector<Coordinate2D> points2 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
+		Polygon r(points2);
 		CHECK_FALSE(isect::intersects(q, r));
-		std::vector<Coordinate2D> points5 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
-		r = Polygon(points5);
+		std::vector<Coordinate2D> points3 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
+		r = Polygon(points3);
 		CHECK(isect::intersects(q, r));
 	}
 	GIVEN("A triangle and a rectangle.") {
-		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
-		Polygon p(points);
+		Polygon p(edgeTri);
 		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
 		CHECK(isect::intersects(p, o));
 		o.translate(1, 0);
@@ -1059,9 +1067,6 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 		CHECK_FALSE(isect::intersects(p, o));
 	}
 	GIVEN("Convex polygons.") {
-		std::vector<Coordinate2D> arb = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
-		std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-			                                  Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
 		GIVEN("An octagon and an arbitrary convex polygon.") {
 			Polygon p(arb);
 			Polygon o(octagon);
@@ -1112,8 +1117,9 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 		}
 		GIVEN("An octagon and a smaller octagon.") {
 			Polygon p(octagon);
-			for (std::size_t i = 0; i < octagon.size(); ++i) octagon[i] *= 0.5f; // Half-size octagon.
-			Polygon o(octagon);
+			std::vector<Coordinate2D> inside;
+			for (std::size_t i = 0; i < octagon.size(); ++i) inside.push_back(octagon[i] * 0.5f); // Half-size octagon.
+			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
@@ -1129,12 +1135,10 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 
 SCENARIO("Testing two polygons for intersection with given positions.", "[poly]") {
 	GIVEN("A triangle.") {
-		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
-		Polygon p(points);
+		Polygon p(rightTri);
 		Coordinate2D pos1(0, 0);
 		GIVEN("A second triangle.") {
-			std::vector<Coordinate2D> points2 = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
-			Polygon o(points2);
+			Polygon o(tri);
 			Coordinate2D pos2(0, 0);
 			THEN("They don't intersect until we move them together.") {
 				CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
@@ -1147,14 +1151,15 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			}
 		}
 		GIVEN("An identical triangle.") {
-			Polygon o(points);
+			Polygon o(rightTri);
 			Coordinate2D pos2(0, 0);
 			THEN("They intersect.")
 				CHECK(isect::intersects(p, pos1, o, pos2));
 		}
 		GIVEN("A triangle inside the first one.") {
-			for (std::size_t i = 0; i < points.size(); ++i) points[i] *= 0.5f;
-			Polygon o(points);
+			std::vector<Coordinate2D> inside;
+			for (std::size_t i = 0; i < rightTri.size(); ++i) inside.push_back(rightTri[i] * 0.5f);
+			Polygon o(inside);
 			Coordinate2D pos2(0, 0);
 			THEN("They intersect.") {
 				CHECK(isect::intersects(p, pos1, o, pos2));
@@ -1163,27 +1168,25 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
-			std::vector<Coordinate2D> points2 = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
-			Polygon o(points2);
+			Polygon o(edgeTri);
 			Coordinate2D pos2(0, 0);
 			CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
 		}
 	}
 	GIVEN("Two large triangles.") {
-		std::vector<Coordinate2D> points3 = { Coordinate2D(0,0), Coordinate2D(1000000,1000000), Coordinate2D(1000000,0) };
-		Polygon q(points3);
+		std::vector<Coordinate2D> points1 = { Coordinate2D(0,0), Coordinate2D(1000000,1000000), Coordinate2D(1000000,0) };
+		Polygon q(points1);
 		Coordinate2D posQ(0, 0);
-		std::vector<Coordinate2D> points4 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
-		Polygon r(points4);
+		std::vector<Coordinate2D> points2 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
+		Polygon r(points2);
 		Coordinate2D posR(0, 0);
 		CHECK_FALSE(isect::intersects(q, posQ, r, posR));
-		std::vector<Coordinate2D> points5 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
-		r = Polygon(points5);
+		std::vector<Coordinate2D> points3 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
+		r = Polygon(points3);
 		CHECK(isect::intersects(q, posQ, r, posR));
 	}
 	GIVEN("A triangle and a rectangle.") {
-		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
-		Polygon p(points);
+		Polygon p(edgeTri);
 		Coordinate2D pos1(0, 0);
 		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
 		Coordinate2D pos2(0, 0);
@@ -1205,9 +1208,6 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 		CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
 	}
 	GIVEN("Convex polygons.") {
-		std::vector<Coordinate2D> arb = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
-		std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-			Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
 		GIVEN("An octagon and an arbitrary convex polygon.") {
 			Polygon p(arb);
 			Coordinate2D pos1(0, 0);
@@ -1261,8 +1261,9 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 		GIVEN("An octagon and a smaller octagon.") {
 			Polygon p(octagon);
 			Coordinate2D pos1(0, 0);
-			for (std::size_t i = 0; i < octagon.size(); ++i) octagon[i] *= 0.5f; // Half-size octagon.
-			Polygon o(octagon);
+			std::vector<Coordinate2D> inside;
+			for (std::size_t i = 0; i < octagon.size(); ++i) inside.push_back(octagon[i] * 0.5f); // Half-size octagon.
+			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They intersect.")

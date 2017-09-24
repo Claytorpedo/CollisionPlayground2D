@@ -54,11 +54,10 @@ public:
 	// Extend a polygon by projecting it along a direction by dist.
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
 
-	// Get normalized edge normal for a specified edge -- if it isn't known, compute it.
-	// Assumes counter-clockwise winding.
+	// Get normalized counter-clockwise edge normal for the polygon at a given index.
 	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
 	units::Coordinate2D getEdgeNorm(std::size_t index);
-	// Get counter-clockwise edge normal for the polygon at a given index.
+	// Get normalized counter-clockwise edge normal for the polygon at a given index.
 	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
 	units::Coordinate2D getEdgeNorm(std::size_t index) const;
 	// Compute all normals for the polygon.

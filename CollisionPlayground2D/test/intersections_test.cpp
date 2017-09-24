@@ -1099,17 +1099,17 @@ SCENARIO("Testing two polygons for intersection.", "[poly]") {
 				THEN("They do not intersect.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
-			WHEN("The octagon is nearly out of the bottom.") {
+			WHEN("The octagon is nearly out of the top.") {
 				o.translate(1, -3.9f);
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, o));
 			}
-			WHEN("The octagon is only touching the bottom.") {
+			WHEN("The octagon is only touching the top.") {
 				o.translate(1, -4);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
 			}
-			WHEN("The octagon is edged ouf of the bottom left.") {
+			WHEN("The octagon is edged out of the top left.") {
 				o.translate(-0.66f, -3.9f);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, o));
@@ -1242,17 +1242,17 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 				THEN("They do not intersect.")
 					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
 			}
-			WHEN("The octagon is nearly out of the bottom.") {
+			WHEN("The octagon is nearly out of the top.") {
 				Coordinate2D pos2(1, -3.9f);
 				THEN("They intersect.")
 					CHECK(isect::intersects(p, pos1, o, pos2));
 			}
-			WHEN("The octagon is only touching the bottom.") {
+			WHEN("The octagon is only touching the top.") {
 				Coordinate2D pos2(1, -4);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
 			}
-			WHEN("The octagon is edged ouf of the bottom left.") {
+			WHEN("The octagon is edged out of the top left.") {
 				Coordinate2D pos2(-0.66f, -3.9f);
 				THEN("They are not intersecting.")
 					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));

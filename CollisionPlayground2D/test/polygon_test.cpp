@@ -11,9 +11,9 @@
 using namespace units;
 
 namespace {
-	std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-		                                  Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-	std::vector<Coordinate2D> triangle = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
+	const std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
+	                                            Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
+	const std::vector<Coordinate2D> triangle = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
 }
 
 SCENARIO("Translate a polygon.", "[poly]") {

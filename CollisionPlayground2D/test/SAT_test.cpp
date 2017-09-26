@@ -439,6 +439,34 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 			}
 		}
 	}
+	GIVEN("A smaller triangle and a larger triangle.") {
+		Polygon p(rightTri);
+		std::vector<Coordinate2D> large;
+		for (std::size_t i = 0; i < rightTri.size(); ++i) large.push_back(rightTri[i] * 100.0f);
+		Polygon o(large);
+		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
+		Coordinate out_dist;
+		WHEN("The small triangle overlaps the large one along its hypotenuse.") {
+			pos1 = Coordinate2D(50, 50);
+			THEN("The small triangle is separated left-downward.") {
+				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_dist == ApproxEps(1.0f / std::sqrt(2.0f)));
+			}
+		}
+		WHEN("The small triangle overlaps the large one inside its hypotenuse.") {
+			pos1 = Coordinate2D(51, 50);
+			THEN("The small triangle is separated left-downward.") {
+				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_dist == ApproxEps(2.0f / std::sqrt(2.0f)));
+			}
+		}
+	}
 	GIVEN("An octagon and arbitrary convex polygon.") {
 		Polygon p(octagon);
 		Polygon o(arb);

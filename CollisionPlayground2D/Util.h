@@ -25,8 +25,13 @@ namespace util {
 	inline units::Pixel tileToPixel( const units::Tile t ) { 
 		return coordToPixel(tileToCoord( t ) ); 
 	}
+	// Rounds to nearest whole number.
 	inline units::MS fpsToMillis( const units::FPS fps ) {
-		return fps == 0 ? 0 : static_cast<units::MS>( constants::SECOND_MILLIS / fps );
+		return fps == 0 ? 0 : static_cast<units::MS>( std::round(static_cast<double>(constants::SECOND_MILLIS) / fps ));
+	}
+	// Rounds to nearest whole number.
+	inline units::FPS millisToFPS(const units::MS ms) {
+		return ms == 0 ? 0 : static_cast<units::FPS>(std::round(static_cast<double>(constants::SECOND_MILLIS) / ms));
 	}
 	inline SDL_Point coord2DToSDLPoint( const units::Coordinate2D c ) {
 		SDL_Point p = {static_cast<int>(c.x), static_cast<int>(c.y)};

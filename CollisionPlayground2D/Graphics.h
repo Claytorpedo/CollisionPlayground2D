@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <vector>
+#include <string>
 
 #include "Units.h"
 
@@ -24,6 +25,8 @@ public:
 	void renderPoly(std::vector<SDL_Point>& points) const;
 	void renderPoint(const SDL_Point& point, Uint8 pointSize=1) const;
 	void renderCircle(const SDL_Point& center, Uint8 radius) const;
+
+	void setWindowTitle(const std::string& text);
 
 	void clear();
 	void present();

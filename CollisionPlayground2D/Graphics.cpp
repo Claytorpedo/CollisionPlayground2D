@@ -102,6 +102,10 @@ void Graphics::renderCircle(const SDL_Point& center, Uint8 radius) const {
 	}
 }
 
+void Graphics::setWindowTitle(const std::string& text) {
+	SDL_SetWindowTitle(window_, text.data());
+}
+
 void Graphics::clear() {
 	SDL_SetRenderDrawColor(renderer_, 0,0,0, 255); // Black.
 	SDL_RenderClear(renderer_);

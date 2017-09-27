@@ -428,11 +428,11 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 				CHECK(out_dist == ApproxEps(0.9f));
 			}
 		}
-		WHEN("The triangle is just below the rectangle's center.") {
+		WHEN("The triangle is just above the rectangle's center.") {
 			pos2 = Coordinate2D(49.5f, 49.1f);
-			THEN("The rectangle is separated out of the triangle upwards.") {
+			THEN("The rectangle is separated out of the triangle downwards.") {
 				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
-				Coordinate2D expected_norm(Coordinate2D(0, -1));
+				Coordinate2D expected_norm(Coordinate2D(0, 1));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				CHECK(out_dist == ApproxEps(50.1f));

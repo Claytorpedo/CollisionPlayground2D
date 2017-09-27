@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <iostream>
+#include <sstream>
 #include <random>
 #include <vector>
 
@@ -32,6 +33,22 @@ void closeWithError() {
 	std::cout << "Press Enter to close." << std::endl;
 	std::cin.ignore();
 	close();
+}
+
+const int fpsSmoothing = 20; // Get an average over several frames.
+std::vector<units::FPS> fpsCounter;
+void showFPS(Graphics& graphics, const units::MS elapsedTime) {
+	if (elapsedTime <= 0)
+		return;
+	if (fpsCounter.size() >= fpsSmoothing)
+		fpsCounter.erase(fpsCounter.begin());
+	const units::FPS fps = util::millisToFPS(elapsedTime);
+	fpsCounter.push_back(fps);
+	units::FPS ave(0);
+	for (std::size_t i = 0; i < fpsCounter.size(); ++i) ave += fpsCounter[i];
+	std::ostringstream stream("FPS: ");
+	stream << ave/fpsCounter.size() << " - Collision Playground 2D";
+	graphics.setWindowTitle(stream.str());
 }
 
 // ----------------------------- Drawing polygons -------------------------------------
@@ -181,6 +198,7 @@ int main (int argc, char* args[]) {
 		graphics.setRenderColour(255, 0, 0);
 		drawPoly(collider, graphics);
 		graphics.present();
+		showFPS(graphics, elapsedTime);
 	}
 	close();
 	return 0;

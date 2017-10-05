@@ -49,7 +49,7 @@ public:
 	// Project along projDir by dist (use dist if this is a unit vector).
 	inline Vector2D project(const Vector2D& projDir, const T dist=static_cast<T>(0)) const {
 		const T dot(projDir.dot(dist == static_cast<T>(0) ? *this : *this * dist));
-		return Vector2D(dot*projDir.x, dot*projDir.y);
+		return projDir*dot;
 	}
 
 	// See if the vector is "inside" vectors a and b.

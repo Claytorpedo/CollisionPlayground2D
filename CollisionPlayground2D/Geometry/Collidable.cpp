@@ -6,29 +6,46 @@
 #include "../Units.h"
 #include "Shape.h"
 #include "Polygon.h"
-#include "CollisionMath.h"
+#include "SAT.h"
 #include "CollisionMap.h"
 
 Collidable::~Collidable() {}
 
+// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
+// Acts as if making the polygon slightly larger.
+const units::Coordinate COLLISION_BUFFER = 0.001f;
 void Collidable::find_closest_collision(const Polygon& collider, const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
-	const Polygon clippedCollider = collider.clipExtend(info.currentDir, info.remainingDist);
-	info.moveDist = info.remainingDist;
+	units::Coordinate2D testNorm;
+	units::Fraction interval(1.0f), testInterval;
 	info.isCollision = false;
-	std::vector<Polygon> objs = collisionMap.getColliding(clippedCollider, info.currentDir*info.remainingDist);
+	const units::Coordinate2D delta(info.currentDir * info.remainingDist);
+	std::vector<Polygon> objs = collisionMap.getColliding(collider, delta);
 	for (std::size_t i = 0; i < objs.size(); ++i) {
-		units::Coordinate testDist;
-		units::Coordinate2D testNorm;
-		if (collision_math::clippedCollides(clippedCollider, info.currentDir, info.remainingDist, objs[i], testDist, testNorm)) {
+		if (sat::performHybridSAT(collider, info.currentPosition, delta, objs[i], units::Coordinate2D(0, 0), testNorm, testInterval)) {
 			info.isCollision = true;
-			if (info.moveDist > testDist) {
-				info.moveDist = testDist;
+			if (testInterval < 0.0f) {
+				std::cerr << "Error: got an MTV collision! (dist = " << testInterval << ")\n";
+			}
+			if (interval > testInterval) {
+				interval = testInterval;
 				info.normal = testNorm;
 			}
-			if (info.moveDist == 0.0f)
-				return; // Can't move any less than not moving!
+			if (interval < constants::EPSILON) {
+				info.moveDist = 0;
+				return;
+			}
 		}
 	}
+	if (!info.isCollision) {
+		info.moveDist = info.remainingDist;
+		return;
+	}
+	// Get the buffer amount to maintain to avoid moving to a collision state.
+	// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
+	const units::Coordinate pushout = COLLISION_BUFFER / info.normal.dot(info.currentDir);
+	info.moveDist = (info.remainingDist * interval) + pushout; // Add instead of subtract to negate.awd
+	if (info.moveDist < 0)
+		info.moveDist = 0;
 }
 
 units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Polygon& collider,
@@ -52,8 +69,6 @@ units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Po
 }
 
 void Collidable::move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
-	Polygon collider(*info.collider);
-	collider.translate(info.currentPosition);
 #ifdef DEBUG
 	int depth = 0;
 #endif
@@ -62,29 +77,27 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const Collisio
 	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 	units::Coordinate prevAngle = 0;
 	while (true) {
-		find_closest_collision(collider, collisionMap, info);
-		info.currentPosition += info.currentDir*info.moveDist;
+		find_closest_collision(*info.collider, collisionMap, info);
+		info.currentPosition += info.moveDist * info.currentDir;
 		if (!info.isCollision)
 			return;
+		info.remainingDist -= info.moveDist;
 		if (!onCollision(info))
 			return; // Signaled to stop.
-		collider = Polygon::translate(*info.collider, info.currentPosition);
-		info.remainingDist -= info.moveDist;
 		if (info.remainingDist < constants::EPSILON || info.normal.isZero())
 			return;
 		// Find the projection of the remaining distance along the original direction on the deflection vector.
-		// Get the edge vector to project along by rotating clockwise.
-		const units::Coordinate2D projDir = info.normal.perpCW();
+		// Get the vector to project along by rotating clockwise.
+		const units::Coordinate2D projDir(info.normal.perpCW());
 		// Project using the original delta direction, to avoid "bouncing" off of corners.
 		const units::Coordinate2D projection(info.originalDir.project(projDir, info.remainingDist));
-		// Projection is our new delta. Get new direction and remaining distance to move.
-		info.remainingDist = projection.magnitude();
+		info.remainingDist = projection.magnitude(); // Projection is our new delta.
 		if (info.remainingDist < constants::EPSILON)
 			return;
 		info.currentDir = projection / info.remainingDist;
 
 		units::Coordinate currAngle = 0; // 0 == 90 degrees == an impossible angle of deflection/collidable has stopped.
-		if (info.moveDist == 0) {
+		if (info.moveDist < constants::EPSILON * 10) {
 			// Get signed angle of deflection relative to the original direction.
 			const units::Coordinate dot(info.originalDir.dot(info.currentDir));
 			currAngle = info.originalDir.cross(info.currentDir) < 0 ? -dot : dot;
@@ -97,7 +110,7 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const Collisio
 #ifdef DEBUG
 		++depth;
 		if (depth >= 10)
-			std::cout << "Recursion depth: " << depth << std::endl;
+			std::cout << "Recursion depth: " << depth << " movedist: " << info.moveDist << std::endl;
 #endif
 	}
 }

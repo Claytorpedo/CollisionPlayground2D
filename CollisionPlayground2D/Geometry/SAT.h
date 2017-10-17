@@ -37,7 +37,7 @@ namespace sat {
 	//             If the polygons are already colliding before any movement, gives negative distance that, when made positive,
 	//             forms the minimum translation vector with out_norm for the first polygon: separationVec = out_norm * (-out_t)
 	// Returns true if the objects overlap or will overlap.
-	bool performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+	bool performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
 	                const Polygon& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta,
 	                units::Coordinate2D& out_norm, units::Fraction& out_interval);
 }

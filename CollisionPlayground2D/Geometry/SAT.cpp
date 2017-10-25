@@ -119,15 +119,15 @@ inline CollisionType _hybrid_SAT(const Polygon& first, const Polygon& second, co
 		projFirst = _get_projection(first, axis);
 		projSecond = _get_projection(second, axis);
 		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
-		overlap1 = projFirst.max - projSecond.min;
-		overlap2 = projSecond.max - projFirst.min;
+		overlap1 = projFirst.max - projSecond.min - constants::EPSILON;
+		overlap2 = projSecond.max - projFirst.min - constants::EPSILON;
 		speed = axis.dot(velocity); // Speed projected along this axis.
-		if (overlap1 < constants::EPSILON || overlap2 < constants::EPSILON) { // Not currently overlapping.
+		if (overlap1 < 0.0f || overlap2 < 0.0f) { // Not currently overlapping.
 			isOverlapping = false;
 			if (speed == 0)
 				return CollisionType::NONE; // Not moving on this axis (moving parallel, or not at all). They will never meet.
 			// Overlaps now tell us how far apart they are on this axis. Divide by speed on this axis to find if/when they will overlap.
-			if (overlap1 < constants::EPSILON) { // The projection of the first shape is to the "left" of the second on this axis.
+			if (overlap1 < 0.0f) { // The projection of the first shape is to the "left" of the second on this axis.
 				testEnter = (-overlap1) / speed;
 				testExit = overlap2 / speed;
 			} else { // Interval on overlap2's side: projection of the first shape is to the "right" of the second on this axis.
@@ -157,10 +157,10 @@ inline CollisionType _hybrid_SAT(const Polygon& first, const Polygon& second, co
 			if (isOverlapping) { // Regular MTV checks.
 				// Find separation for this axis (assumes pushing out the first polygon).
 				if (projFirst.min < projSecond.min) {
-					testDist = overlap1;
+					testDist = overlap1 + constants::EPSILON;
 					axis = -axis; // Ensure right direction to push out the first polygon.
 				} else {
-					testDist = overlap2;
+					testDist = overlap2 + constants::EPSILON;
 				}
 				if (out_mtv_dist == -1 || testDist < out_mtv_dist) {
 					out_mtv_dist = testDist;

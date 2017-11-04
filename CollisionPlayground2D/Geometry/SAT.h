@@ -20,26 +20,28 @@ namespace sat {
 	// Returns true if they overlap.
 	bool performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos,
 	                units::Coordinate2D& out_norm, units::Coordinate& out_dist);
+	// Describes the type of collision.
+	enum class HybridResult {
+		NONE, // No collision.
+		MTV,  // Current collision.
+		SWEEP // Future collision.
+	};
 	// Find when a collision will occur for one moving and one stationary polygon, and the normal of their collision, if they collide.
 	// Takes polygons, their positions, and the first polygon's movement vector.
 	// out_norm  - The collision normal for the first polygon (reverse it for the second).
-	// out_t     - When they will collide in [0,1]. Multiply by delta vectors to get truncated movement vectors.
-	//             If the polygons are already colliding before any movement, gives negative distance that, when made positive,
-	//             forms the minimum translation vector with out_norm for the first polygon: separationVec = out_norm * (-out_t)
-	// Returns true if the objects overlap or will overlap.
-	bool performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-		const Polygon& second, const units::Coordinate2D& secondPos,
-		units::Coordinate2D& out_norm, units::Fraction& out_interval);
+	// out_t     - For SWEEP results: a value in range [0,1], indicating when along the delta vector the collision occurs.
+	//             For MTV results: The polygons are already colliding. Gives distance to travel along the norm to separate.
+	// Returns the type of collision: NONE, a current MTV collision, or a future SWEEP collision on the interval [0, MAX].
+	HybridResult performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+		const Polygon& second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t);
 	// Find when a collision will occur for two moving objects and the normal of their collision, if they collide.
 	// Takes polygons, their positions, and movement vectors.
 	// out_norm  - The collision normal for the first polygon (reverse it for the second).
-	// out_t     - When they will collide in [0,1]. Multiply by delta vectors to get truncated movement vectors.
-	//             If the polygons are already colliding before any movement, gives negative distance that, when made positive,
-	//             forms the minimum translation vector with out_norm for the first polygon: separationVec = out_norm * (-out_t)
-	// Returns true if the objects overlap or will overlap.
-	bool performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-	                const Polygon& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta,
-	                units::Coordinate2D& out_norm, units::Fraction& out_interval);
+	// out_t     - For SWEEP results: a value in range [0,1], indicating when along the delta vectors the collision occurs.
+	//             For MTV results: The polygons are already colliding. Gives distance to travel along the norm to separate.
+	// Returns the type of collision: NONE, a current MTV collision, or a future SWEEP collision on the interval [0, MAX].
+	HybridResult performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+		const Polygon& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t);
 }
 
 #endif // _SAT_H

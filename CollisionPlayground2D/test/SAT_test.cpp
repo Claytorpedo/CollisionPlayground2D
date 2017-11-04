@@ -524,14 +524,14 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 			GIVEN("The stationary polygon is a triangle.") {
 				Polygon stationary(tri);
 				THEN("It should collide immediately and not move at all.") {
-					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(0, -10), stationary, Coordinate2D(0, 0), out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(0, -10), stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 					REQUIRE(out_t == ApproxEps(0));
 				}
 			}
 			GIVEN("The stationary polygon is a rectangle.") {
 				Polygon stationary(Rectangle(-1, 0, 1, 1).toPoly());
 				THEN("It should collide immediately and not move at all.") {
-					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(-10, 0), stationary, Coordinate2D(0, 0), out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(-10, 0), stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 					REQUIRE(out_t == ApproxEps(0));
 				}
 			}
@@ -541,7 +541,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				Polygon stationary = Polygon(octagon);
 				Coordinate2D stationaryPos(10, 0);
 				THEN("The collider should move the distance between them.") {
-					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 					REQUIRE(out_t == ApproxEps(0.7f));
 				}
 			}
@@ -549,7 +549,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				Polygon stationary = Polygon(tri);
 				Coordinate2D stationaryPos(3, -4);
 				THEN("The collider should move the distance between them.") {
-					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(6, -8), stationary, stationaryPos, out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(6, -8), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 					REQUIRE(out_t == ApproxEps(0.5f));
 				}
 			}
@@ -565,7 +565,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving up into the triangle.") {
 					Coordinate2D delta(0, -10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -574,7 +574,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving right into the triangle.") {
 					Coordinate2D delta(10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -583,7 +583,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving up-right into the triangle.") {
 					Coordinate2D delta(10, -10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -597,7 +597,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving left into the rectangle.") {
 					Coordinate2D delta(-10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -606,7 +606,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-left into the rectangle.") {
 					Coordinate2D delta(-10, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -615,7 +615,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving up-left into the rectangle.") {
 					Coordinate2D delta(-1, -100);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -630,7 +630,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 					Coordinate2D expected_norm((stationary[3] - stationary[2]).perpCCW().normalize());
 					Coordinate2D delta(-10, 0);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.9f));
@@ -644,7 +644,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 					Coordinate2D expected_norm((stationary[1] - stationary[0]).perpCCW().normalize());
 					Coordinate2D delta(6, -8);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.5f));
@@ -663,7 +663,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving left into the triangle.") {
 					Coordinate2D delta(-10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -672,7 +672,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down into the triangle.") {
 					Coordinate2D delta(0, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -681,7 +681,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-left into the triangle.") {
 					Coordinate2D delta(-10, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -695,7 +695,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving right into the octagon.") {
 					Coordinate2D delta(10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -704,7 +704,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-right into the octagon.") {
 					Coordinate2D delta(10, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -713,7 +713,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving up-right into the octagon.") {
 					Coordinate2D delta(1, -100);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -729,7 +729,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 					Coordinate2D expected_norm((collider[1] - collider[0]).perpCW().normalize());
 					Coordinate2D delta(-6, 8);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.5f));
@@ -747,7 +747,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving right into the edge.") {
 					Coordinate2D delta(10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -756,7 +756,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-right into the edge.") {
 					Coordinate2D delta(10, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -765,7 +765,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving up-right into the edge.") {
 					Coordinate2D delta(1, -100);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -779,7 +779,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving left into the edge.") {
 					Coordinate2D delta(-10, 0);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -788,7 +788,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down into the edge.") {
 					Coordinate2D delta(0, 10);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -797,7 +797,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-left into the edge.") {
 					Coordinate2D delta(-1, 100);
 					THEN("It should collide immediately and not move at all.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0));
@@ -813,7 +813,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving right into the edge.") {
 					Coordinate2D delta(10, 0);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.4f));
@@ -822,7 +822,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-right into the edge.") {
 					Coordinate2D delta(8, 6);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.5f));
@@ -837,7 +837,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-left into the triangle.") {
 					Coordinate2D delta(-8, 6);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(-8, 6), stationary, stationaryPos, out_norm, out_t));
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(-8, 6), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.5f));
@@ -854,7 +854,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 			Coordinate2D expected_norm((collider[2] - collider[1]).perpCW().normalize());
 			Coordinate2D delta(0, 1);
 			THEN("The collider should move the distance between them.") {
-				REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(1 - ((1.0 / 1000) * 0.1))); // very slightly less than 1
@@ -870,7 +870,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				Coordinate2D delta(10, 0);
 				Coordinate2D expected_norm((collider[2] - collider[1]).perpCW().normalize());
 				THEN("It should collide immediately and not move at all.") {
-					REQUIRE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					REQUIRE(out_t == ApproxEps(0));
@@ -881,7 +881,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				Coordinate2D delta(0, -10);
 				Coordinate2D expected_norm((collider[0] - collider[2]).perpCW().normalize());
 				THEN("It should move the distance between them.") {
-					REQUIRE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+					REQUIRE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					REQUIRE(out_t == ApproxEps(0.8f));
@@ -900,42 +900,42 @@ SCENARIO("Two polygons are currently overlapping, detected with hybrid SAT.", "[
 			Coordinate2D colliderPos(0, 0), stationaryPos(0, 0);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
 				// We don't know which normal will be chosen, as all axes are the MTV.
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t));
-				REQUIRE(out_t == ApproxEps(-1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
+				REQUIRE(out_t == ApproxEps(1));
 			}
 		}
 		WHEN("The collider slightly overlaps the stationary rectangle.") {
 			Coordinate2D colliderPos(-0.99f, 0), stationaryPos(0, 0);
 			Coordinate2D expected_norm(-1, 0);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-0.01f));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(0.01f));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-0.01f));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(0.01f));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-0.01f));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(0.01f));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-0.01f));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(0.01f));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-0.01f));
+				REQUIRE(out_t == ApproxEps(0.01f));
 			}
 		}
 	}
@@ -946,26 +946,26 @@ SCENARIO("Two polygons are currently overlapping, detected with hybrid SAT.", "[
 			Coordinate2D colliderPos(-1.5f, -3), stationaryPos(0, 0);
 			Coordinate2D expected_norm(0, -1);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -90), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-1));
-				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t));
+				REQUIRE(out_t == ApproxEps(1));
+				REQUIRE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::MTV);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(-1));
+				REQUIRE(out_t == ApproxEps(1));
 			}
 		}
 	}
@@ -979,53 +979,53 @@ SCENARIO("Two polygons are separated and will not collide, detected with hybrid 
 		Coordinate2D colliderPos(0, 0), stationaryPos(0, 0);
 		WHEN("They move away from each other.") {
 			THEN("They will not collide.") {
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, -10), stationary, stationaryPos, out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -10), stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, -10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 			}
 		}
 		WHEN("They slide along an edge.") {
 			Coordinate2D delta(10, 10);
 			THEN("They will not collide.") {
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, -delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(collider, colliderPos, -delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 			}
 		}
 		WHEN("They are not moving.") {
 			Coordinate2D delta(0, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 	}
 	GIVEN("Two polygons are not touching.") {
 		Coordinate2D colliderPos(5, 2), stationaryPos(-5, 2);
 		WHEN("They move away from each other.") {
 			THEN("They will not collide.") {
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, -10), stationary, stationaryPos, out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -10), stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(0, -10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(collider, colliderPos, Coordinate2D(10, -10), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 			}
 		}
 		WHEN("They move towards each other, but fall short of a collision.") {
 			Coordinate2D delta(-5, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 		WHEN("They move until they are touching, but not overlapping.") {
 			Coordinate2D delta(-10, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 		WHEN("They \"glance\" each other, but never overlap.") {
 			Coordinate2D colliderPos(11, 12), stationaryPos(1, 2);
 			Coordinate2D delta(-20, -20);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 		WHEN("They are not moving.") {
 			Coordinate2D delta(0, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t));
+				CHECK(sat::performHybridSAT(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 	}
 }
@@ -1043,22 +1043,22 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		WHEN("They move away from each other.") {
 			Coordinate2D p1Delta(10, 0), p2Delta(-10, 0);
 			THEN("They will not collide.") {
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(-10, 0), out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, -10), p2, pos2, Coordinate2D(0, 10), out_norm, out_t));
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, -10), p2, pos2, Coordinate2D(-10, 10), out_norm, out_t));
+				CHECK(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(-10, 0), out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(p1, pos1, Coordinate2D(0, -10), p2, pos2, Coordinate2D(0, 10), out_norm, out_t) == sat::HybridResult::NONE);
+				CHECK(sat::performHybridSAT(p1, pos1, Coordinate2D(10, -10), p2, pos2, Coordinate2D(-10, 10), out_norm, out_t) == sat::HybridResult::NONE);
 			}
 		}
 		WHEN("They move towards each other.") {
 			THEN("They will collide.") {
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(-10, 0), p2, pos2, Coordinate2D(10, 0), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(-10, 0), p2, pos2, Coordinate2D(10, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0));
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 10), p2, pos2, Coordinate2D(0, -10), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 10), p2, pos2, Coordinate2D(0, -10), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0));
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(-10, 10), p2, pos2, Coordinate2D(10, -10), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(-10, 10), p2, pos2, Coordinate2D(10, -10), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0));
@@ -1067,26 +1067,26 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		WHEN("They slide along an edge.") {
 			Coordinate2D p1Delta(10, 10), p2Delta(-10, -10);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t));
+				CHECK(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 		WHEN("They move at the same speed.") {
 			Coordinate2D p1Delta(10, 0), p2Delta(10, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t));
+				CHECK(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 		WHEN("The delta of one overtakes the delta of the other.") {
 			Coordinate2D p1Delta(10, 0), p2Delta(20, 0);
-			THEN("They will not collide.") {
-				REQUIRE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t));
+			THEN("They will collide effectively immediately.") {
+				REQUIRE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
-				REQUIRE(out_t == ApproxEps(0)); // Will effectively collide immediately.
+				REQUIRE(out_t == ApproxEps(0));
 			}
 		}
 		WHEN("They are not moving.") {
 			Coordinate2D p1Delta(0, 0), p2Delta(0, 0);
 			THEN("They will not collide.")
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t));
+				CHECK(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 	}
 	GIVEN("Two polygons a distance apart.") {
@@ -1095,19 +1095,19 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		WHEN("They move towards each other.") {
 			Coordinate2D expected_norm(-1, 0);
 			THEN("They will collide, the time determined by how fast they cover the distance between them.") {
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(-10, 0), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(-10, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0.4f));
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(0, 0), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 0), p2, pos2, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0.8f));
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(100, 0), p2, pos2, Coordinate2D(0, 1), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(100, 0), p2, pos2, Coordinate2D(0, 1), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0.08f));
-				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(100, 0), p2, pos2, Coordinate2D(20, 0), out_norm, out_t));
+				REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(100, 0), p2, pos2, Coordinate2D(20, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				REQUIRE(out_t == ApproxEps(0.1f));
@@ -1116,7 +1116,7 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		WHEN("They move until they touch, but don't overlap.") {
 			Coordinate2D p1Delta(4, 0), p2Delta(-4, 0);
 			THEN("They do not collide.")
-				CHECK_FALSE(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t));
+				CHECK(sat::performHybridSAT(p1, pos1, p1Delta, p2, pos2, p2Delta, out_norm, out_t) == sat::HybridResult::NONE);
 		}
 	}
 	GIVEN("Two overlapping polygons.") {
@@ -1124,22 +1124,22 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		Coordinate2D pos1(0, 0), pos2(-0.5f, 0);
 		Coordinate2D expected_norm(1, 0);
 		THEN("They get the same MTV, regardless of deltas.") {
-			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(1000, 1), p2, pos2, Coordinate2D(1000, 1), out_norm, out_t));
+			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(1000, 1), p2, pos2, Coordinate2D(1000, 1), out_norm, out_t) == sat::HybridResult::MTV);
 			CHECK(out_norm.x == ApproxEps(expected_norm.x));
 			CHECK(out_norm.y == ApproxEps(expected_norm.y));
-			REQUIRE(out_t == ApproxEps(-0.5f));
-			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 0), p2, pos2, Coordinate2D(10, 10), out_norm, out_t));
+			REQUIRE(out_t == ApproxEps(0.5f));
+			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 0), p2, pos2, Coordinate2D(10, 10), out_norm, out_t) == sat::HybridResult::MTV);
 			CHECK(out_norm.x == ApproxEps(expected_norm.x));
 			CHECK(out_norm.y == ApproxEps(expected_norm.y));
-			REQUIRE(out_t == ApproxEps(-0.5f));
-			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 10), p2, pos2, Coordinate2D(0, 0), out_norm, out_t));
+			REQUIRE(out_t == ApproxEps(0.5f));
+			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(10, 10), p2, pos2, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::MTV);
 			CHECK(out_norm.x == ApproxEps(expected_norm.x));
 			CHECK(out_norm.y == ApproxEps(expected_norm.y));
-			REQUIRE(out_t == ApproxEps(-0.5f));
-			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 0), p2, pos2, Coordinate2D(0, 0), out_norm, out_t));
+			REQUIRE(out_t == ApproxEps(0.5f));
+			REQUIRE(sat::performHybridSAT(p1, pos1, Coordinate2D(0, 0), p2, pos2, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::MTV);
 			CHECK(out_norm.x == ApproxEps(expected_norm.x));
 			CHECK(out_norm.y == ApproxEps(expected_norm.y));
-			REQUIRE(out_t == ApproxEps(-0.5f));
+			REQUIRE(out_t == ApproxEps(0.5f));
 		}
 	}
 }

@@ -21,7 +21,7 @@ private:
 public:
 	SimpleCollisionMap(std::vector<Polygon> polys) : polys_(polys) {}
 	~SimpleCollisionMap() {}
-	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& delta) const {
+	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& position, const units::Coordinate2D& delta) const {
 		return polys_;
 	}
 };

@@ -11,41 +11,44 @@
 
 Collidable::~Collidable() {}
 
-// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
-// Acts as if making the polygon slightly larger.
-const units::Coordinate COLLISION_BUFFER = 0.001f;
-void Collidable::find_closest_collision(const Polygon& collider, const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
+sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
 	units::Coordinate2D testNorm;
 	units::Fraction interval(1.0f), testInterval;
 	info.isCollision = false;
 	const units::Coordinate2D delta(info.currentDir * info.remainingDist);
-	std::vector<Polygon> objs = collisionMap.getColliding(collider, delta);
+	std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition, delta);
+	sat::HybridResult result;
 	for (std::size_t i = 0; i < objs.size(); ++i) {
-		if (sat::performHybridSAT(collider, info.currentPosition, delta, objs[i], units::Coordinate2D(0, 0), testNorm, testInterval)) {
+		result = sat::performHybridSAT(*info.collider, info.currentPosition, delta, objs[i], units::Coordinate2D(0, 0), testNorm, testInterval);
+		if (result == sat::HybridResult::SWEEP) {
 			info.isCollision = true;
-			if (testInterval < 0.0f) {
-				std::cerr << "Error: got an MTV collision! (dist = " << testInterval << ")\n";
-			}
 			if (interval > testInterval) {
 				interval = testInterval;
 				info.normal = testNorm;
 			}
 			if (interval < constants::EPSILON) {
 				info.moveDist = 0;
-				return;
+				return sat::HybridResult::SWEEP;
 			}
+		}
+		if (result == sat::HybridResult::MTV) {
+			info.isCollision = true;
+			info.moveDist = testInterval;
+			info.normal = testNorm;
+			return sat::HybridResult::MTV; // Currently overlapping something. Abort.
 		}
 	}
 	if (!info.isCollision) {
 		info.moveDist = info.remainingDist;
-		return;
+		return sat::HybridResult::NONE;
 	}
 	// Get the buffer amount to maintain to avoid moving to a collision state.
 	// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
-	const units::Coordinate pushout = COLLISION_BUFFER / info.normal.dot(info.currentDir);
-	info.moveDist = (info.remainingDist * interval) + pushout; // Add instead of subtract to negate.awd
+	const units::Coordinate pushout = collidable::COLLISION_BUFFER / info.normal.dot(info.currentDir);
+	info.moveDist = (info.remainingDist * interval) + pushout; // Add instead of subtract to negate.
 	if (info.moveDist < 0)
 		info.moveDist = 0;
+	return sat::HybridResult::SWEEP;
 }
 
 units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Polygon& collider,
@@ -55,20 +58,28 @@ units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Po
 	if (delta.isZero())
 		return origin; // Nowhere to move.
 	switch (type) {
-	case DEFLECTION:
-		move_deflection(info, collisionMap);
+	case CollisionType::NONE:
+		info.currentPosition += delta;
 		break;
-	case REVERSE:
-
-	case REFLECT:
-
+	case CollisionType::DEFLECTION:
+		_move_deflection(info, collisionMap);
+		break;
+	case CollisionType::REVERSE:
+		std::cerr << "Error: Unimplemented collision algorithm type.\n";
+		break;
+	case CollisionType::REFLECT:
+		std::cerr << "Error: Unimplemented collision algorithm type.\n";
+		break;
+	case CollisionType::_DEBUG_:
+		std::cerr << "Error: _DEBUG_ collision algorithm is for internal use only.\n";
+		break;
 	default:
 		std::cerr << "Error: Unimplemented collision algorithm type.\n";
 	}
 	return info.currentPosition;
 }
 
-void Collidable::move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
+void Collidable::_move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
 #ifdef DEBUG
 	int depth = 0;
 #endif
@@ -77,7 +88,10 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const Collisio
 	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 	units::Coordinate prevAngle = 0;
 	while (true) {
-		find_closest_collision(*info.collider, collisionMap, info);
+		if (_find_closest_collision(collisionMap, info) == sat::HybridResult::MTV) {
+			_debug_collision(info, collisionMap);
+			return;
+		}
 		info.currentPosition += info.moveDist * info.currentDir;
 		if (!info.isCollision)
 			return;
@@ -113,6 +127,34 @@ void Collidable::move_deflection(Collidable::CollisionInfo& info, const Collisio
 			std::cout << "Recursion depth: " << depth << " movedist: " << info.moveDist << std::endl;
 #endif
 	}
+}
+
+bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
+#ifdef DEBUG
+	std::cerr << "Debugging MTV collision...\n";
+#endif
+	info.currentPosition += (info.moveDist + collidable::COLLISION_BUFFER) * info.normal;
+	for (std::size_t i = 1; i < collidable::COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
+		std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition);
+		info.isCollision = false;
+		for (std::size_t k = 0; k < objs.size(); ++k) {
+			if (sat::performSAT(*info.collider, info.currentPosition, objs[k], units::Coordinate2D(0, 0), info.normal, info.moveDist)) {
+				info.isCollision = true;
+				break;
+			}
+		}
+		if (!info.isCollision) {
+#ifdef DEBUG
+			std::cerr << "MTV collision resolved (in " << i << " attempts).\n";
+#endif
+			return true; // Situation resolved. No longer overlapping anything.
+		}
+		info.currentPosition += (info.moveDist + collidable::COLLISION_BUFFER) * info.normal;;
+	}
+#ifdef DEBUG
+	std::cerr << "Warning: Max debug attempts (" << collidable::COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.\n";
+#endif
+	return false; // May not be resolved.
 }
 
 bool Collidable::onCollision(CollisionInfo & info){

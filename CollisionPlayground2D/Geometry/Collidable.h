@@ -4,15 +4,26 @@
 
 #include "../Units.h"
 #include "Polygon.h"
+#include "SAT.h"
 
 class CollisionMap;
 
+namespace collidable {
+	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
+	// Acts as if making the polygon slightly larger.
+	const units::Coordinate COLLISION_BUFFER = 0.001f;
+	// Number of attempts to resolve a situation where shapes are already overlapping.
+	const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+}
+
 class Collidable {
 public:
-	enum CollisionType {
+	enum class CollisionType {
+		NONE,       // Collisions are ignored (noclip), or there was no collision.
 		DEFLECTION, // Collisions result in deflection along edges.
 		REVERSE,    // Collisions result in reversing direction.
-		REFLECT     // Collisions result in reflecting/bouncing off edges.
+		REFLECT,    // Collisions result in reflecting/bouncing off edges.
+		_DEBUG_     // There is an error that must be resolved (the shapes are overlapping).
 	};
 
 	struct CollisionInfo {
@@ -28,7 +39,7 @@ public:
 			isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
 			moveDist(0), currentPosition(position), normal(0,0) {}
 	};
-	Collidable() : type(DEFLECTION) {}
+	Collidable() : type(CollisionType::DEFLECTION) {}
 	Collidable(CollisionType type) : type(type) {}
 	virtual ~Collidable() = 0;
 
@@ -47,9 +58,12 @@ protected:
 
 private:
 	// Find the nearest collision from a list of polygons.
-	void find_closest_collision(const Polygon& collider, const CollisionMap& collisionMap, CollisionInfo& info) const;
-
-	void move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
+	sat::HybridResult _find_closest_collision(const CollisionMap& collisionMap, CollisionInfo& info) const;
+	// Algorithm for deflecting-type collisions.
+	void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
+	// Attempt to fix currently-overlaping collisions.
+	// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
+	bool _debug_collision(CollisionInfo& info, const CollisionMap& collisionMap);
 };
 
 #endif //_COLLIDABLE_H

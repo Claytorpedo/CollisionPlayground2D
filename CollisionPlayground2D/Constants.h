@@ -10,7 +10,7 @@ namespace constants {
 
 	const units::MS         SECOND_MILLIS = 1000;
 	const units::MS         MAX_FRAME_TIME = 50; // The maximum lengh one frame of gameplay can last in MS.
-	const units::Coordinate EPSILON = 0.00001f;  // Float equality tolerance.
+	const units::Coordinate EPSILON = 0.000001f; // Float equality tolerance.
 	const units::Pixel      TILE_SIZE = 16;
 
 	const units::Fraction   PI  = 3.141592653589793238f;

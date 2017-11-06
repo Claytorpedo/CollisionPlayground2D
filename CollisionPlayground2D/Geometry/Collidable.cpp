@@ -101,7 +101,7 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 		if (info.remainingDist < constants::EPSILON || info.normal.isZero())
 			return;
 		// Find the projection of the remaining distance along the original direction on the deflection vector.
-		// Get the vector to project along by rotating clockwise.
+		// Get the vector to project along by rotating 90 degrees (direction doesn't matter).
 		const units::Coordinate2D projDir(info.normal.perpCW());
 		// Project using the original delta direction, to avoid "bouncing" off of corners.
 		const units::Coordinate2D projection(info.originalDir.project(projDir, info.remainingDist));

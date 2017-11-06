@@ -76,7 +76,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Geometry\Collidable.cpp" />
-    <ClCompile Include="Geometry\CollisionMath.cpp" />
     <ClCompile Include="Geometry\IntersectionMath.cpp" />
     <ClInclude Include="Geometry\Collidable.h" />
     <ClInclude Include="Geometry\CollisionMap.h" />
@@ -93,7 +92,6 @@
   <ItemGroup>
     <ClInclude Include="Constants.h" />
     <ClInclude Include="Direction.h" />
-    <ClInclude Include="Geometry\CollisionMath.h" />
     <ClInclude Include="Geometry\LineSegment.h" />
     <ClInclude Include="Geometry\Polygon.h" />
     <ClInclude Include="Geometry\Ray.h" />

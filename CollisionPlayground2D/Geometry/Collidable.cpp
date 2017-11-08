@@ -42,10 +42,7 @@ sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collis
 		info.moveDist = info.remainingDist;
 		return sat::HybridResult::NONE;
 	}
-	// Get the buffer amount to maintain to avoid moving to a collision state.
-	// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
-	const units::Coordinate pushout = collidable::COLLISION_BUFFER / info.normal.dot(info.currentDir);
-	info.moveDist = (info.remainingDist * interval) + pushout; // Add instead of subtract to negate.
+	info.moveDist = (info.remainingDist * interval) - collidable::getPushoutDistance(info.currentDir, info.normal);
 	if (info.moveDist < 0)
 		info.moveDist = 0;
 	return sat::HybridResult::SWEEP;
@@ -124,7 +121,7 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 #ifdef DEBUG
 		++depth;
 		if (depth >= 10)
-			std::cout << "Recursion depth: " << depth << " movedist: " << info.moveDist << std::endl;
+			std::cout << "Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist << "\n";
 #endif
 	}
 }

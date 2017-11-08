@@ -8,15 +8,13 @@
 
 class CollisionMap;
 
-namespace mover {
-	const units::Velocity     MAX_SPEED =          0.3f;
-	const units::Velocity     MAX_DIAGONAL_SPEED = MAX_SPEED * (units::Velocity)std::sin(constants::PI / 4.0f);
-	const units::Acceleration ACCELERATION       = 0.0025f;
-	const units::Acceleration DECELERATION       = 0.004f;
-}
-
 class Mover : public Collidable {
 public:
+	static const units::Velocity     MAX_SPEED;
+	static const units::Velocity     MAX_DIAGONAL_SPEED;
+	static const units::Acceleration ACCELERATION;
+	static const units::Acceleration DECELERATION;
+
 	Mover() {}
 	Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider);
 	Mover(units::Coordinate2D position, Polygon collider);

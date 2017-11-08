@@ -9,6 +9,9 @@
 #include "SAT.h"
 #include "CollisionMap.h"
 
+const units::Coordinate Collidable::COLLISION_BUFFER = 0.001f;
+const unsigned int Collidable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+
 Collidable::~Collidable() {}
 
 sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
@@ -42,7 +45,7 @@ sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collis
 		info.moveDist = info.remainingDist;
 		return sat::HybridResult::NONE;
 	}
-	info.moveDist = (info.remainingDist * interval) - collidable::getPushoutDistance(info.currentDir, info.normal);
+	info.moveDist = (info.remainingDist * interval) - getPushoutDistance(info.currentDir, info.normal);
 	if (info.moveDist < 0)
 		info.moveDist = 0;
 	return sat::HybridResult::SWEEP;
@@ -130,8 +133,8 @@ bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& colli
 #ifdef DEBUG
 	std::cerr << "Debugging MTV collision...\n";
 #endif
-	info.currentPosition += (info.moveDist + collidable::COLLISION_BUFFER) * info.normal;
-	for (std::size_t i = 1; i < collidable::COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
+	info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
+	for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
 		std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition);
 		info.isCollision = false;
 		for (std::size_t k = 0; k < objs.size(); ++k) {
@@ -146,10 +149,10 @@ bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& colli
 #endif
 			return true; // Situation resolved. No longer overlapping anything.
 		}
-		info.currentPosition += (info.moveDist + collidable::COLLISION_BUFFER) * info.normal;;
+		info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;;
 	}
 #ifdef DEBUG
-	std::cerr << "Warning: Max debug attempts (" << collidable::COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.\n";
+	std::cerr << "Warning: Max debug attempts (" << COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.\n";
 #endif
 	return false; // May not be resolved.
 }

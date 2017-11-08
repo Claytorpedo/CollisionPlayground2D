@@ -10,12 +10,6 @@ class Rectangle;
 
 // Convex polygon with counterclockwise winding.
 
-namespace polygon {
-	// Used when determining if two vectors are perpendicular.
-	// We don't normalize the vectors, so scale is a factor.
-	const units::Coordinate EPSILON_DEGREE_TOLERANCE = 0.00001f;
-}
-
 class Polygon : public Shape {
 private:
 	std::vector<units::Coordinate2D> vertices_, edge_normals_;
@@ -24,6 +18,10 @@ private:
 	// Find the bounding box for the polygon and cache the values.
 	void _find_bounds();
 public:
+	// Used when determining if two vectors are perpendicular.
+	// We don't normalize the vectors, so scale is a factor.
+	static const units::Coordinate EPSILON_DEGREE_TOLERANCE;
+
 	Polygon();
 	// Vertices should be in counterclockwise order.
 	// The final vertex connects with the first vertex.

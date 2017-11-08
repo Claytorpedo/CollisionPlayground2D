@@ -14,15 +14,18 @@
 #include "Direction.h"
 #include "Geometry/Shape.h"
 
+const Uint8 Room::HEIGHT = 12 * 4;
+const Uint8 Room::WIDTH = 20 * 4;
+
 Room::Room() {
-	for (Uint8 r = 0; r < room::height; ++r) {
+	for (Uint8 r = 0; r < HEIGHT; ++r) {
 		std::vector<Rectangle> row;
-		for (Uint8 c = 0; c < room::width; ++c) {
+		for (Uint8 c = 0; c < WIDTH; ++c) {
 			Rectangle rect(util::tileToCoord(c), util::tileToCoord(r), util::tileToCoord(1), util::tileToCoord(1));
 			row.push_back(rect);
 		}
 		background_tiles_.push_back(row);
-		is_marked_.push_back(std::vector<bool>(room::width));
+		is_marked_.push_back(std::vector<bool>(WIDTH));
 	}
 }
 Room::~Room() {}

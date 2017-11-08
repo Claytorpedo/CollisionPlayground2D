@@ -6,6 +6,8 @@
 #include <cmath>
 #include <algorithm>
 
+const units::Coordinate Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;
+
 Polygon::Polygon() : vertices_(), x_min_(), x_max_(), y_min_(), y_max_() {}
 Polygon::Polygon(std::vector<units::Coordinate2D> vertices) : vertices_(vertices), edge_normals_(vertices.size(), units::Coordinate2D(0,0)), x_min_(), x_max_(), y_min_(), y_max_() {
 	_find_bounds();
@@ -129,7 +131,7 @@ namespace {
 	// Check what kind of angle the minimum angle between two vectors is.
 	inline AngleResult _check_min_angle(const units::Coordinate2D& vec1, const units::Coordinate2D& vec2) {
 		const units::Coordinate dot = vec1.dot(vec2);
-		if (std::abs(dot) <= polygon::EPSILON_DEGREE_TOLERANCE)
+		if (std::abs(dot) <= Polygon::EPSILON_DEGREE_TOLERANCE)
 			return PERPENDICULAR;
 		if (dot > 0)
 			return ACUTE;

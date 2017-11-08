@@ -8,22 +8,19 @@
 
 class CollisionMap;
 
-namespace collidable {
+class Collidable {
+public:
 	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
 	// Acts as if making the polygon slightly larger.
-	const units::Coordinate COLLISION_BUFFER = 0.001f;
+	static const units::Coordinate COLLISION_BUFFER;
 	// Number of attempts to resolve a situation where shapes are already overlapping.
-	const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+	static const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS;
 
 	// Get the buffer amount to maintain to avoid moving to a collision state.
-	inline units::Coordinate getPushoutDistance(const units::Coordinate2D& travelDir, const units::Coordinate2D& collisionNormal) {
+	static inline units::Coordinate getPushoutDistance(const units::Coordinate2D& travelDir, const units::Coordinate2D& collisionNormal) {
 		// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
 		return -(COLLISION_BUFFER / collisionNormal.dot(travelDir));
 	}
-}
-
-class Collidable {
-public:
 	enum class CollisionType {
 		NONE,       // Collisions are ignored (noclip), or there was no collision.
 		DEFLECTION, // Collisions result in deflection along edges.

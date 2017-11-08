@@ -4,6 +4,11 @@
 #include "Geometry/CollisionMap.h"
 #include "Util.h"
 
+const units::Velocity     Mover::MAX_SPEED = 0.3f;
+const units::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (units::Velocity)std::sin(constants::PI / 4.0f);
+const units::Acceleration Mover::ACCELERATION = 0.0025f;
+const units::Acceleration Mover::DECELERATION = 0.004f;
+
 Mover::Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider) : Collidable(type), position_(position), collider_(collider) {
 	collider_.computeNormals();
 }
@@ -12,7 +17,7 @@ Mover::Mover(units::Coordinate2D position, Polygon collider) : position_(positio
 }
 
 void Mover::update(const units::MS elapsedTime, const CollisionMap& polys) {
-	const units::Velocity maxSpeed = (!util::almostZero(acceleration_.x) && !util::almostZero(acceleration_.y)) ? mover::MAX_DIAGONAL_SPEED : mover::MAX_SPEED;
+	const units::Velocity maxSpeed = (!util::almostZero(acceleration_.x) && !util::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
 	update_position(elapsedTime, maxSpeed, polys);
 }
 
@@ -22,12 +27,12 @@ void Mover::update_position(const units::MS elapsedTime, const units::Velocity m
 	velocity_.y = util::clamp(velocity_.y, -maxSpeed, maxSpeed);
 	if (acceleration_.x == 0 && velocity_.x != 0) {
 		const bool isPos(velocity_.x > 0);
-		velocity_.x += (isPos ? -1.0f : 1.0f) * mover::DECELERATION * elapsedTime;
+		velocity_.x += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
 		velocity_.x = isPos ? (velocity_.x < 0 ? 0.0f : velocity_.x) : (velocity_.x > 0 ? 0.0f : velocity_.x);
 	}
 	if (acceleration_.y == 0 && velocity_.y != 0) {
 		const bool isPos(velocity_.y > 0);
-		velocity_.y += (isPos ? -1.0f : 1.0f) * mover::DECELERATION * elapsedTime;
+		velocity_.y += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
 		velocity_.y = isPos ? (velocity_.y < 0 ? 0.0f : velocity_.y) : (velocity_.y > 0 ? 0.0f : velocity_.y);
 	}
 	const units::Coordinate2D delta(velocity_*(units::Coordinate)(elapsedTime));
@@ -42,10 +47,10 @@ Polygon Mover::getCollider() const {
 	return Polygon::translate(collider_, position_);
 }
 
-void Mover::moveLeft()  { acceleration_.x = -mover::ACCELERATION; }
-void Mover::moveRight() { acceleration_.x =  mover::ACCELERATION; }
-void Mover::moveUp()    { acceleration_.y = -mover::ACCELERATION; }
-void Mover::moveDown()  { acceleration_.y =  mover::ACCELERATION; }
+void Mover::moveLeft()  { acceleration_.x = -ACCELERATION; }
+void Mover::moveRight() { acceleration_.x =  ACCELERATION; }
+void Mover::moveUp()    { acceleration_.y = -ACCELERATION; }
+void Mover::moveDown()  { acceleration_.y =  ACCELERATION; }
 void Mover::stopMovingHorizontal() { acceleration_.x = 0.0f; }
 void Mover::stopMovingVertical()   { acceleration_.y = 0.0f; }
 void Mover::stopMoving()           { acceleration_ = units::Acceleration2D(0, 0); }

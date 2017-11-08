@@ -17,6 +17,8 @@ public:
 	static const units::Coordinate WEDGE_MOVE_THRESH;
 	// Number of attempts to resolve a situation where shapes are already overlapping.
 	static const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS;
+	// How many loops the collision algorithm can perform before stopping.
+	static const unsigned int COLLISION_ALG_MAX_DEPTH;
 
 	// Get the buffer amount to maintain to avoid moving to a collision state.
 	static inline units::Coordinate getPushoutDistance(const units::Coordinate2D& travelDir, const units::Coordinate2D& collisionNormal) {

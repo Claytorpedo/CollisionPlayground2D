@@ -12,6 +12,7 @@
 const units::Coordinate Collidable::COLLISION_BUFFER  = 0.001f;
 const units::Coordinate Collidable::WEDGE_MOVE_THRESH = 0.0001f;
 const unsigned int      Collidable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+const unsigned int      Collidable::COLLISION_ALG_MAX_DEPTH = 25;
 
 Collidable::~Collidable() {}
 
@@ -81,14 +82,12 @@ units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Po
 }
 
 void Collidable::_move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
-#ifdef DEBUG
-	int depth = 0;
-#endif
+	unsigned int depth = 0;
 	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
 	// deflection angle relative to the original direction.
 	// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 	units::Coordinate prevAngle = 0;
-	while (true) {
+	while (depth < COLLISION_ALG_MAX_DEPTH) {
 		if (_find_closest_collision(collisionMap, info) == sat::HybridResult::MTV) {
 			_debug_collision(info, collisionMap);
 			return;
@@ -122,9 +121,9 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 				return;
 		}
 		prevAngle = currAngle;
-#ifdef DEBUG
 		++depth;
-		if (depth >= 10)
+#ifdef DEBUG
+		if (depth >= 5)
 			std::cout << "Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist << "\n";
 #endif
 	}

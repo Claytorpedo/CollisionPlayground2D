@@ -13,6 +13,8 @@ public:
 	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
 	// Acts as if making the polygon slightly larger.
 	static const units::Coordinate COLLISION_BUFFER;
+	// Minimum movement to consider when looking to see if the collider is stuck in a wedge (if moving more than this, considered not stuck).
+	static const units::Coordinate WEDGE_MOVE_THRESH;
 	// Number of attempts to resolve a situation where shapes are already overlapping.
 	static const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS;
 

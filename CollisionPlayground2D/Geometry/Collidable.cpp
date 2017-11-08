@@ -9,8 +9,9 @@
 #include "SAT.h"
 #include "CollisionMap.h"
 
-const units::Coordinate Collidable::COLLISION_BUFFER = 0.001f;
-const unsigned int Collidable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+const units::Coordinate Collidable::COLLISION_BUFFER  = 0.001f;
+const units::Coordinate Collidable::WEDGE_MOVE_THRESH = 0.0001f;
+const unsigned int      Collidable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
 
 Collidable::~Collidable() {}
 
@@ -111,7 +112,7 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 		info.currentDir = projection / info.remainingDist;
 
 		units::Coordinate currAngle = 0; // 0 == 90 degrees == an impossible angle of deflection/collidable has stopped.
-		if (info.moveDist < constants::EPSILON * 10) {
+		if (info.moveDist < WEDGE_MOVE_THRESH) {
 			// Get signed angle of deflection relative to the original direction.
 			const units::Coordinate dot(info.originalDir.dot(info.currentDir));
 			currAngle = info.originalDir.cross(info.currentDir) < 0 ? -dot : dot;

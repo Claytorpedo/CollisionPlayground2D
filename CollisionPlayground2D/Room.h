@@ -11,9 +11,6 @@ class Shape;
 class Graphics;
 
 class Room {
-private: 
-	std::vector< std::vector<Rectangle> > background_tiles_; 
-	std::vector< std::vector<bool> > is_marked_;
 public:
 	static const Uint8 HEIGHT;
 	static const Uint8 WIDTH;
@@ -29,6 +26,9 @@ public:
 
 	// Render the viewable portion of the level to the screen.
 	void draw(Graphics& graphics);
+private:
+	std::vector< std::vector<Rectangle> > background_tiles_;
+	std::vector< std::vector<bool> > is_marked_;
 };
 
 #endif // _ROOM_H

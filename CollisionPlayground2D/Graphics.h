@@ -8,9 +8,6 @@
 #include "Units.h"
 
 class Graphics {
-private:
-	SDL_Window* window_;
-	SDL_Renderer* renderer_;
 public:
 	Graphics();
 	~Graphics();
@@ -30,6 +27,10 @@ public:
 
 	void clear();
 	void present();
+
+private:
+	SDL_Window* window_;
+	SDL_Renderer* renderer_;
 };
 
 

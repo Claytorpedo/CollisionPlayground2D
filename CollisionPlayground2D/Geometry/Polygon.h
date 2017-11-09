@@ -11,12 +11,6 @@ class Rectangle;
 // Convex polygon with counterclockwise winding.
 
 class Polygon : public Shape {
-private:
-	std::vector<units::Coordinate2D> vertices_, edge_normals_;
-	units::Coordinate x_min_, x_max_, y_min_, y_max_;
-	
-	// Find the bounding box for the polygon and cache the values.
-	void _find_bounds();
 public:
 	// Used when determining if two vectors are perpendicular.
 	// We don't normalize the vectors, so scale is a factor.
@@ -96,6 +90,13 @@ public:
 	inline std::size_t size() const { return vertices_.size(); }
 	// Check if the polygon has any vertices.
 	inline bool isEmpty() const { return vertices_.empty(); }
+
+private:
+	std::vector<units::Coordinate2D> vertices_, edge_normals_;
+	units::Coordinate x_min_, x_max_, y_min_, y_max_;
+
+	// Find the bounding box for the polygon and cache the values.
+	void _find_bounds();
 };
 
 #endif //_POLYGON_H

@@ -11,24 +11,11 @@
 
 using namespace units;
 
-namespace { // Some shapes we'll use.
-	const std::vector<Coordinate2D> rightTri = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
-	const std::vector<Coordinate2D> edgeTri = { Coordinate2D(0,0), Coordinate2D(0,1), Coordinate2D(1,1) };
-	const std::vector<Coordinate2D> tri = { Coordinate2D(-1, -2), Coordinate2D(1, 0), Coordinate2D(3, -1) };
-	const std::vector<Coordinate2D> edgetri = { Coordinate2D(-1, -2), Coordinate2D(-1, 0), Coordinate2D(1, 0) }; // shares edge with tri
-	const std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-	                                            Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-	const std::vector<Coordinate2D> smallOct = { Coordinate2D(0,0.5f), Coordinate2D(0.2f,0.8f), Coordinate2D(0.5f,1), Coordinate2D(0.8f,0.8f),
-	                                             Coordinate2D(1,0.5f), Coordinate2D(0.8f,0.2f), Coordinate2D(0.5f,0), Coordinate2D(0.2f,0.2f) };
-	// An arbitrary polygon.
-	const std::vector<Coordinate2D> arb = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
-}
-
 SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 	GIVEN("A triangle.") {
-		Polygon p(rightTri);
+		Polygon p(shapes::rightTri);
 		GIVEN("A second triangle.") {
-			Polygon o(tri);
+			Polygon o(shapes::tri);
 			THEN("They don't overlap until we move them together.") {
 				CHECK_FALSE(sat::performSAT(p, o));
 				o.translate(0, 1);
@@ -40,13 +27,13 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 			}
 		}
 		GIVEN("An identical triangle.") {
-			Polygon o(rightTri);
+			Polygon o(shapes::rightTri);
 			THEN("They overlap.")
 				CHECK(sat::performSAT(p, o));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coordinate2D> inside;
-			for (std::size_t i = 0; i < rightTri.size(); ++i) inside.push_back(rightTri[i] * 0.5f);
+			for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) inside.push_back(shapes::rightTri[i] * 0.5f);
 			Polygon o(inside);
 			THEN("They overlap.") {
 				CHECK(sat::performSAT(p, o));
@@ -55,7 +42,7 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
-			Polygon o(edgeTri);
+			Polygon o(shapes::edgeTriR);
 			CHECK_FALSE(sat::performSAT(p, o));
 		}
 	}
@@ -70,7 +57,7 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 		CHECK(sat::performSAT(q, r));
 	}
 	GIVEN("A triangle and a rectangle.") {
-		Polygon p(edgeTri);
+		Polygon p(shapes::edgeTriR);
 		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
 		CHECK(sat::performSAT(p, o));
 		o.translate(1, 0);
@@ -88,8 +75,8 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 	}
 	GIVEN("Convex polygons.") {
 		GIVEN("An octagon and an arbitrary convex polygon.") {
-			Polygon p(arb);
-			Polygon o(octagon);
+			Polygon p(shapes::arb);
+			Polygon o(shapes::octagon);
 			WHEN("They have a lot of overlap.") {
 				THEN("They overlap.")
 					CHECK(sat::performSAT(p, o));
@@ -136,9 +123,9 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 			}
 		}
 		GIVEN("An octagon and a smaller octagon.") {
-			Polygon p(octagon);
+			Polygon p(shapes::octagon);
 			std::vector<Coordinate2D> inside;
-			for (std::size_t i = 0; i < octagon.size(); ++i) inside.push_back(octagon[i] * 0.5f); // Half-size octagon.
+			for (std::size_t i = 0; i < shapes::octagon.size(); ++i) inside.push_back(shapes::octagon[i] * 0.5f); // Half-size octagon.
 			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				THEN("They overlap.")
@@ -155,10 +142,10 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 
 SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]") {
 	GIVEN("A triangle.") {
-		Polygon p(rightTri);
+		Polygon p(shapes::rightTri);
 		Coordinate2D pos1(0, 0);
 		GIVEN("A second triangle.") {
-			Polygon o(tri);
+			Polygon o(shapes::tri);
 			Coordinate2D pos2(0, 0);
 			THEN("They don't overlap until we move them together.") {
 				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
@@ -171,14 +158,14 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			}
 		}
 		GIVEN("An identical triangle.") {
-			Polygon o(rightTri);
+			Polygon o(shapes::rightTri);
 			Coordinate2D pos2(0, 0);
 			THEN("They overlap.")
 				CHECK(sat::performSAT(p, pos1, o, pos2));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coordinate2D> inside;
-			for (std::size_t i = 0; i < rightTri.size(); ++i) inside.push_back(rightTri[i] * 0.5f);
+			for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) inside.push_back(shapes::rightTri[i] * 0.5f);
 			Polygon o(inside);
 			Coordinate2D pos2(0, 0);
 			THEN("They overlap.") {
@@ -188,7 +175,7 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
-			Polygon o(edgeTri);
+			Polygon o(shapes::edgeTriR);
 			Coordinate2D pos2(0, 0);
 			CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
 		}
@@ -206,7 +193,7 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 		CHECK(sat::performSAT(q, posQ, r, posR));
 	}
 	GIVEN("A triangle and a rectangle.") {
-		Polygon p(edgeTri);
+		Polygon p(shapes::edgeTriR);
 		Coordinate2D pos1(0, 0);
 		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
 		Coordinate2D pos2(0, 0);
@@ -229,9 +216,9 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 	}
 	GIVEN("Convex polygons.") {
 		GIVEN("An octagon and an arbitrary convex polygon.") {
-			Polygon p(arb);
+			Polygon p(shapes::arb);
 			Coordinate2D pos1(0, 0);
-			Polygon o(octagon);
+			Polygon o(shapes::octagon);
 			WHEN("They have a lot of overlap.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They overlap.")
@@ -279,10 +266,10 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			}
 		}
 		GIVEN("An octagon and a smaller octagon.") {
-			Polygon p(octagon);
+			Polygon p(shapes::octagon);
 			Coordinate2D pos1(0, 0);
 			std::vector<Coordinate2D> inside;
-			for (std::size_t i = 0; i < octagon.size(); ++i) inside.push_back(octagon[i] * 0.5f); // Half-size octagon.
+			for (std::size_t i = 0; i < shapes::octagon.size(); ++i) inside.push_back(shapes::octagon[i] * 0.5f); // Half-size octagon.
 			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				Coordinate2D pos2(0, 0);
@@ -301,7 +288,7 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum translation vector).", "[poly][SAT]") {
 	GIVEN("The polygon to be moved is a rectangle, and the stationary one is a triangle.") {
 		Polygon p(Rectangle(0, 0, 1, 1).toPoly());
-		Polygon o(rightTri);
+		Polygon o(shapes::rightTri);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
@@ -347,7 +334,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 	}
 	GIVEN("A large rectangle, and a smaller triangle.") {
 		Polygon p(Rectangle(0, 0, 100, 100).toPoly());
-		Polygon o(rightTri);
+		Polygon o(shapes::rightTri);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
@@ -442,9 +429,9 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		}
 	}
 	GIVEN("A smaller triangle and a larger triangle.") {
-		Polygon p(rightTri);
+		Polygon p(shapes::rightTri);
 		std::vector<Coordinate2D> large;
-		for (std::size_t i = 0; i < rightTri.size(); ++i) large.push_back(rightTri[i] * 100.0f);
+		for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) large.push_back(shapes::rightTri[i] * 100.0f);
 		Polygon o(large);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;
@@ -470,8 +457,8 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		}
 	}
 	GIVEN("An octagon and arbitrary convex polygon.") {
-		Polygon p(octagon);
-		Polygon o(arb);
+		Polygon p(shapes::octagon);
+		Polygon o(shapes::arb);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;
 		WHEN("They octagon overlaps the arbitrary polygon's left side.") {
@@ -517,11 +504,11 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 	Fraction out_t;
 	Coordinate2D out_norm;
 	GIVEN("The polygons will collide vertex to vertex.") {
-		Polygon collider(rightTri);
+		Polygon collider(shapes::rightTri);
 		// What normal to use is not particularily clear with these cases. Should the collider stop, or deflect off a side?
 		WHEN("The collider moves towards a polygon it is already touching.") {
 			GIVEN("The stationary polygon is a triangle.") {
-				Polygon stationary(tri);
+				Polygon stationary(shapes::tri);
 				THEN("It should collide immediately and not move at all.") {
 					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(0, -10), stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 					REQUIRE(out_t == ApproxEps(0));
@@ -537,7 +524,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 		}
 		WHEN("The collider moves towards a distant polygon.") {
 			GIVEN("The stationary polygon is an octagon.") {
-				Polygon stationary = Polygon(octagon);
+				Polygon stationary = Polygon(shapes::octagon);
 				Coordinate2D stationaryPos(10, 0);
 				THEN("The collider should move the distance between them.") {
 					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(10, 0), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
@@ -545,7 +532,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				}
 			}
 			GIVEN("The stationary polygon is a triangle.") {
-				Polygon stationary = Polygon(tri);
+				Polygon stationary = Polygon(shapes::tri);
 				Coordinate2D stationaryPos(3, -4);
 				THEN("The collider should move the distance between them.") {
 					REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(6, -8), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
@@ -555,10 +542,10 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 		}
 	}
 	GIVEN("The polygons will collide vertex to edge.") {
-		Polygon collider(rightTri);
+		Polygon collider(shapes::rightTri);
 		WHEN("The collider moves towards a polygon it is already touching.") {
 			GIVEN("A vertex on the collider is moving into a edge of a triangle immediately above and to the right of it.") {
-				Polygon stationary(tri);
+				Polygon stationary(shapes::tri);
 				Coordinate2D stationaryPos(1, 1);
 				Coordinate2D expected_norm((stationary[1] - stationary[0]).perpCCW().normalize());
 				WHEN("Moving up into the triangle.") {
@@ -637,7 +624,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				}
 			}
 			GIVEN("The stationary polygon is a triangle above and to the right of the collider.") {
-				Polygon stationary(tri);
+				Polygon stationary(shapes::tri);
 				Coordinate2D stationaryPos(4, -3);
 				WHEN("Moving up-right into a triangle.") {
 					Coordinate2D expected_norm((stationary[1] - stationary[0]).perpCCW().normalize());
@@ -653,10 +640,10 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 		}
 	}
 	GIVEN("The polygons will collide edge to vertex.") {
-		Polygon collider(rightTri);
+		Polygon collider(shapes::rightTri);
 		WHEN("The collider moves towards a polygon it is already touching.") {
 			GIVEN("An edge on the collider is moving into a vertex of a triangle immediately above and to the left of it.") {
-				Polygon stationary(tri);
+				Polygon stationary(shapes::tri);
 				Coordinate2D stationaryPos(-2.5f, 1.5f);
 				Coordinate2D expected_norm((collider[1] - collider[0]).perpCW().normalize());
 				WHEN("Moving left into the triangle.") {
@@ -688,7 +675,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				}
 			}
 			GIVEN("An edge on the collider is moving into a vertex of an octagon immediately to the right of it.") {
-				Polygon stationary(octagon);
+				Polygon stationary(shapes::octagon);
 				Coordinate2D stationaryPos(3, 0.5f);
 				Coordinate2D expected_norm((collider[2] - collider[1]).perpCW().normalize());
 				WHEN("Moving right into the octagon.") {
@@ -722,7 +709,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 		}
 		WHEN("The collider moves towards a distant polygon.") {
 			GIVEN("The stationary polygon is a triangle down and to the left of the collider.") {
-				Polygon stationary(tri);
+				Polygon stationary(shapes::tri);
 				Coordinate2D stationaryPos(-5.5f, 5.5f);
 				WHEN("Moving down-left into a triangle.") {
 					Coordinate2D expected_norm((collider[1] - collider[0]).perpCW().normalize());
@@ -740,7 +727,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 	GIVEN("The polygons will collide edge to edge.") {
 		WHEN("The collider moves towards a polygon it is already touching.") {
 			GIVEN("An edge on the collider is moving into an edge of a rectangle immediately to the right of it.") {
-				Polygon collider(rightTri);
+				Polygon collider(shapes::rightTri);
 				Polygon stationary(Rectangle(1, 0, 1, 1).toPoly());
 				Coordinate2D expected_norm((stationary[1] - stationary[0]).perpCCW().normalize());
 				WHEN("Moving right into the edge.") {
@@ -772,8 +759,8 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				}
 			}
 			GIVEN("An edge on the collider is moving into a triangle with a matching edge immediately down and to the left of it.") {
-				Polygon collider(tri);
-				Polygon stationary(edgetri);
+				Polygon collider(shapes::tri);
+				Polygon stationary(shapes::edgeTri);
 				Coordinate2D expected_norm((stationary[0] - stationary[2]).perpCCW().normalize());
 				WHEN("Moving left into the edge.") {
 					Coordinate2D delta(-10, 0);
@@ -806,7 +793,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 		}
 		WHEN("The collider moves towards a distant polygon.") {
 			GIVEN("The stationary polygon is a rectangle to the right of the collider.") {
-				Polygon collider(rightTri);
+				Polygon collider(shapes::rightTri);
 				Polygon stationary(Rectangle(5, 0, 1, 10).toPoly());
 				Coordinate2D expected_norm((stationary[1] - stationary[0]).perpCCW().normalize());
 				WHEN("Moving right into the edge.") {
@@ -829,8 +816,8 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				}
 			}
 			GIVEN("The stationary polygon is a triangle down and to the left of the collider.") {
-				Polygon collider(tri);
-				Polygon stationary(edgetri);
+				Polygon collider(shapes::tri);
+				Polygon stationary(shapes::edgeTri);
 				Coordinate2D stationaryPos(-4, 3);
 				Coordinate2D expected_norm((stationary[0] - stationary[2]).perpCCW().normalize());
 				WHEN("Moving down-left into the triangle.") {
@@ -862,8 +849,8 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 	}
 	GIVEN("Both the collider and stationary polygon are given a position.") {
 		GIVEN("The collider is a triangle, and the stationary polygon an octagon.") {
-			Polygon collider(rightTri);
-			Polygon stationary(octagon);
+			Polygon collider(shapes::rightTri);
+			Polygon stationary(shapes::octagon);
 			WHEN("They are touching and the collider moves into the ocatagon.") {
 				Coordinate2D colliderPos(-2, -0.25f), stationaryPos(1, 0.25f);
 				Coordinate2D delta(10, 0);
@@ -939,8 +926,8 @@ SCENARIO("Two polygons are currently overlapping, detected with hybrid SAT.", "[
 		}
 	}
 	GIVEN("An arbitrary polygon and an octagon.") {
-		Polygon collider(arb);
-		Polygon stationary(octagon);
+		Polygon collider(shapes::arb);
+		Polygon stationary(shapes::octagon);
 		WHEN("They have significant overlap.") {
 			Coordinate2D colliderPos(-1.5f, -3), stationaryPos(0, 0);
 			Coordinate2D expected_norm(0, -1);
@@ -972,8 +959,8 @@ SCENARIO("Two polygons are currently overlapping, detected with hybrid SAT.", "[
 SCENARIO("Two polygons are separated and will not collide, detected with hybrid SAT.", "[poly][SAT][hybridSAT]") {
 	Fraction out_t;
 	Coordinate2D out_norm;
-	Polygon collider(tri);
-	Polygon stationary(edgetri);
+	Polygon collider(shapes::tri);
+	Polygon stationary(shapes::edgeTri);
 	GIVEN("Two touching polygons.") {
 		Coordinate2D colliderPos(0, 0), stationaryPos(0, 0);
 		WHEN("They move away from each other.") {
@@ -1035,8 +1022,8 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 	Fraction out_t;
 	Coordinate2D out_norm;
 	GIVEN("Two touching polygons.") {
-		Polygon p1(tri);
-		Polygon p2(edgetri);
+		Polygon p1(shapes::tri);
+		Polygon p2(shapes::edgeTri);
 		Coordinate2D pos1(0, 0), pos2(0, 0);
 		Coordinate2D expected_norm((p2[0] - p2[2]).perpCCW().normalize());
 		WHEN("They move away from each other.") {
@@ -1089,7 +1076,7 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 		}
 	}
 	GIVEN("Two polygons a distance apart.") {
-		Polygon p1(octagon), p2(Rectangle(0, 0, 1, 1).toPoly());
+		Polygon p1(shapes::octagon), p2(Rectangle(0, 0, 1, 1).toPoly());
 		Coordinate2D pos1(0, 0), pos2(10, -0.5f);
 		WHEN("They move towards each other.") {
 			Coordinate2D expected_norm(-1, 0);

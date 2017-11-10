@@ -11,16 +11,10 @@
 
 using namespace units;
 
-namespace {
-	const std::vector<Coordinate2D> octagon = { Coordinate2D(0,2), Coordinate2D(1.5f,1.5f), Coordinate2D(2,0), Coordinate2D(1.5f,-1.5f),
-	                                            Coordinate2D(0,-2), Coordinate2D(-1.5f,-1.5f), Coordinate2D(-2,0), Coordinate2D(-1.5f,1.5f) };
-	const std::vector<Coordinate2D> triangle = { Coordinate2D(0,0), Coordinate2D(1, 1), Coordinate2D(2, 0) };
-}
-
 SCENARIO("Translate a polygon.", "[poly]") {
 	GIVEN("An octogon.") {
-		Polygon oct(octagon);
-		std::vector<Coordinate2D> points(octagon);
+		Polygon oct(shapes::octagon);
+		std::vector<Coordinate2D> points(shapes::octagon);
 		THEN("Its bounding box is created from the min/max x and y coordinates.") {
 			CHECK(oct.left()   == -2);
 			CHECK(oct.right()  ==  2);
@@ -115,7 +109,7 @@ SCENARIO("Finding the points to extend a polygon from in a given direction.", "[
 		}
 	}
 	GIVEN("An octagon.") {
-		Polygon oct(octagon);
+		Polygon oct(shapes::octagon);
 		WHEN("Extending down.") {
 			oct.findExtendRange(Coordinate2D(0, 1), first, last, should_dupe_first, should_dupe_last);
 			CHECK(first == 6);
@@ -231,8 +225,8 @@ std::vector<Coordinate2D> _get_normals(std::vector<Coordinate2D> extendSet) {
 
 SCENARIO("A polygon computes its normals." "[poly]") {
 	GIVEN("An octogon.") {
-		Polygon oct(octagon);
-		std::vector<Coordinate2D> normals(_get_normals(octagon));
+		Polygon oct(shapes::octagon);
+		std::vector<Coordinate2D> normals(_get_normals(shapes::octagon));
 		WHEN("We pre-compute the normals.") {
 			oct.computeNormals();
 			THEN("All of the edge normals are computed for a counter-clockwise wound polygon.") {
@@ -280,7 +274,7 @@ SCENARIO("A polygon is expanded.", "[poly") {
 		}
 	}
 	GIVEN("An octagon.") {
-		Polygon p(octagon);
+		Polygon p(shapes::octagon);
 		WHEN("It is expanded 3 units larger.") {
 			units::Coordinate amt = 3;
 			p.expand(amt);
@@ -288,10 +282,10 @@ SCENARIO("A polygon is expanded.", "[poly") {
 			units::Coordinate2D right(5,0);
 			units::Coordinate2D top(0,-5);
 			units::Coordinate2D bottom(0,5);
-			units::Coordinate2D bottomLeft( octagon[7] + units::Coordinate2D(-1, 1).normalize() * amt);
-			units::Coordinate2D bottomRight(octagon[1] + units::Coordinate2D( 1, 1).normalize() * amt);
-			units::Coordinate2D topRight(   octagon[3] + units::Coordinate2D( 1,-1).normalize() * amt);
-			units::Coordinate2D topLeft(    octagon[5] + units::Coordinate2D(-1,-1).normalize() * amt);
+			units::Coordinate2D bottomLeft( shapes::octagon[7] + units::Coordinate2D(-1, 1).normalize() * amt);
+			units::Coordinate2D bottomRight(shapes::octagon[1] + units::Coordinate2D( 1, 1).normalize() * amt);
+			units::Coordinate2D topRight(   shapes::octagon[3] + units::Coordinate2D( 1,-1).normalize() * amt);
+			units::Coordinate2D topLeft(    shapes::octagon[5] + units::Coordinate2D(-1,-1).normalize() * amt);
 			THEN("It becomes 3 units larger on all sides by its vertices.") {
 				CHECK(p.left() == ApproxEps(-5));
 				CHECK(p.right() == ApproxEps(5));
@@ -320,7 +314,7 @@ SCENARIO("A polygon is expanded.", "[poly") {
 
 SCENARIO("Extending a polygon.", "[poly]") {
 	GIVEN("A triangle.") {
-		Polygon tri(triangle);
+		Polygon tri(shapes::isoTri);
 		tri.computeNormals();
 		WHEN("Extended downwards.") {
 			Polygon t = tri.extend(Coordinate2D(0, 1), 5);
@@ -355,7 +349,7 @@ SCENARIO("Extending a polygon.", "[poly]") {
 		}
 	}
 	GIVEN("An octagon.") {
-		Polygon oct(octagon);
+		Polygon oct(shapes::octagon);
 		oct.computeNormals();
 		WHEN("Extended downwards.") {
 			Polygon t = oct.extend(Coordinate2D(0, 1), 5);
@@ -398,7 +392,7 @@ SCENARIO("Extending a polygon.", "[poly]") {
 
 SCENARIO("A polygon is clip-extended: extended in a direction, and only the extended part is kept.", "[poly]") {
 	GIVEN("A triangle.") {
-		Polygon tri(triangle);
+		Polygon tri(shapes::isoTri);
 		tri.computeNormals();
 		WHEN("Clip-extended downwards.") {
 			Polygon t = tri.clipExtend(Coordinate2D(0, 1), 5);
@@ -433,7 +427,7 @@ SCENARIO("A polygon is clip-extended: extended in a direction, and only the exte
 		}
 	}
 	GIVEN("An octagon.") {
-		Polygon oct(octagon);
+		Polygon oct(shapes::octagon);
 		oct.computeNormals();
 		WHEN("Clip-extneded downwards.") {
 			Polygon t = oct.clipExtend(Coordinate2D(0, 1), 5);

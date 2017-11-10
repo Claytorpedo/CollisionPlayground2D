@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "definitions.h"
 
 #include <vector>
 
@@ -460,91 +461,91 @@ TEST_CASE("Line segment intersections with coordinate of intersection output.", 
 			LineSegment s1(0, 0, 0, 0);
 			LineSegment s2(0, 0, 0, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(0));
 			s2 = LineSegment(0, 0, 1, 1);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(0));
 		}
 		SECTION("Diagonal line segments.") {
 			LineSegment s1(1, 1, 0, 0);
 			LineSegment s2(1, 1, 0, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(1).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(1).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(1));
+			CHECK(out_p.y == ApproxEps(1));
 			s2 = LineSegment(0, 0, 1, 1);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(1).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(1).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(1));
+			CHECK(out_p.y == ApproxEps(1));
 			s1 = LineSegment(-1, -1, 0, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(0));
 			s1 = LineSegment(0, 1, 1, 0);
 			REQUIRE(isect::intersects(s1, s2, out_p));
-			CHECK(out_p.x == Approx(0.5f).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(0.5f).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0.5f));
+			CHECK(out_p.y == ApproxEps(0.5f));
 		}
 		SECTION("Horizontal and vertical line segments.") {
 			LineSegment v(0, -10, 0, 10);
 			LineSegment s(0, -10, 0, 10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(-10));
 			s = LineSegment(0, 10, 0, 20);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(10));
 			s = LineSegment(0, -10, 0, -20);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(-10));
 			s = LineSegment(-50, -10, 0, -10);
 			REQUIRE(isect::intersects(v, s));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(-10));
 			s = LineSegment(-50, -10, 50, -10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(-10));
 			s = LineSegment(-50, 10, 0, 10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(10));
 			s = LineSegment(-50, 10, 50, 10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(10));
 			s = LineSegment(-50, 5, 0, 5);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(5).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(5));
 			s = LineSegment(-50, 5, 50, 5);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(5).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(5));
 			s = LineSegment(-10, 10, 10, -10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(0));
+			CHECK(out_p.y == ApproxEps(0));
 			v = LineSegment(30.5f, 20, 30.5f, 10); // v is now horizontal.
 			s = LineSegment(30.5f, 9, 30.5f, 11);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(30.5f).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(11).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(30.5f));
+			CHECK(out_p.y == ApproxEps(11));
 			s = LineSegment(30.5f, 10, 30.5f, 20);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(30.5f).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(20).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(30.5f));
+			CHECK(out_p.y == ApproxEps(20));
 			s = LineSegment(30.5f, -10, 30.5f, 20);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(30.5f).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(20).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(30.5f));
+			CHECK(out_p.y == ApproxEps(20));
 			s = LineSegment(0, 20, 40, 10);
 			REQUIRE(isect::intersects(v, s, out_p));
-			CHECK(out_p.x == Approx(30.5f).margin(constants::EPSILON));
-			CHECK(out_p.y == Approx(12.375f).margin(constants::EPSILON));
+			CHECK(out_p.x == ApproxEps(30.5f));
+			CHECK(out_p.y == ApproxEps(12.375f));
 		}
 	}
 	SECTION("Non-intersecting line segments.") {
@@ -609,12 +610,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 2).normalize());
 		LineSegment s(1, 2, 1, 2);
 		REQUIRE(isect::intersects(r, s, out_p));
-		CHECK(out_p.x == Approx(1).margin(constants::EPSILON));
-		CHECK(out_p.y == Approx(2).margin(constants::EPSILON));
+		CHECK(out_p.x == ApproxEps(1));
+		CHECK(out_p.y == ApproxEps(2));
 		s = LineSegment(0, 0, 0, 0);
 		REQUIRE(isect::intersects(r, s, out_p));
-		CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-		CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+		CHECK(out_p.x == ApproxEps(0));
+		CHECK(out_p.y == ApproxEps(0));
 		s = LineSegment(1, 1.5f, 1, 1.5f);
 		CHECK_FALSE(isect::intersects(r, s, out_p));
 	}
@@ -624,18 +625,18 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
 				LineSegment s(0, 0, -1, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(-0.1f, 0, -10, 0);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(5, 0, 1, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(1).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(1));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(50, 0, 100, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(50).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(50));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(50, 0.1f, 100, 0.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -643,12 +644,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(-10, 10), Coordinate2D(-1, 0).normalize());
 				LineSegment s(10, 10, -100, 10);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(10));
 				s = LineSegment(-100, 10, -1000, 10);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-100).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-100));
+				CHECK(out_p.y == ApproxEps(10));
 				s = LineSegment(-100, 10.1f, -1000, 10.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -658,18 +659,18 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
 				LineSegment s(0, 0, 0, 1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(0, -0.1f, -10, 0);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(0, 5, 0, 1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(1).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(1));
 				s = LineSegment(0, 50, 0, 100);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(50).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(50));
 				s = LineSegment(0.1f, 50, 0.1f, 100);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -677,12 +678,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(10, -10), Coordinate2D(0, -1).normalize());
 				LineSegment s(10, 10, 10, -100);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(10, -100, 10, -1000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-100).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(10));
+				CHECK(out_p.y == ApproxEps(-100));
 				s = LineSegment(10.1f, -100, 10.1f, -1000);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -692,18 +693,18 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
 				LineSegment s(0, 0, -1, -1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(-0.1f, -0.1f, -10, -10);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(5, 5, 1, 1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(1).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(1).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(1));
+				CHECK(out_p.y == ApproxEps(1));
 				s = LineSegment(50, 50, 100, 100);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(50).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(50).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(50));
+				CHECK(out_p.y == ApproxEps(50));
 				s = LineSegment(50.1f, 50, 100.1f, 100);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -711,12 +712,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(10, 10), Coordinate2D(-1, 2).normalize());
 				LineSegment s(15, 0, 0, 30);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(10));
+				CHECK(out_p.y == ApproxEps(10));
 				s = LineSegment(0, 30, -35, 100);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(30).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(30));
 				s = LineSegment(0.1f, 30, -34.9, 100);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -728,32 +729,32 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
 				LineSegment s(0, 0, 0, -1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(0, 10, 0, -10);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(-0.1f, 10, -0.1f, 10);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(1000, 10, 1000, -10);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(1000).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));;
+				CHECK(out_p.x == ApproxEps(1000));
+				CHECK(out_p.y == ApproxEps(0));;
 			}
 			SECTION("Leftwards ray not from origin.") {
 				Ray r = Ray(Coordinate2D(-10, -10), Coordinate2D(-1, 0).normalize());
 				LineSegment s = LineSegment(-10, -10, -10, 10);
 				Coordinate2D out_p;
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(-9.9f, -10, -9.9f, 10);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(-1000, 10, -1000, -20);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-1000).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-1000));
+				CHECK(out_p.y == ApproxEps(-10));
 			}
 		}
 		SECTION("Vertical ray.") {
@@ -761,31 +762,31 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
 				LineSegment s(0, 0, -1, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(10, 0, -10, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(10, -0.1f, 10, -0.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(10, 1000, -10, 1000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(1000).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(1000));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coordinate2D(-10, -10), Coordinate2D(0, -1).normalize());
 				LineSegment s(10, -10, -10, -10);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(10, -9.9f, -10, -9.9f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(10, -1000, -10, -1000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-1000).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(-1000));
 			}
 		}
 		SECTION("Diagonal ray.") {
@@ -793,33 +794,33 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
 				LineSegment s(0, 0, -5, 5);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(5, -5, -5, 5);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(5, -5, 0.1f, -0.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(-5, 4.9f, 5, 5.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(0, 1000, 1000, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(500).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(500).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(500));
+				CHECK(out_p.y == ApproxEps(500));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coordinate2D(-10, 10), Coordinate2D(1, -2).normalize());
 				LineSegment s(-10, -5, 0, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-4).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-2).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-4));
+				CHECK(out_p.y == ApproxEps(-2));
 				s = LineSegment(-20, 5.1f, 0, 15.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(0, -2000, 4000, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(796).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-1602).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(796));
+				CHECK(out_p.y == ApproxEps(-1602));
 			}
 		}
 	}
@@ -829,16 +830,16 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 0).normalize());
 				LineSegment s(0, -1, 1000, 1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(500).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(500));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(1000, 1, 0, -1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(500).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(500));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(0, -4000, 1, 4000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0.5f).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0.5f));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(-2, -4000, 1, 4000);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -846,12 +847,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(10, -10), Coordinate2D(-1, 0).normalize());
 				LineSegment s(0, 20, -20, -40);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(-65, 140, 15, -20);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(-64.9f, 140, 15.1f, -20);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -861,16 +862,16 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(0, 1).normalize());
 				LineSegment s(-1, 0, 1, 1000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(500).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(500));
 				s = LineSegment(1, 1000, -1, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(500).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(500));
 				s = LineSegment(-4000, 0, 4000, 1);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0.5f).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0.5f));
 				s = LineSegment(-4000, -2, 4000, 1);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -878,12 +879,12 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(10, -10), Coordinate2D(-1, 0).normalize());
 				LineSegment s(20, 0, -40, -20);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(100, -85, -20, 15);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(10).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-10).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(10));
+				CHECK(out_p.y == ApproxEps(-10));
 				s = LineSegment(140, -64.9f, -20, 15.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
@@ -893,33 +894,33 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
 				LineSegment s(-10, 0, 10, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(0).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(0).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(0));
+				CHECK(out_p.y == ApproxEps(0));
 				s = LineSegment(800, 0, 800, 1000);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(800).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(800).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(800));
+				CHECK(out_p.y == ApproxEps(800));
 				s = LineSegment(-0.1f, -10, -0.1f, -10);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(-20, 50, 20, 50.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(10, 100, 100, 55);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(70).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(70).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(70));
+				CHECK(out_p.y == ApproxEps(70));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coordinate2D(-10, 10), Coordinate2D(1, -2).normalize());
 				LineSegment s(-10, -5, 0, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(-4).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-2).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(-4));
+				CHECK(out_p.y == ApproxEps(-2));
 				s = LineSegment(-20, 5.1f, 0, 15.1f);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 				s = LineSegment(0, -2000, 4000, 0);
 				REQUIRE(isect::intersects(r, s, out_p));
-				CHECK(out_p.x == Approx(796).margin(constants::EPSILON));
-				CHECK(out_p.y == Approx(-1602).margin(constants::EPSILON));
+				CHECK(out_p.x == ApproxEps(796));
+				CHECK(out_p.y == ApproxEps(-1602));
 			}
 		}
 	}

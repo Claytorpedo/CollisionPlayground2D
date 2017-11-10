@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "definitions.h"
 
 #include <vector>
 
@@ -22,8 +23,6 @@ namespace { // Some shapes we'll use.
 	// An arbitrary polygon.
 	const std::vector<Coordinate2D> arb = { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
 }
-
-#define ApproxEps(x) Approx(x).margin(constants::EPSILON)
 
 SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 	GIVEN("A triangle.") {

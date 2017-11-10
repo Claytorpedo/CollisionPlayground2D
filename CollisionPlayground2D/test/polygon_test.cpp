@@ -1,4 +1,5 @@
 #include "catch.hpp"
+#include "definitions.h"
 
 #include <vector>
 
@@ -227,8 +228,6 @@ std::vector<Coordinate2D> _get_normals(std::vector<Coordinate2D> extendSet) {
 	}
 	return normals;
 }
-
-#define ApproxEps(x) Approx(x).margin(constants::EPSILON)
 
 SCENARIO("A polygon computes its normals." "[poly]") {
 	GIVEN("An octogon.") {

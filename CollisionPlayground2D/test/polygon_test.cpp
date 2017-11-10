@@ -30,16 +30,16 @@ SCENARIO("Translate a polygon.", "[poly]") {
 				CHECK(oct.bottom() ==  2);
 				for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(5, 0);
 				for (std::size_t i = 0; i < oct.size(); ++i) {
-					CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
-					CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+					CHECK(oct[i].x == ApproxEps(points[i].x));
+					CHECK(oct[i].y == ApproxEps(points[i].y));
 				}
 				AND_WHEN("The polygon is now translated 5 units down.") {
 					oct.translate(0, 5);
 					THEN("Its boundinb box and all its points are also translated 5 units down.") {
 						for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(0, 5);
 						for (std::size_t i = 0; i < oct.size(); ++i) {
-							CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
-							CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+							CHECK(oct[i].x == ApproxEps(points[i].x));
+							CHECK(oct[i].y == ApproxEps(points[i].y));
 						}
 						CHECK(oct.left()   == 3);
 						CHECK(oct.right()  == 7);
@@ -54,8 +54,8 @@ SCENARIO("Translate a polygon.", "[poly]") {
 			THEN("Its bounding box and all its points are translated diagonally by the same amount.") {
 				for (std::size_t i = 0; i < points.size(); ++i) points[i] += Coordinate2D(-10.5f, -12.5f);
 				for (std::size_t i = 0; i < oct.size(); ++i) {
-					CHECK(oct[i].x == Approx(points[i].x).margin(constants::EPSILON));
-					CHECK(oct[i].y == Approx(points[i].y).margin(constants::EPSILON));
+					CHECK(oct[i].x == ApproxEps(points[i].x));
+					CHECK(oct[i].y == ApproxEps(points[i].y));
 				}
 				CHECK(oct.left()   == -12.5f);
 				CHECK(oct.right()  == -8.5f);

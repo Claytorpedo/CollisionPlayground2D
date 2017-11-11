@@ -792,6 +792,20 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 			}
 		}
 		WHEN("The collider moves towards a distant polygon.") {
+			GIVEN("The stationary polygon is a rectangle below and to the left of the collider.") {
+				Polygon collider(Rectangle(0, 0, 1, 1).toPoly());
+				Polygon stationary(Rectangle(-2, 2, 1, 2).toPoly());
+				WHEN("The collider moves down-left.") {
+					Coordinate2D delta(-10, 10);
+					Coordinate2D expected_norm(1, 0);
+					THEN("The collider should move the distance between them.") {
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, Coordinate2D(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
+						CHECK(out_norm.x == ApproxEps(expected_norm.x));
+						CHECK(out_norm.y == ApproxEps(expected_norm.y));
+						REQUIRE(out_t == ApproxEps(0.1f));
+					}
+				}
+			}
 			GIVEN("The stationary polygon is a rectangle to the right of the collider.") {
 				Polygon collider(shapes::rightTri);
 				Polygon stationary(Rectangle(5, 0, 1, 10).toPoly());
@@ -823,7 +837,7 @@ SCENARIO("One polygon is moving to collide with a stationary one, detected with 
 				WHEN("Moving down-left into the triangle.") {
 					Coordinate2D delta(-8, 6);
 					THEN("The collider should move the distance between them.") {
-						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), Coordinate2D(-8, 6), stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
+						REQUIRE(sat::performHybridSAT(collider, Coordinate2D(0, 0), delta, stationary, stationaryPos, out_norm, out_t) == sat::HybridResult::SWEEP);
 						CHECK(out_norm.x == ApproxEps(expected_norm.x));
 						CHECK(out_norm.y == ApproxEps(expected_norm.y));
 						REQUIRE(out_t == ApproxEps(0.5f));

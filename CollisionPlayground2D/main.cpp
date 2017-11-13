@@ -53,7 +53,7 @@ void showFPS(Graphics& graphics, const units::MS elapsedTime) {
 
 // ----------------------------- Drawing polygons -------------------------------------
 
-void drawPoly(Polygon& p, Graphics& graphics) {
+void drawPoly(const Polygon& p, Graphics& graphics) {
 	const size_t size = p.size();
 	// Draw the lines of the polygon.
 	for (std::size_t i = 0; i < size - 1; ++i) {
@@ -67,7 +67,7 @@ void drawPoly(Polygon& p, Graphics& graphics) {
 		graphics.renderCircle(util::coord2DToSDLPoint(p[i]), 1);
 	}
 }
-void drawPolyEdgeNormals(Polygon& p, Graphics& graphics) {
+void drawPolyEdgeNormals(const Polygon& p, Graphics& graphics) {
 	graphics.setRenderColour(0, 0, 255);
 	const size_t size = p.size();
 	for (std::size_t i = 0; i < size; ++i) {
@@ -184,7 +184,8 @@ int main (int argc, char* args[]) {
 		mover.update(elapsedTime, objs);
 
 		graphics.clear();
-		Polygon collider = mover.getCollider();
+		Polygon collider(*(static_cast<const Polygon* const>(mover.getCollider())));
+		collider.translate(mover.getPosition());
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 #ifdef DEBUG
 			isect::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);

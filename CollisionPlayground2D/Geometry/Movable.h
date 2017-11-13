@@ -3,12 +3,13 @@
 #define _MOVABLE_H
 
 #include "../Units.h"
+#include "Collidable.h"
 #include "Polygon.h"
 #include "SAT.h"
 
 class CollisionMap;
 
-class Movable {
+class Movable : public Collidable {
 public:
 	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
 	// Acts as if making the polygon slightly larger.

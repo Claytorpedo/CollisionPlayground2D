@@ -43,8 +43,12 @@ void Mover::setPosition(units::Coordinate2D position) {
 	position_ = position;
 }
 
-Polygon Mover::getCollider() const {
-	return Polygon::translate(collider_, position_);
+const units::Coordinate2D& Mover::getPosition() const {
+	return position_;
+}
+
+const Shape* const Mover::getCollider() const {
+	return &collider_;
 }
 
 void Mover::moveLeft()  { acceleration_.x = -ACCELERATION; }

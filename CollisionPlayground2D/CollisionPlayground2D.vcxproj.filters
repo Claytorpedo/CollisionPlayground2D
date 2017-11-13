@@ -104,5 +104,8 @@
     <ClInclude Include="Geometry\Movable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Geometry\Collidable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

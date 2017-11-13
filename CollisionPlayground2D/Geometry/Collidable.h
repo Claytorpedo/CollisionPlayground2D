@@ -26,7 +26,7 @@ public:
 		return -(COLLISION_BUFFER / collisionNormal.dot(travelDir));
 	}
 	enum class CollisionType {
-		NONE,       // Collisions are ignored (noclip), or there was no collision.
+		NONE,       // Collisions are ignored (noclip).
 		DEFLECTION, // Collisions result in deflection along edges.
 		REVERSE,    // Collisions result in reversing direction.
 		REFLECT,    // Collisions result in reflecting/bouncing off edges.

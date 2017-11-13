@@ -36,13 +36,13 @@
     <ClCompile Include="Geometry\IntersectionMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry\Collidable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Mover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Geometry\SAT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry\Movable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,9 +89,6 @@
     <ClInclude Include="Geometry\IntersectionMath.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry\Collidable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Mover.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,6 +96,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\SAT.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\DebugLogger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Movable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

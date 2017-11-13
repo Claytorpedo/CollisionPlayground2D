@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 
+#include "DebugLogger.h"
 #include "../Units.h"
 #include "Shape.h"
 #include "Polygon.h"
@@ -124,15 +125,13 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 		++depth;
 #ifdef DEBUG
 		if (depth >= 5)
-			std::cout << "Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist << "\n";
+			DBG_LOG("Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 #endif
 	}
 }
 
 bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
-#ifdef DEBUG
-	std::cerr << "Debugging MTV collision...\n";
-#endif
+	DBG_LOG("Debugging MTV collision...");
 	info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
 	for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
 		std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition);
@@ -144,16 +143,12 @@ bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& colli
 			}
 		}
 		if (!info.isCollision) {
-#ifdef DEBUG
-			std::cerr << "MTV collision resolved (in " << i << " attempts).\n";
-#endif
+			DBG_LOG("MTV collision resolved (in " << i << " attempts).");
 			return true; // Situation resolved. No longer overlapping anything.
 		}
 		info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;;
 	}
-#ifdef DEBUG
-	std::cerr << "Warning: Max debug attempts (" << COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.\n";
-#endif
+	DBG_WARN("Max debug attempts (" << COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.");
 	return false; // May not be resolved.
 }
 

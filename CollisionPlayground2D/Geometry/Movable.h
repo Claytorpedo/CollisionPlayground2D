@@ -8,7 +8,7 @@
 
 class CollisionMap;
 
-class Collidable {
+class Movable {
 public:
 	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
 	// Acts as if making the polygon slightly larger.
@@ -46,9 +46,9 @@ public:
 			isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
 			moveDist(0), currentPosition(position), normal(0,0) {}
 	};
-	Collidable() : type(CollisionType::DEFLECTION) {}
-	Collidable(CollisionType type) : type(type) {}
-	virtual ~Collidable() = 0;
+	Movable() : type(CollisionType::DEFLECTION) {}
+	Movable(CollisionType type) : type(type) {}
+	virtual ~Movable() = 0;
 
 	// Takes the collidable's origin, its bounding shape, the delta it is moving in, and the objects it can collide with.
 	// Calls onCollision when collisions occur, if any special action is to be taken.

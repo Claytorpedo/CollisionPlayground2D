@@ -1,4 +1,4 @@
-#include "Collidable.h"
+#include "Movable.h"
 
 #include <vector>
 #include <iostream>
@@ -10,14 +10,14 @@
 #include "SAT.h"
 #include "CollisionMap.h"
 
-const units::Coordinate Collidable::COLLISION_BUFFER  = 0.001f;
-const units::Coordinate Collidable::WEDGE_MOVE_THRESH = 0.0001f;
-const unsigned int      Collidable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
-const unsigned int      Collidable::COLLISION_ALG_MAX_DEPTH = 25;
+const units::Coordinate Movable::COLLISION_BUFFER  = 0.001f;
+const units::Coordinate Movable::WEDGE_MOVE_THRESH = 0.0001f;
+const unsigned int      Movable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+const unsigned int      Movable::COLLISION_ALG_MAX_DEPTH = 25;
 
-Collidable::~Collidable() {}
+Movable::~Movable() {}
 
-sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collisionMap, Collidable::CollisionInfo& info) const {
+sat::HybridResult Movable::_find_closest_collision(const CollisionMap& collisionMap, Movable::CollisionInfo& info) const {
 	units::Coordinate2D testNorm;
 	units::Fraction interval(1.0f), testInterval;
 	info.isCollision = false;
@@ -54,7 +54,7 @@ sat::HybridResult Collidable::_find_closest_collision(const CollisionMap& collis
 	return sat::HybridResult::SWEEP;
 }
 
-units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Polygon& collider,
+units::Coordinate2D Movable::move(const units::Coordinate2D& origin, const Polygon& collider,
 	                                 const units::Coordinate2D& delta, const CollisionMap& collisionMap) {
 	const units::Coordinate originalDist = delta.magnitude();
 	CollisionInfo info(&collider, origin, delta/originalDist, originalDist);
@@ -82,7 +82,7 @@ units::Coordinate2D Collidable::move(const units::Coordinate2D& origin, const Po
 	return info.currentPosition;
 }
 
-void Collidable::_move_deflection(Collidable::CollisionInfo& info, const CollisionMap& collisionMap) {
+void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
 	unsigned int depth = 0;
 	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
 	// deflection angle relative to the original direction.
@@ -111,7 +111,7 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 			return;
 		info.currentDir = projection / info.remainingDist;
 
-		units::Coordinate currAngle = 0; // 0 == 90 degrees == an impossible angle of deflection/collidable has stopped.
+		units::Coordinate currAngle = 0; // 0 == 90 degrees == an impossible angle of deflection/Movable has stopped.
 		if (info.moveDist < WEDGE_MOVE_THRESH) {
 			// Get signed angle of deflection relative to the original direction.
 			const units::Coordinate dot(info.originalDir.dot(info.currentDir));
@@ -130,7 +130,7 @@ void Collidable::_move_deflection(Collidable::CollisionInfo& info, const Collisi
 	}
 }
 
-bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
+bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
 	DBG_LOG("Debugging MTV collision...");
 	info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
 	for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
@@ -152,6 +152,6 @@ bool Collidable::_debug_collision(CollisionInfo& info, const CollisionMap& colli
 	return false; // May not be resolved.
 }
 
-bool Collidable::onCollision(CollisionInfo & info){
+bool Movable::onCollision(CollisionInfo & info){
 	return true;
 }

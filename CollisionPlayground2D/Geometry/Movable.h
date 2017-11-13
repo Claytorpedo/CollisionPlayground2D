@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _COLLIDABLE_H
-#define _COLLIDABLE_H
+#ifndef _MOVABLE_H
+#define _MOVABLE_H
 
 #include "../Units.h"
 #include "Polygon.h"
@@ -73,4 +73,4 @@ private:
 	bool _debug_collision(CollisionInfo& info, const CollisionMap& collisionMap);
 };
 
-#endif //_COLLIDABLE_H
+#endif //_MOVABLE_H

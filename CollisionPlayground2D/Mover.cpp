@@ -9,7 +9,7 @@ const units::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (units:
 const units::Acceleration Mover::ACCELERATION = 0.0025f;
 const units::Acceleration Mover::DECELERATION = 0.004f;
 
-Mover::Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider) : Collidable(type), position_(position), collider_(collider) {
+Mover::Mover(Movable::CollisionType type, units::Coordinate2D position, Polygon collider) : Movable(type), position_(position), collider_(collider) {
 	collider_.computeNormals();
 }
 Mover::Mover(units::Coordinate2D position, Polygon collider) : position_(position), collider_(collider) {
@@ -36,7 +36,7 @@ void Mover::update_position(const units::MS elapsedTime, const units::Velocity m
 		velocity_.y = isPos ? (velocity_.y < 0 ? 0.0f : velocity_.y) : (velocity_.y > 0 ? 0.0f : velocity_.y);
 	}
 	const units::Coordinate2D delta(velocity_*(units::Coordinate)(elapsedTime));
-	position_ = Collidable::move(position_, collider_, delta, polys);
+	position_ = Movable::move(position_, collider_, delta, polys);
 }
 
 void Mover::setPosition(units::Coordinate2D position) {

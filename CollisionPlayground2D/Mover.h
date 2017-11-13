@@ -2,13 +2,13 @@
 #ifndef _MOVER_H
 #define _MOVER_H
 
-#include "Geometry/Collidable.h"
+#include "Geometry/Movable.h"
 #include "Geometry/Polygon.h"
 #include "Units.h"
 
 class CollisionMap;
 
-class Mover : public Collidable {
+class Mover : public Movable {
 public:
 	static const units::Velocity     MAX_SPEED;
 	static const units::Velocity     MAX_DIAGONAL_SPEED;
@@ -16,7 +16,7 @@ public:
 	static const units::Acceleration DECELERATION;
 
 	Mover() {}
-	Mover(Collidable::CollisionType type, units::Coordinate2D position, Polygon collider);
+	Mover(Movable::CollisionType type, units::Coordinate2D position, Polygon collider);
 	Mover(units::Coordinate2D position, Polygon collider);
 	~Mover() {}
 

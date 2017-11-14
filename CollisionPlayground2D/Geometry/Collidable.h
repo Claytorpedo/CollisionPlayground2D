@@ -9,9 +9,9 @@ class Rectangle;
 
 class Collidable {
 public:
-	virtual ~Collidable() = 0;
+	virtual ~Collidable() {}
 	virtual const units::Coordinate2D& getPosition() const = 0;
 	virtual const Shape* const getCollider() const = 0;
 };
 
-#endif _COLLIDABLE_H
+#endif //_COLLIDABLE_H

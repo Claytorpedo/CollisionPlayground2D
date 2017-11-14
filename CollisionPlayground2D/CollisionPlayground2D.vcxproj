@@ -97,6 +97,7 @@
     <ClInclude Include="Geometry\LineSegment.h" />
     <ClInclude Include="Geometry\DebugLogger.h" />
     <ClInclude Include="Geometry\Polygon.h" />
+    <ClInclude Include="Geometry\Projection.h" />
     <ClInclude Include="Geometry\Ray.h" />
     <ClInclude Include="Geometry\Rectangle.h" />
     <ClInclude Include="Geometry\SAT.h" />

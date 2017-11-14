@@ -15,8 +15,7 @@ class Rectangle;
 
 class Shape {
 public:
-	Shape(){}
-	~Shape(){}
+	virtual ~Shape(){}
 
 	// Get leftmost x coordinate.
 	virtual units::Coordinate left()   const = 0;

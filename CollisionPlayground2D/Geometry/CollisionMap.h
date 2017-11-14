@@ -4,22 +4,17 @@
 
 #include <vector>
 
-#include "Shape.h"
+#include "Collidable.h"
 #include "../Units.h"
 
 class CollisionMap {
 public:
-	CollisionMap() {}
-	~CollisionMap() {}
+	virtual ~CollisionMap() {}
 	// Given a collider and its delta, return a set of shapes it may collide with.
-	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& position, const units::Coordinate2D& delta) const = 0;
+	virtual const std::vector<Collidable*> getColliding(const Collidable& collider, const units::Coordinate2D& delta) const = 0;
 	// Given a collider, return a set of shapes it may overlap with.
-	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& position) const {
-		return getColliding(collider, position, units::Coordinate2D(0, 0));
-	}
-	// Given a collider, return a set of shapes it may overlap with.
-	virtual std::vector<Polygon> getColliding(const Shape& collider) const {
-		return getColliding(collider, units::Coordinate2D(0, 0), units::Coordinate2D(0, 0));
+	virtual const std::vector<Collidable*> getColliding(const Collidable& collider) const {
+		return getColliding(collider, units::Coordinate2D(0, 0));
 	}
 };
 

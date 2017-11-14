@@ -13,16 +13,32 @@
 #include "Geometry/Polygon.h"
 #include "Geometry/IntersectionMath.h"
 #include "Geometry/CollisionMap.h"
+#include "Geometry/Wall.h"
 
 // Extremely simple CollisionMap implementation: no data structure speedup at all.
 class SimpleCollisionMap : public CollisionMap {
 private:
-	std::vector<Polygon> polys_;
+	std::vector<Wall*> obstacles_;
 public:
-	SimpleCollisionMap(std::vector<Polygon> polys) : polys_(polys) {}
-	~SimpleCollisionMap() {}
-	virtual std::vector<Polygon> getColliding(const Shape& collider, const units::Coordinate2D& position, const units::Coordinate2D& delta) const {
-		return polys_;
+	SimpleCollisionMap(std::vector<Polygon> polys) {
+		add(polys);
+	}
+	~SimpleCollisionMap() {
+		clear();
+	}
+	virtual const std::vector<Collidable*> getColliding(const Collidable& collider, const units::Coordinate2D& delta) const {
+		return std::vector<Collidable*>(obstacles_.begin(), obstacles_.end());
+	}
+	void add(std::vector<Polygon> polys) {
+		for (std::size_t i = 0; i < polys.size(); ++i) {
+			Wall* w = new Wall(new Polygon(polys[i]));
+			obstacles_.push_back(w);
+		}
+	}
+	void clear() {
+		for (std::size_t i = 0; i < obstacles_.size(); ++i)
+			delete obstacles_[i];
+		obstacles_.clear();
 	}
 };
 
@@ -171,17 +187,17 @@ int main (int argc, char* args[]) {
 			mover.stopMovingVertical();
 		}
 		if (input.wasKeyPressed( Input::R ) ) {
-			for (std::size_t i = 0; i < numPolys; ++i) {
+			objs.clear();
+			for (std::size_t i = 0; i < numPolys; ++i)
 				polys[i] = Polygon::generate(twister, region);
-			}
 			mover = genMover(polys, twister, region);
-			objs = SimpleCollisionMap(polys);
+			objs.add(polys);
 		}
 		currentTime = SDL_GetTicks();
 		elapsedTime = currentTime - previousTime;
 		previousTime = currentTime;
 
-		mover.update(elapsedTime, objs);
+		mover.update(elapsedTime, &objs);
 
 		graphics.clear();
 		Polygon collider(*(static_cast<const Polygon* const>(mover.getCollider())));

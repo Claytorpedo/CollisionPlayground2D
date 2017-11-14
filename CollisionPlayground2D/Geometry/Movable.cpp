@@ -17,15 +17,15 @@ const unsigned int      Movable::COLLISION_ALG_MAX_DEPTH = 25;
 
 Movable::~Movable() {}
 
-sat::HybridResult Movable::_find_closest_collision(const CollisionMap& collisionMap, Movable::CollisionInfo& info) const {
+sat::HybridResult Movable::_find_closest_collision(const CollisionMap* const collisionMap, Movable::CollisionInfo& info) const {
 	units::Coordinate2D testNorm;
 	units::Fraction interval(1.0f), testInterval;
 	info.isCollision = false;
 	const units::Coordinate2D delta(info.currentDir * info.remainingDist);
-	std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition, delta);
+	std::vector<Collidable*> objs = collisionMap->getColliding(*this, delta);
 	sat::HybridResult result;
 	for (std::size_t i = 0; i < objs.size(); ++i) {
-		result = sat::performHybridSAT(*info.collider, info.currentPosition, delta, objs[i], units::Coordinate2D(0, 0), testNorm, testInterval);
+		result = sat::performHybridSAT(*info.collider, info.currentPosition, delta, *static_cast<const Polygon*>(objs[i]->getCollider()), objs[i]->getPosition(), testNorm, testInterval);
 		if (result == sat::HybridResult::SWEEP) {
 			info.isCollision = true;
 			if (interval > testInterval) {
@@ -55,7 +55,7 @@ sat::HybridResult Movable::_find_closest_collision(const CollisionMap& collision
 }
 
 units::Coordinate2D Movable::move(const units::Coordinate2D& origin, const Polygon& collider,
-	                                 const units::Coordinate2D& delta, const CollisionMap& collisionMap) {
+	                                 const units::Coordinate2D& delta, const CollisionMap* const collisionMap) {
 	const units::Coordinate originalDist = delta.magnitude();
 	CollisionInfo info(&collider, origin, delta/originalDist, originalDist);
 	if (delta.isZero())
@@ -82,7 +82,7 @@ units::Coordinate2D Movable::move(const units::Coordinate2D& origin, const Polyg
 	return info.currentPosition;
 }
 
-void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
+void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap* const collisionMap) {
 	unsigned int depth = 0;
 	// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
 	// deflection angle relative to the original direction.
@@ -130,14 +130,14 @@ void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap&
 	}
 }
 
-bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
+bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap) {
 	DBG_LOG("Debugging MTV collision...");
 	info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
 	for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
-		std::vector<Polygon> objs = collisionMap.getColliding(*info.collider, info.currentPosition);
+		std::vector<Collidable*> objs = collisionMap->getColliding(*this);
 		info.isCollision = false;
 		for (std::size_t k = 0; k < objs.size(); ++k) {
-			if (sat::performSAT(*info.collider, info.currentPosition, objs[k], units::Coordinate2D(0, 0), info.normal, info.moveDist)) {
+			if (sat::performSAT(*info.collider, info.currentPosition, *static_cast<const Polygon*>(objs[k]->getCollider()), objs[k]->getPosition(), info.normal, info.moveDist)) {
 				info.isCollision = true;
 				break;
 			}

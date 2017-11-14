@@ -20,7 +20,7 @@ public:
 	Mover(units::Coordinate2D position, Polygon collider);
 	~Mover() {}
 
-	void update(const units::MS elapsedTime, const CollisionMap& polys);
+	void update(const units::MS elapsedTime, const CollisionMap* const map);
 
 	void setPosition(const units::Coordinate2D position);
 
@@ -41,7 +41,7 @@ private:
 	units::Acceleration2D acceleration_;
 	units::Velocity2D velocity_;
 
-	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap& polys);
+	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap* const polys);
 };
 
 #endif // _MOVER_H

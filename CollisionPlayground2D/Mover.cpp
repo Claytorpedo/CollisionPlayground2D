@@ -16,12 +16,12 @@ Mover::Mover(units::Coordinate2D position, Polygon collider) : position_(positio
 	collider_.computeNormals();
 }
 
-void Mover::update(const units::MS elapsedTime, const CollisionMap& polys) {
+void Mover::update(const units::MS elapsedTime, const CollisionMap* const map) {
 	const units::Velocity maxSpeed = (!util::almostZero(acceleration_.x) && !util::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
-	update_position(elapsedTime, maxSpeed, polys);
+	update_position(elapsedTime, maxSpeed, map);
 }
 
-void Mover::update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap& polys) {
+void Mover::update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap* const map) {
 	velocity_ += acceleration_ * (units::Coordinate)(elapsedTime);
 	velocity_.x = util::clamp(velocity_.x, -maxSpeed, maxSpeed);
 	velocity_.y = util::clamp(velocity_.y, -maxSpeed, maxSpeed);
@@ -36,7 +36,7 @@ void Mover::update_position(const units::MS elapsedTime, const units::Velocity m
 		velocity_.y = isPos ? (velocity_.y < 0 ? 0.0f : velocity_.y) : (velocity_.y > 0 ? 0.0f : velocity_.y);
 	}
 	const units::Coordinate2D delta(velocity_*(units::Coordinate)(elapsedTime));
-	position_ = Movable::move(position_, collider_, delta, polys);
+	position_ = Movable::move(position_, collider_, delta, map);
 }
 
 void Mover::setPosition(units::Coordinate2D position) {

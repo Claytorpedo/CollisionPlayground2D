@@ -55,7 +55,7 @@ public:
 	// Calls onCollision when collisions occur, if any special action is to be taken.
 	// Returns the final position of the collider.
 	units::Coordinate2D move(const units::Coordinate2D& origin, const Polygon& collider,
-		                     const units::Coordinate2D& delta, const CollisionMap& collisionMap);
+		                     const units::Coordinate2D& delta, const CollisionMap* const collisionMap);
 protected:
 	CollisionType type;
 
@@ -66,12 +66,12 @@ protected:
 
 private:
 	// Find the nearest collision from a list of polygons.
-	sat::HybridResult _find_closest_collision(const CollisionMap& collisionMap, CollisionInfo& info) const;
+	sat::HybridResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
 	// Algorithm for deflecting-type collisions.
-	void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
+	void _move_deflection(CollisionInfo& info, const CollisionMap* const collisionMap);
 	// Attempt to fix currently-overlaping collisions.
 	// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
-	bool _debug_collision(CollisionInfo& info, const CollisionMap& collisionMap);
+	bool _debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap);
 };
 
 #endif //_MOVABLE_H

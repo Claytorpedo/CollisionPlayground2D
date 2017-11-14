@@ -84,6 +84,7 @@
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\SAT.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
+    <ClCompile Include="Geometry\Wall.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Mover.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Geometry\Rectangle.h" />
     <ClInclude Include="Geometry\SAT.h" />
     <ClInclude Include="Geometry\Shape.h" />
+    <ClInclude Include="Geometry\Wall.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Mover.h" />

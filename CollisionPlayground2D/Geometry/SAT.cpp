@@ -38,7 +38,7 @@ inline std::vector<units::Coordinate2D> _get_separating_axes(const Shape* const 
 	std::vector<units::Coordinate2D> axes;
 	if (_get_separating_axes(first, second, axes, true))
 		return axes;
-	_get_separating_axes(first, second, axes, false);
+	_get_separating_axes(second, first, axes, false);
 	return axes;
 }
 

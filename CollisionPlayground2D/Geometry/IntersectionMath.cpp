@@ -8,7 +8,6 @@
 #include "Ray.h"
 #include "Shape.h"
 #include "Rectangle.h"
-#include "Polygon.h"
 #include "SAT.h"
 
 namespace isect {
@@ -244,8 +243,8 @@ namespace isect {
 			   first.top()    < second.bottom() &&
 			   first.bottom() > second.top();
 	}
-	bool intersects(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos) {
-		if (!intersects(first.getAABB() + firstPos, second.getAABB() + secondPos)) // Bounds test for quick out.
+	bool intersects(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos) {
+		if (!intersects(first->getAABB() + firstPos, second->getAABB() + secondPos)) // Bounds test for quick out.
 			return false;
 		return sat::performSAT(first, firstPos, second, secondPos);
 	}

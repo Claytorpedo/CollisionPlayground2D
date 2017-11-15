@@ -120,7 +120,7 @@ Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangl
 	while(true) {
 		bool isOccupied = false;
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			if (isect::intersects(Polygon::translate(collider, position), polys[i])) {
+			if (isect::intersects(&Polygon::translate(collider, position), &polys[i])) {
 				isOccupied = true;
 				collider = Polygon::generate(twister, Rectangle());
 				position = units::Coordinate2D(distX(twister), distY(twister));
@@ -205,7 +205,7 @@ int main (int argc, char* args[]) {
 		collider.translate(mover.getPosition());
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 #ifdef DEBUG
-			isect::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+			isect::intersects(&collider, &polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
 			drawPoly(polys[i], graphics);
 #else
 			graphics.setRenderColour(0, 100, 255);

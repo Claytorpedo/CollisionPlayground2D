@@ -13,9 +13,9 @@ namespace sat {
 	// Test if two shapes overlap each other.
 	// Returns true if they overlap.
 	bool performSAT(const Shape* const first, const Shape* const second);
-	// Test if two convex polygons with given positions overlap each other.
+	// Test if two shapes with given positions overlap each other.
 	// Returns true if they overlap.
-	bool performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos);
+	bool performSAT(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos);
 	// Test if two convex polygons with given positions overlap each other.
 	// Gives the normal and distance that make up the minimum translation vector of separation to move the first polygon out of the second polygon.
 	// Returns true if they overlap.

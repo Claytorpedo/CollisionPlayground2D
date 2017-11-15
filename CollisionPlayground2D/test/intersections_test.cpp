@@ -12,7 +12,7 @@
 
 using namespace units;
 
-TEST_CASE("Rectangle and coordinate intersections.", "[rect][coord]") {
+TEST_CASE("Rectangle and coordinate intersections.", "[isect][rect][coord]") {
 	SECTION("A 0-sized rectangle is a coordinate, and should intersect with one.") {
 		Rectangle r(0, 0, 0, 0);
 		Coordinate2D c(0, 0);
@@ -84,7 +84,7 @@ TEST_CASE("Rectangle and coordinate intersections.", "[rect][coord]") {
 	}
 }
 
-TEST_CASE("Line segment and coordinate intersections.", "[lineseg][coord]") {
+TEST_CASE("Line segment and coordinate intersections.", "[isect][lineseg][coord]") {
 	SECTION("A 0-length line segment is a coordinate, and should intersect with one.") {
 		LineSegment s(0, 0, 0, 0);
 		Coordinate2D c(0, 0);
@@ -218,7 +218,7 @@ TEST_CASE("Line segment and coordinate intersections.", "[lineseg][coord]") {
 	}
 }
 
-TEST_CASE("Ray and coordinate intersections.", "[ray][coord]") {
+TEST_CASE("Ray and coordinate intersections.", "[isect][ray][coord]") {
 	SECTION("Coordinates on a diagonal ray.") {
 		SECTION("Diagonal ray from origin.") {
 			Ray r(Coordinate2D(0, 0), Coordinate2D(1, 1).normalize());
@@ -345,7 +345,7 @@ TEST_CASE("Ray and coordinate intersections.", "[ray][coord]") {
 	}
 }
 
-TEST_CASE("Line segment intersections.", "[lineseg]") {
+TEST_CASE("Line segment intersections.", "[isect][lineseg]") {
 	SECTION("Intersecting line segments.") {
 		SECTION("Zero-length line segments.") {
 			LineSegment s1(0, 0, 0, 0);
@@ -454,7 +454,7 @@ TEST_CASE("Line segment intersections.", "[lineseg]") {
 	}
 }
 
-TEST_CASE("Line segment intersections with coordinate of intersection output.", "[lineseg]") {
+TEST_CASE("Line segment intersections with coordinate of intersection output.", "[isect][lineseg]") {
 	Coordinate2D out_p;
 	SECTION("Intersecting line segments.") {
 		SECTION("Zero-length line segments.") {
@@ -604,7 +604,7 @@ TEST_CASE("Line segment intersections with coordinate of intersection output.", 
 	}
 }
 
-TEST_CASE("Ray and line segment intersections with coordinate of intersection output.", "[ray][lineseg]") {
+TEST_CASE("Ray and line segment intersections with coordinate of intersection output.", "[isect][ray][lineseg]") {
 	Coordinate2D out_p;
 	SECTION("Ray and a point.") {
 		Ray r(Coordinate2D(0, 0), Coordinate2D(1, 2).normalize());
@@ -718,7 +718,7 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 				REQUIRE(isect::intersects(r, s, out_p));
 				CHECK(out_p.x == ApproxEps(0));
 				CHECK(out_p.y == ApproxEps(30));
-				s = LineSegment(0.1f, 30, -34.9, 100);
+				s = LineSegment(0.1f, 30, -34.9f, 100);
 				CHECK_FALSE(isect::intersects(r, s, out_p));
 			}
 		}
@@ -926,7 +926,7 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 	}
 }
 
-TEST_CASE("Rectangle line segment intersections.", "[rect][lineseg]") {
+TEST_CASE("Rectangle line segment intersections.", "[isect][rect][lineseg]") {
 	Rectangle r(5, 5, 2, 2);
 	LineSegment s(5, 5, 5, 5);
 	CHECK(isect::intersects(r, s));
@@ -970,7 +970,7 @@ TEST_CASE("Rectangle line segment intersections.", "[rect][lineseg]") {
 	CHECK_FALSE(isect::intersects(r, s));
 }
 
-TEST_CASE("Rectangle intersections.", "[rect]") {
+TEST_CASE("Rectangle intersections.", "[isect][rect]") {
 	Rectangle r(0, 0, 1, 1);
 	Rectangle o(0, 0, 1, 1);
 	CHECK(isect::intersects(r, o));
@@ -994,7 +994,7 @@ TEST_CASE("Rectangle intersections.", "[rect]") {
 	CHECK(isect::intersects(r, o));
 }
 
-SCENARIO("Testing two shapes for intersection.", "[poly]") {
+SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 	GIVEN("A triangle.") {
 		std::vector<Coordinate2D> points = { Coordinate2D(0,0), Coordinate2D(1,1), Coordinate2D(1,0) };
 		Polygon p(shapes::rightTri);
@@ -1124,7 +1124,7 @@ SCENARIO("Testing two shapes for intersection.", "[poly]") {
 	}
 }
 
-SCENARIO("Testing two polygons for intersection with given positions.", "[poly]") {
+SCENARIO("Testing two shapes for intersection with given positions.", "[isect][shape]") {
 	GIVEN("A triangle.") {
 		Polygon p(shapes::rightTri);
 		Coordinate2D pos1(0, 0);
@@ -1132,20 +1132,20 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			Polygon o(shapes::tri);
 			Coordinate2D pos2(0, 0);
 			THEN("They don't intersect until we move them together.") {
-				CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+				CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(0, 1);
-				CHECK(isect::intersects(p, pos1, o, pos2));
+				CHECK(isect::intersects(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(1.9f, 2.5f);
-				CHECK(isect::intersects(p, pos1, o, pos2));
+				CHECK(isect::intersects(&p, pos1, &o, pos2));
 				pos1 = Coordinate2D(-0.1f, 0);
-				CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+				CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("An identical triangle.") {
 			Polygon o(shapes::rightTri);
 			Coordinate2D pos2(0, 0);
 			THEN("They intersect.")
-				CHECK(isect::intersects(p, pos1, o, pos2));
+				CHECK(isect::intersects(&p, pos1, &o, pos2));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coordinate2D> inside;
@@ -1153,15 +1153,15 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			Polygon o(inside);
 			Coordinate2D pos2(0, 0);
 			THEN("They intersect.") {
-				CHECK(isect::intersects(p, pos1, o, pos2));
+				CHECK(isect::intersects(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(0.5f, 0.5f);
-				CHECK(isect::intersects(p, pos1, o, pos2));
+				CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
 			Polygon o(shapes::edgeTri);
 			Coordinate2D pos2(0, 0);
-			CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+			CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 		}
 	}
 	GIVEN("Two large triangles.") {
@@ -1171,32 +1171,32 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 		std::vector<Coordinate2D> points2 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
 		Polygon r(points2);
 		Coordinate2D posR(0, 0);
-		CHECK_FALSE(isect::intersects(q, posQ, r, posR));
+		CHECK_FALSE(isect::intersects(&q, posQ, &r, posR));
 		std::vector<Coordinate2D> points3 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
 		r = Polygon(points3);
-		CHECK(isect::intersects(q, posQ, r, posR));
+		CHECK(isect::intersects(&q, posQ, &r, posR));
 	}
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
 		Coordinate2D pos1(0, 0);
-		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
+		Rectangle o(0, 0, 1, 1);
 		Coordinate2D pos2(0, 0);
-		CHECK(isect::intersects(p, pos1, o, pos2));
+		CHECK(isect::intersects(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, 0);
 		pos2 = Coordinate2D(1.5f, 0);
-		CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+		CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 		pos2 = Coordinate2D(1, 1);
-		CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+		CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 		pos2 = Coordinate2D(1, 0.9f);
-		CHECK(isect::intersects(p, pos1, o, pos2));
-		o = Rectangle(0, 0, 2, 2).toPoly();
+		CHECK(isect::intersects(&p, pos1, &o, pos2));
+		o = Rectangle(0, 0, 2, 2);
 		pos1 = Coordinate2D(0, 0);
 		pos2 = Coordinate2D(0, 0);
-		CHECK(isect::intersects(p, pos1, o, pos2));
+		CHECK(isect::intersects(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, 0.5f);
-		CHECK(isect::intersects(p, pos1, o, pos2));
+		CHECK(isect::intersects(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, -1);
-		CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+		CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 	}
 	GIVEN("Convex polygons.") {
 		GIVEN("An octagon and an arbitrary convex polygon.") {
@@ -1206,47 +1206,47 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			WHEN("They have a lot of overlap.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out the left side.") {
 				Coordinate2D pos2(-1.9f, 0);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out of the right side.") {
 				Coordinate2D pos2(4.9f, 0);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the left side.") {
 				Coordinate2D pos2(-2, 0);
 				THEN("Touching polygons are not intersecting.")
-					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+					CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the right side.") {
 				Coordinate2D pos2(5, 0);
 				THEN("They are not intersecting.")
-					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+					CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("They are significantly apart.") {
 				Coordinate2D pos2(20, 50);
 				THEN("They do not intersect.")
-					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+					CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out of the top.") {
 				Coordinate2D pos2(1, -3.9f);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the top.") {
 				Coordinate2D pos2(1, -4);
 				THEN("They are not intersecting.")
-					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+					CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is edged out of the top left.") {
 				Coordinate2D pos2(-0.66f, -3.9f);
 				THEN("They are not intersecting.")
-					CHECK_FALSE(isect::intersects(p, pos1, o, pos2));
+					CHECK_FALSE(isect::intersects(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("An octagon and a smaller octagon.") {
@@ -1258,12 +1258,12 @@ SCENARIO("Testing two polygons for intersection with given positions.", "[poly]"
 			WHEN("One is completely inside the other.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 			WHEN("One is inside the other, sharing edges.") {
 				Coordinate2D pos2(-1, 0);
 				THEN("They intersect.")
-					CHECK(isect::intersects(p, pos1, o, pos2));
+					CHECK(isect::intersects(&p, pos1, &o, pos2));
 			}
 		}
 	}

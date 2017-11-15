@@ -42,22 +42,6 @@ inline std::vector<units::Coordinate2D> _get_separating_axes(const Shape* const 
 }
 
 // Tests the axes of one polygon against the other using SAT. Offset is the position of polygon first - second.
-inline bool _SAT(const Polygon& first, const Polygon& second, const units::Coordinate2D& offset) {
-	const std::size_t size = first.size();
-	units::Coordinate2D axis;
-	Projection projFirst, projSecond;
-	for (std::size_t i = 0; i < size; ++i) {
-		axis = first.getEdgeNorm(i); // Axis to project along.
-		projFirst = first.getProjection(axis);
-		projSecond = second.getProjection(axis);
-		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
-		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
-			return false;
-	}
-	return true;
-}
-
-// Tests the axes of one polygon against the other using SAT. Offset is the position of polygon first - second.
 // Outputs the normal and distance that make up the minimum translation vector.
 inline bool _MTV_SAT(const Polygon& first, const Polygon& second, const units::Coordinate2D& offset, units::Coordinate2D& out_norm, units::Coordinate& out_dist) {
 	const std::size_t size = first.size();
@@ -191,7 +175,7 @@ inline sat::HybridResult _perform_hybrid_SAT(const Polygon& first, const Polygon
 }
 
 bool sat::performSAT(const Shape* const first, const Shape* const second) {
-	std::vector<units::Coordinate2D> axes(_get_separating_axes(first, second));
+	const std::vector<units::Coordinate2D> axes(_get_separating_axes(first, second));
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
 		projFirst = first->getProjection(axes[i]);
@@ -202,8 +186,18 @@ bool sat::performSAT(const Shape* const first, const Shape* const second) {
 	return true;
 }
 
-bool sat::performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos) {
-	return _SAT(first, second, firstPos - secondPos) && _SAT(second, first, secondPos - firstPos);
+bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos) {
+	const std::vector<units::Coordinate2D> axes(_get_separating_axes(first, second));
+	const units::Coordinate2D offset(firstPos - secondPos);
+	Projection projFirst, projSecond;
+	for (std::size_t i = 0; i < axes.size(); ++i) {
+		projFirst = first->getProjection(axes[i]);
+		projSecond = second->getProjection(axes[i]);
+		projFirst += offset.dot(axes[i]); // Apply offset between the two polygons' positions.
+		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
+			return false;
+	}
+	return true;
 }
 
 bool sat::performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos,

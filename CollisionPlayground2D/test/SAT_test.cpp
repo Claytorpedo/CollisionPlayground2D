@@ -11,7 +11,7 @@
 
 using namespace units;
 
-SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
+SCENARIO("Testing two shapes for overlap.", "[sat]") {
 	GIVEN("A triangle.") {
 		Polygon p(shapes::rightTri);
 		GIVEN("A second triangle.") {
@@ -140,7 +140,7 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 	}
 }
 
-SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]") {
+SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 	GIVEN("A triangle.") {
 		Polygon p(shapes::rightTri);
 		Coordinate2D pos1(0, 0);
@@ -148,20 +148,20 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			Polygon o(shapes::tri);
 			Coordinate2D pos2(0, 0);
 			THEN("They don't overlap until we move them together.") {
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(0, 1);
-				CHECK(sat::performSAT(p, pos1, o, pos2));
+				CHECK(sat::performSAT(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(1.9f, 2.5f);
-				CHECK(sat::performSAT(p, pos1, o, pos2));
+				CHECK(sat::performSAT(&p, pos1, &o, pos2));
 				pos1 = Coordinate2D(-0.1f, 0);
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("An identical triangle.") {
 			Polygon o(shapes::rightTri);
 			Coordinate2D pos2(0, 0);
 			THEN("They overlap.")
-				CHECK(sat::performSAT(p, pos1, o, pos2));
+				CHECK(sat::performSAT(&p, pos1, &o, pos2));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coordinate2D> inside;
@@ -169,15 +169,15 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			Polygon o(inside);
 			Coordinate2D pos2(0, 0);
 			THEN("They overlap.") {
-				CHECK(sat::performSAT(p, pos1, o, pos2));
+				CHECK(sat::performSAT(&p, pos1, &o, pos2));
 				pos2 = Coordinate2D(0.5f, 0.5f);
-				CHECK(sat::performSAT(p, pos1, o, pos2));
+				CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
 			Polygon o(shapes::edgeTriR);
 			Coordinate2D pos2(0, 0);
-			CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+			CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 		}
 	}
 	GIVEN("Two large triangles.") {
@@ -187,32 +187,32 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 		std::vector<Coordinate2D> points2 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
 		Polygon r(points2);
 		Coordinate2D posR(0, 0);
-		CHECK_FALSE(sat::performSAT(q, posQ, r, posR));
+		CHECK_FALSE(sat::performSAT(&q, posQ, &r, posR));
 		std::vector<Coordinate2D> points3 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
 		r = Polygon(points3);
-		CHECK(sat::performSAT(q, posQ, r, posR));
+		CHECK(sat::performSAT(&q, posQ, &r, posR));
 	}
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
 		Coordinate2D pos1(0, 0);
-		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
+		Rectangle o(0, 0, 1, 1);
 		Coordinate2D pos2(0, 0);
-		CHECK(sat::performSAT(p, pos1, o, pos2));
+		CHECK(sat::performSAT(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, 0);
 		pos2 = Coordinate2D(1.5f, 0);
-		CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+		CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 		pos2 = Coordinate2D(1, 1);
-		CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+		CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 		pos2 = Coordinate2D(1, 0.9f);
-		CHECK(sat::performSAT(p, pos1, o, pos2));
-		o = Rectangle(0, 0, 2, 2).toPoly();
+		CHECK(sat::performSAT(&p, pos1, &o, pos2));
+		o = Rectangle(0, 0, 2, 2);
 		pos1 = Coordinate2D(0, 0);
 		pos2 = Coordinate2D(0, 0);
-		CHECK(sat::performSAT(p, pos1, o, pos2));
+		CHECK(sat::performSAT(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, 0.5f);
-		CHECK(sat::performSAT(p, pos1, o, pos2));
+		CHECK(sat::performSAT(&p, pos1, &o, pos2));
 		pos1 = Coordinate2D(0.5f, -1);
-		CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+		CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 	}
 	GIVEN("Convex polygons.") {
 		GIVEN("An octagon and an arbitrary convex polygon.") {
@@ -222,47 +222,47 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			WHEN("They have a lot of overlap.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out the left side.") {
 				Coordinate2D pos2(-1.9f, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out of the right side.") {
 				Coordinate2D pos2(4.9f, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is nearly out of the top.") {
 				Coordinate2D pos2(1, -3.9f);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the left side.") {
 				Coordinate2D pos2(-2, 0);
 				THEN("Touching polygons are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+					CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the right side.") {
 				Coordinate2D pos2(5, 0);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+					CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("They are significantly apart.") {
 				Coordinate2D pos2(20, 50);
 				THEN("They do not overlap.")
-					CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+					CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is only touching the top.") {
 				Coordinate2D pos2(1, -4);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+					CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("The octagon is edged out of the top left.") {
 				Coordinate2D pos2(-0.66f, -3.9f);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
+					CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2));
 			}
 		}
 		GIVEN("An octagon and a smaller octagon.") {
@@ -274,12 +274,12 @@ SCENARIO("Testing two polygons for overlap with given positions.", "[poly][SAT]"
 			WHEN("One is completely inside the other.") {
 				Coordinate2D pos2(0, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 			WHEN("One is inside the other, sharing edges.") {
 				Coordinate2D pos2(-1, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, pos1, o, pos2));
+					CHECK(sat::performSAT(&p, pos1, &o, pos2));
 			}
 		}
 	}

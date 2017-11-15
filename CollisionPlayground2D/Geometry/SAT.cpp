@@ -18,6 +18,7 @@ Returns true if it encounteres a special case that handled both shapes.
 */
 inline bool _get_separating_axes(const Shape* const first, const Shape* const second, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
 	if (const Polygon* const p = dynamic_cast<const Polygon* const>(first)) {
+		axes.reserve(axes.size() + p->size());
 		for (std::size_t i = 0; i < p->size(); ++i)
 			axes.push_back(p->getEdgeNorm(i));
 	} else if (dynamic_cast<const Rectangle* const>(first)) {

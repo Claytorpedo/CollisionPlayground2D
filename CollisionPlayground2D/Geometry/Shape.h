@@ -7,6 +7,7 @@
 
 class Polygon;
 class Rectangle;
+struct Projection;
 
 // Parent class for geometry objects.
 
@@ -22,6 +23,9 @@ public:
 	virtual units::Coordinate top()    const = 0;
 	// Get bottommost y coordinate.
 	virtual units::Coordinate bottom() const = 0;
+	// Get the shape's projection along a given axis.
+	// Default implementation uses the toPoly conversion.
+	virtual Projection getProjection(const units::Coordinate2D& axis) const;
 
 	// Convert the shape into a polygon.
 	// All child classes should be able to be at least approximated by a convex polygon.

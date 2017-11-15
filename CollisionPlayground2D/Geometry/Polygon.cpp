@@ -1,10 +1,11 @@
 #include "Polygon.h"
 
-#include "Rectangle.h"
-
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+
+#include "Rectangle.h"
+#include "Projection.h"
 
 const units::Coordinate Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;
 
@@ -95,6 +96,20 @@ units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) const {
 void Polygon::computeNormals() {
 	for (std::size_t i = 0; i < edge_normals_.size(); ++i)
 		getEdgeNorm(i);
+}
+
+Projection Polygon::getProjection(const units::Coordinate2D& axis) const {
+	units::Coordinate min(vertices_[0].dot(axis));
+	units::Coordinate max(min);
+	units::Coordinate proj;
+	for (std::size_t i = 1; i < vertices_.size(); ++i) {
+		proj = vertices_[i].dot(axis);
+		if (proj < min)
+			min = proj;
+		else if (proj > max)
+			max = proj;
+	}
+	return Projection(min, max);
 }
 
 void Polygon::expand(const units::Coordinate expandAmount) {

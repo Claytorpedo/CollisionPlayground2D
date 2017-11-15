@@ -7,6 +7,7 @@
 #include <random>
 
 class Rectangle;
+struct Projection;
 
 // Convex polygon with counterclockwise winding.
 
@@ -39,6 +40,8 @@ public:
 	virtual units::Coordinate right()  const { return x_max_; }
 	virtual units::Coordinate top()    const { return y_min_; }
 	virtual units::Coordinate bottom() const { return y_max_; }
+
+	virtual Projection getProjection(const units::Coordinate2D& axis) const;
 
 	// Returns a copy of itself.
 	virtual Polygon toPoly() const;

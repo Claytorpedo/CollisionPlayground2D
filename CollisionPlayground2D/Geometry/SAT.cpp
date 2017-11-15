@@ -3,26 +3,8 @@
 #include "../Units.h"
 #include "../Constants.h"
 #include "Polygon.h"
+#include "Projection.h"
 
-namespace {
-	struct Projection {
-		units::Coordinate min, max;
-		Projection() : min(0), max(0) {}
-		Projection(units::Coordinate min, units::Coordinate max) : min(min), max(max) {}
-		inline Projection& operator+=(const units::Coordinate& v) { min += v; max += v; return *this; }
-	};
-	inline Projection _get_projection(const Polygon& poly, const units::Coordinate2D& axis) {
-		units::Coordinate min(poly[0].dot(axis));
-		units::Coordinate max(min);
-		units::Coordinate proj;
-		for (std::size_t i = 1; i < poly.size(); ++i) {
-			proj = poly[i].dot(axis);
-			if (proj < min)
-				min = proj;
-			else if (proj > max)
-				max = proj;
-		}
-		return Projection(min, max);
 	}
 }
 
@@ -33,8 +15,8 @@ inline bool _SAT(const Polygon& first, const Polygon& second) {
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < size; ++i) {
 		axis = first.getEdgeNorm(i); // Axis to project along.
-		projFirst = _get_projection(first, axis);
-		projSecond = _get_projection(second, axis);
+		projFirst = first.getProjection(axis);
+		projSecond = second.getProjection(axis);
 		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
 			return false;
 	}
@@ -48,8 +30,8 @@ inline bool _SAT(const Polygon& first, const Polygon& second, const units::Coord
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < size; ++i) {
 		axis = first.getEdgeNorm(i); // Axis to project along.
-		projFirst = _get_projection(first, axis);
-		projSecond = _get_projection(second, axis);
+		projFirst = first.getProjection(axis);
+		projSecond = second.getProjection(axis);
 		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
 		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
 			return false;
@@ -66,8 +48,8 @@ inline bool _MTV_SAT(const Polygon& first, const Polygon& second, const units::C
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < size; ++i) {
 		axis = first.getEdgeNorm(i); // Axis to project along.
-		projFirst = _get_projection(first, axis);
-		projSecond = _get_projection(second, axis);
+		projFirst = first.getProjection(axis);
+		projSecond = second.getProjection(axis);
 		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
 		overlap1 = projFirst.max - projSecond.min;
 		overlap2 = projSecond.max - projFirst.min;
@@ -111,8 +93,8 @@ inline sat::HybridResult _hybrid_SAT(const Polygon& first, const Polygon& second
 	const std::size_t size = first.size();
 	for (std::size_t i = 0; i < size; ++i) {
 		axis = first.getEdgeNorm(i);   // Axis to project along.
-		projFirst = _get_projection(first, axis);
-		projSecond = _get_projection(second, axis);
+		projFirst = first.getProjection(axis);
+		projSecond = second.getProjection(axis);
 		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
 		overlap1 = projFirst.max - projSecond.min - constants::EPSILON;
 		overlap2 = projSecond.max - projFirst.min - constants::EPSILON;

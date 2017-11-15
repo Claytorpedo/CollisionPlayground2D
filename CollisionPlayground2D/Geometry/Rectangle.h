@@ -4,6 +4,7 @@
 #include "Shape.h"
 #include "Polygon.h"
 #include "../Constants.h"
+#include "Projection.h"
 
 using namespace units;
 
@@ -42,6 +43,27 @@ public:
 		       left() >= o.left() - constants::EPSILON   && top() >= o.top() - constants::EPSILON;
 	}
 	
+	virtual Projection getProjection(const units::Coordinate2D& axis) const {
+		units::Coordinate proj(axis.dot(topLeft()));
+		units::Coordinate min(proj), max(proj);
+		proj = axis.dot(topRight());
+		if (proj < min)
+			min = proj;
+		else
+			max = proj;
+		proj = axis.dot(bottomLeft());
+		if (proj < min)
+			min = proj;
+		else if (proj > max)
+			max = proj;
+		proj = axis.dot(bottomRight());
+		if (proj < min)
+			min = proj;
+		else if (proj > max)
+			max = proj;
+		return Projection(min, max);
+	}
+
 	virtual Polygon toPoly() const {
 		std::vector<units::Coordinate2D> vertices;
 		vertices.reserve(4);

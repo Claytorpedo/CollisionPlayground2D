@@ -5,6 +5,7 @@
 #include "../Units.h"
 #include "Polygon.h"
 #include "Rectangle.h"
+#include "Projection.h"
 
 units::Coordinate Shape::side(direction::Direction side) const {
 	if (side == direction::LEFT)
@@ -17,6 +18,11 @@ units::Coordinate Shape::side(direction::Direction side) const {
 		return bottom();
 	std::cerr << "Error: Invalid direction to get side.\n";
 	return 0;
+}
+
+Projection Shape::getProjection(const units::Coordinate2D& axis) const {
+	Polygon p(this->toPoly());
+	return p.getProjection(axis);
 }
 
 Polygon Shape::extend(const units::Coordinate2D& dir, const units::Coordinate dist) const {

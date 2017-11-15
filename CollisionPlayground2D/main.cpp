@@ -120,7 +120,7 @@ Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangl
 	while(true) {
 		bool isOccupied = false;
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			if (isect::intersects(&Polygon::translate(collider, position), &polys[i])) {
+			if (isect::intersects(&collider, position, &polys[i], units::Coordinate2D(0,0))) {
 				isOccupied = true;
 				collider = Polygon::generate(twister, Rectangle());
 				position = units::Coordinate2D(distX(twister), distY(twister));

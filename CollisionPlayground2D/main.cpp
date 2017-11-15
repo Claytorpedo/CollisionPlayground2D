@@ -8,6 +8,7 @@
 #include "Graphics.h"
 #include "Constants.h"
 #include "Units.h"
+#include "Util.h"
 #include "Mover.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"

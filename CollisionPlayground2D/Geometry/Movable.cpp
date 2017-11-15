@@ -5,6 +5,7 @@
 
 #include "DebugLogger.h"
 #include "../Units.h"
+#include "../Constants.h"
 #include "Shape.h"
 #include "Polygon.h"
 #include "SAT.h"

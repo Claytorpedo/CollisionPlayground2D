@@ -3,9 +3,6 @@
 #define _SHAPE_H
 
 #include "../Units.h"
-#include "../Constants.h"
-#include "../Util.h"
-#include "../Graphics.h"
 #include "../Direction.h"
 
 class Polygon;

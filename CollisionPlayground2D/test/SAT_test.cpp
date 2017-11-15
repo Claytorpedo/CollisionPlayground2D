@@ -17,33 +17,33 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 		GIVEN("A second triangle.") {
 			Polygon o(shapes::tri);
 			THEN("They don't overlap until we move them together.") {
-				CHECK_FALSE(sat::performSAT(p, o));
+				CHECK_FALSE(sat::performSAT(&p, &o));
 				o.translate(0, 1);
-				CHECK(sat::performSAT(p, o));
+				CHECK(sat::performSAT(&p, &o));
 				o.translate(1.9f, 1.5f);
-				CHECK(sat::performSAT(p, o));
+				CHECK(sat::performSAT(&p, &o));
 				o.translate(0.1f, 0);
-				CHECK_FALSE(sat::performSAT(p, o));
+				CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 		}
 		GIVEN("An identical triangle.") {
 			Polygon o(shapes::rightTri);
 			THEN("They overlap.")
-				CHECK(sat::performSAT(p, o));
+				CHECK(sat::performSAT(&p, &o));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coordinate2D> inside;
 			for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) inside.push_back(shapes::rightTri[i] * 0.5f);
 			Polygon o(inside);
 			THEN("They overlap.") {
-				CHECK(sat::performSAT(p, o));
+				CHECK(sat::performSAT(&p, &o));
 				o.translate(0.5f, 0.5f);
-				CHECK(sat::performSAT(p, o));
+				CHECK(sat::performSAT(&p, &o));
 			}
 		}
 		GIVEN("A triangle only sharing an edge.") {
 			Polygon o(shapes::edgeTriR);
-			CHECK_FALSE(sat::performSAT(p, o));
+			CHECK_FALSE(sat::performSAT(&p, &o));
 		}
 	}
 	GIVEN("Two large triangles.") {
@@ -51,27 +51,27 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 		Polygon q(points1);
 		std::vector<Coordinate2D> points2 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 0), Coordinate2D(3000000, -1000000) };
 		Polygon r(points2);
-		CHECK_FALSE(sat::performSAT(q, r));
+		CHECK_FALSE(sat::performSAT(&q, &r));
 		std::vector<Coordinate2D> points3 = { Coordinate2D(-1000000, -2000000), Coordinate2D(1000000, 1), Coordinate2D(3000000, -1000000) };
 		r = Polygon(points3);
-		CHECK(sat::performSAT(q, r));
+		CHECK(sat::performSAT(&q, &r));
 	}
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
-		Polygon o(Rectangle(0, 0, 1, 1).toPoly());
-		CHECK(sat::performSAT(p, o));
-		o.translate(1, 0);
-		CHECK_FALSE(sat::performSAT(p, o));
-		o.translate(-0.5f, 1);
-		CHECK_FALSE(sat::performSAT(p, o));
-		o.translate(0, -0.1f);
-		CHECK(sat::performSAT(p, o));
-		o = Rectangle(0, 0, 2, 2).toPoly();
-		CHECK(sat::performSAT(p, o));
-		o.translate(-0.5f, -0.5f);
-		CHECK(sat::performSAT(p, o));
+		Rectangle o(0, 0, 1, 1);
+		CHECK(sat::performSAT(&p, &o));
+		o += Coordinate2D(1, 0);
+		CHECK_FALSE(sat::performSAT(&p, &o));
+		o += Coordinate2D(-0.5f, 1);
+		CHECK_FALSE(sat::performSAT(&p, &o));
+		o += Coordinate2D(0, -0.1f);
+		CHECK(sat::performSAT(&p, &o));
+		o = Rectangle(0, 0, 2, 2);
+		CHECK(sat::performSAT(&p, &o));
+		o += Coordinate2D(-0.5f, -0.5f);
+		CHECK(sat::performSAT(&p, &o));
 		p.translate(0, -1.5f);
-		CHECK_FALSE(sat::performSAT(p, o));
+		CHECK_FALSE(sat::performSAT(&p, &o));
 	}
 	GIVEN("Convex polygons.") {
 		GIVEN("An octagon and an arbitrary convex polygon.") {
@@ -79,47 +79,47 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 			Polygon o(shapes::octagon);
 			WHEN("They have a lot of overlap.") {
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is nearly out the left side.") {
 				o.translate(-1.9f, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is nearly out of the right side.") {
 				o.translate(4.9f, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is nearly out of the top.") {
 				o.translate(1, -3.9f);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is only touching the left side.") {
 				o.translate(-2, 0);
 				THEN("Touching polygons are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, o));
+					CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is only touching the right side.") {
 				o.translate(5, 0);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, o));
+					CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 			WHEN("They are significantly apart.") {
 				o.translate(20, 50);
 				THEN("They do not overlap.")
-					CHECK_FALSE(sat::performSAT(p, o));
+					CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is only touching the top.") {
 				o.translate(1, -4);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, o));
+					CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 			WHEN("The octagon is edged out of the top left.") {
 				o.translate(-0.66f, -3.9f);
 				THEN("They are not overlapping.")
-					CHECK_FALSE(sat::performSAT(p, o));
+					CHECK_FALSE(sat::performSAT(&p, &o));
 			}
 		}
 		GIVEN("An octagon and a smaller octagon.") {
@@ -129,12 +129,12 @@ SCENARIO("Testing two polygons for overlap.", "[poly][SAT]") {
 			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 			WHEN("One is inside the other, sharing edges.") {
 				o.translate(-1, 0);
 				THEN("They overlap.")
-					CHECK(sat::performSAT(p, o));
+					CHECK(sat::performSAT(&p, &o));
 			}
 		}
 	}

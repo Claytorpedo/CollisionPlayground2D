@@ -244,18 +244,14 @@ namespace isect {
 			   first.top()    < second.bottom() &&
 			   first.bottom() > second.top();
 	}
-
-	bool intersects(const Polygon& first, const Polygon& second) {
-		if (!intersects(first.getAABB(), second.getAABB())) // Bounds test for quick out.
-			return false;
-		return sat::performSAT(first, second);
-	}
 	bool intersects(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos) {
 		if (!intersects(first.getAABB() + firstPos, second.getAABB() + secondPos)) // Bounds test for quick out.
 			return false;
 		return sat::performSAT(first, firstPos, second, secondPos);
 	}
-	bool intersects(const Shape& first, const Shape& second) {
-		return intersects(first.toPoly(), second.toPoly());
+	bool intersects(const Shape* const first, const Shape* const second) {
+		if (!intersects(first->getAABB(), second->getAABB())) // Bounds test for quick out.
+			return false;
+		return sat::performSAT(first, second);
 	}
 }

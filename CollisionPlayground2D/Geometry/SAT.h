@@ -4,14 +4,15 @@
 
 #include "../Units.h"
 
+class Shape;
 class Polygon;
 
 // Separating Axis Theorem tests.
-// For all tests, "touching" polygons are not considered intersecting: they must overlap.
+// For all tests, "touching" shapes are not considered intersecting: they must overlap.
 namespace sat {
-	// Test if two convex polygons overlap each other.
+	// Test if two shapes overlap each other.
 	// Returns true if they overlap.
-	bool performSAT(const Polygon& first, const Polygon& second);
+	bool performSAT(const Shape* const first, const Shape* const second);
 	// Test if two convex polygons with given positions overlap each other.
 	// Returns true if they overlap.
 	bool performSAT(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos);

@@ -35,9 +35,8 @@ namespace isect {
 	// Note that "touching" shapes are not considered intersecting if they have no overlap.
 
 	bool intersects(const Rectangle& first, const Rectangle& second);
-	bool intersects(const Polygon& first, const Polygon& second);
 	bool intersects(const Polygon& first, const units::Coordinate2D& firstPos, const Polygon& second, const units::Coordinate2D& secondPos);
-	bool intersects(const Shape& first, const Shape& second);
+	bool intersects(const Shape* const first, const Shape* const second);
 }
 
 #endif // _INTERSECTION_MATH_H

@@ -1,11 +1,44 @@
 #include "SAT.h"
 
+#include <vector>
+
 #include "../Units.h"
 #include "../Constants.h"
+#include "DebugLogger.h"
+#include "Shape.h"
 #include "Polygon.h"
+#include "Rectangle.h"
 #include "Projection.h"
 
+/*
+System for finding the separating axes for the given shapes.
+This is a little messy by nature.
+Determine the type of shape the first one is, then see if it forms a special case when paired with the second shape.
+Returns true if it encounteres a special case that handled both shapes.
+*/
+inline bool _get_separating_axes(const Shape* const first, const Shape* const second, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
+	if (const Polygon* const p = dynamic_cast<const Polygon* const>(first)) {
+		for (std::size_t i = 0; i < p->size(); ++i)
+			axes.push_back(p->getEdgeNorm(i));
+	} else if (dynamic_cast<const Rectangle* const>(first)) {
+		axes.push_back(units::Coordinate2D(1, 0)); // Rectangles are axis-alligned.
+		axes.push_back(units::Coordinate2D(0, 1));
+		if (isFirstCall && dynamic_cast<const Rectangle* const>(second)) // Special case: will share axes.
+			return true;
+	} else {
+		DBG_WARN("Unhandled shape type for SAT. Converting to polygon.");
+		Polygon p = first->toPoly();
+		for (std::size_t i = 0; i < p.size(); ++i)
+			axes.push_back(p.getEdgeNorm(i));
 	}
+	return false;
+}
+inline std::vector<units::Coordinate2D> _get_separating_axes(const Shape* const first, const Shape* const second) {
+	std::vector<units::Coordinate2D> axes;
+	if (_get_separating_axes(first, second, axes, true))
+		return axes;
+	_get_separating_axes(first, second, axes, false);
+	return axes;
 }
 
 // Tests the axes of one polygon against the other using SAT.

@@ -15,6 +15,7 @@ collisions_test
 *.userprefs
 
 # Build results
+UnitTest/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/

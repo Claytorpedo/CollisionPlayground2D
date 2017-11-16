@@ -25,4 +25,8 @@ namespace shapes { // Some shapes we'll use in various tests.
 	const std::vector<Coordinate2D> arb =      { Coordinate2D(0,0), Coordinate2D(1,2), Coordinate2D(2,2), Coordinate2D(3,1), Coordinate2D(3, -1), Coordinate2D(1, -2) };
 }
 
+namespace separating_axes {
+	const std::size_t RECT_NUM_AXES = 2; // Rectangles are axis-alligned.
+}
+
 #endif // _DEFINITIONS_H

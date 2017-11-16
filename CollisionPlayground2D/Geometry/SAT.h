@@ -2,6 +2,8 @@
 #ifndef _SAT_H
 #define _SAT_H
 
+#include <vector>
+
 #include "../Units.h"
 
 class Shape;
@@ -43,6 +45,11 @@ namespace sat {
 	// Returns the type of collision: NONE, a current MTV collision, or a future SWEEP collision on the interval [0, MAX].
 	HybridResult performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
 		const Polygon& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t);
+
+	// Given two shapes, find the axes of separation for them.
+	// If given an unknown shape, converts the shape to a polygon.
+	// Returns a vector of normalized separating axes.
+	std::vector<units::Coordinate2D> getSeparatingAxes(const Shape* const first, const Shape* const second);
 }
 
 #endif // _SAT_H

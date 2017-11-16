@@ -285,7 +285,7 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 	}
 }
 
-SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum translation vector).", "[poly][SAT]") {
+SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum translation vector).", "[SAT]") {
 	GIVEN("The polygon to be moved is a rectangle, and the stationary one is a triangle.") {
 		Polygon p(Rectangle(0, 0, 1, 1).toPoly());
 		Polygon o(shapes::rightTri);
@@ -1140,6 +1140,75 @@ SCENARIO("Hybrid SAT with both polygons moving.", "[poly][SAT][hybridSAT]") {
 			CHECK(out_norm.x == ApproxEps(expected_norm.x));
 			CHECK(out_norm.y == ApproxEps(expected_norm.y));
 			REQUIRE(out_t == ApproxEps(0.5f));
+		}
+	}
+}
+
+SCENARIO("Finding the separating axes for two shapes.", "[sat]") {
+	GIVEN("Two polygons.") {
+		GIVEN("An octagon and a triangle.") {
+			Polygon p(shapes::octagon);
+			Polygon o(shapes::tri);
+			WHEN("They get their separating axes.") {
+				std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&p, &o);
+				std::size_t expected = p.size() + o.size();
+				THEN("It's the sum of the number of axes between them.")
+					CHECK(axes.size() == expected);
+			}
+			WHEN("They get their separating axes in the opposite order.") {
+				std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&o, &p);
+				std::size_t expected = p.size() + o.size();
+				THEN("It's the sum of the number of axes between them.")
+					CHECK(axes.size() == expected);
+			}
+		}
+		GIVEN("Two different triangles.") {
+			Polygon p(shapes::rightTri);
+			Polygon o(shapes::tri);
+			WHEN("They get their separating axes.") {
+				std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&p, &o);
+				std::size_t expected = p.size() + o.size();
+				THEN("It's the sum of the number of axes between them.")
+					CHECK(axes.size() == expected);
+			}
+			WHEN("They get their separating axes in the opposite order.") {
+				std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&o, &p);
+				std::size_t expected = p.size() + o.size();
+				THEN("It's the sum of the number of axes between them.")
+					CHECK(axes.size() == expected);
+			}
+		}
+	}
+	GIVEN("A polygon and a rectangle.") {
+		Polygon p(shapes::octagon);
+		Rectangle r(0, 10, 1, 5);
+		WHEN("They get their separating axes.") {
+			std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&p, &r);
+			std::size_t expected = p.size() + separating_axes::RECT_NUM_AXES;
+			THEN("It's the sum of the number of axes between them.")
+				CHECK(axes.size() == expected);
+		}
+		WHEN("They get their separating axes in the opposite order.") {
+			std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&r, &p);
+			std::size_t expected = p.size() + separating_axes::RECT_NUM_AXES;
+			THEN("It's the sum of the number of axes between them.")
+				CHECK(axes.size() == expected);
+		}
+	}
+	GIVEN("Two rectangles.") {
+		Rectangle p(50, -10, 600, 2);
+		Rectangle r(0, 10, 1, 5);
+		WHEN("They get their separating axes.") {
+			std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&p, &r);
+			std::size_t expected = separating_axes::RECT_NUM_AXES;
+			THEN("There is a special case with only two axes.")
+				CHECK(axes.size() == expected);
+		}
+		WHEN("They get their separating axes in the opposite order.") {
+			std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(&r, &p);
+			std::size_t expected = separating_axes::RECT_NUM_AXES;
+			THEN("There is a special case with only two axes.")
+				CHECK(axes.size() == expected);
 		}
 	}
 }

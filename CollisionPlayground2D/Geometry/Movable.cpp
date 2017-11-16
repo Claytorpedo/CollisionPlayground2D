@@ -129,6 +129,7 @@ void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap*
 			DBG_LOG("Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 #endif
 	}
+	DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping algorithm.");
 }
 
 bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap) {

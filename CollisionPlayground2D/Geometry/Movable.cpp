@@ -139,7 +139,7 @@ bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const co
 		std::vector<Collidable*> objs = collisionMap->getColliding(*this);
 		info.isCollision = false;
 		for (std::size_t k = 0; k < objs.size(); ++k) {
-			if (sat::performSAT(*info.collider, info.currentPosition, *static_cast<const Polygon*>(objs[k]->getCollider()), objs[k]->getPosition(), info.normal, info.moveDist)) {
+			if (sat::performSAT(info.collider, info.currentPosition, objs[k]->getCollider(), objs[k]->getPosition(), info.normal, info.moveDist)) {
 				info.isCollision = true;
 				break;
 			}

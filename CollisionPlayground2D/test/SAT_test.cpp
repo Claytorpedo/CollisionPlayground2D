@@ -294,7 +294,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
 			pos1 = Coordinate2D(0.8f, 0);
 			THEN("The rectangle is separated out of the triangle to the right.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(1, 0);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -304,7 +304,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle from the top.") {
 			pos1 = Coordinate2D(0, -0.8f);
 			THEN("The rectangle is separated out of the triangle upwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(0, -1);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -314,7 +314,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle along the hypotenuse.") {
 			pos1 = Coordinate2D(-0.4f, 0.4f);
 			THEN("The rectangle is separated out of the triangle left-downwards") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -324,7 +324,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle along the bottom.") {
 			pos1 = Coordinate2D(0.5f, 0.8f);
 			THEN("The rectangle is separated out of the triangle downwards") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(0, 1);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -340,7 +340,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
 			pos1 = Coordinate2D(0.8f, 0);
 			THEN("The rectangle is separated out of the triangle to the right.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(1, 0);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -350,7 +350,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle from the top.") {
 			pos1 = Coordinate2D(0, -99.8f);
 			THEN("The rectangle is separated out of the triangle upwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(0, -1);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -360,7 +360,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle along the hypotenuse.") {
 			pos1 = Coordinate2D(-99.4f, 0.4f);
 			THEN("The rectangle is separated out of the triangle left-downwards") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -370,7 +370,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The rectangle slightly overlaps the triangle along the bottom.") {
 			pos1 = Coordinate2D(-50, 0.8f);
 			THEN("The rectangle is separated out of the triangle downwards") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(0, 1);
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -380,7 +380,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The triangle is just below the rectangle's top-left corner.") {
 			pos2 = Coordinate2D(0, 0.1f);
 			THEN("The rectangle is separated out of the triangle rightwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(1, 0));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -390,7 +390,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The triangle is just below the rectangle's bottom-left corner.") {
 			pos2 = Coordinate2D(0, 99.1f);
 			THEN("The rectangle is separated out of the triangle upwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(0, -1));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -400,7 +400,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The triangle is just to the right of the rectangle's top-right corner.") {
 			pos2 = Coordinate2D(99.1f, 0);
 			THEN("The rectangle is separated out of the triangle left-downwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -410,7 +410,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The triangle is just below the rectangle's bottom-right corner.") {
 			pos2 = Coordinate2D(99, 99.1f);
 			THEN("The rectangle is separated out of the triangle upwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(0, -1));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -420,7 +420,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The triangle is just above the rectangle's center.") {
 			pos2 = Coordinate2D(49.5f, 49.1f);
 			THEN("The rectangle is separated out of the triangle downwards.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(0, 1));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -438,7 +438,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The small triangle overlaps the large one along its hypotenuse.") {
 			pos1 = Coordinate2D(50, 50);
 			THEN("The small triangle is separated left-downward.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -448,7 +448,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The small triangle overlaps the large one inside its hypotenuse.") {
 			pos1 = Coordinate2D(51, 50);
 			THEN("The small triangle is separated left-downward.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(-1, 1).normalize());
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -464,7 +464,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("They octagon overlaps the arbitrary polygon's left side.") {
 			pos1 = Coordinate2D(4, 0);
 			THEN("The octagon is separated out to the right.") {
-				REQUIRE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				REQUIRE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 				Coordinate2D expected_norm(Coordinate2D(1, 0));
 				CHECK(out_norm.x == ApproxEps(expected_norm.x));
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
@@ -475,27 +475,27 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		WHEN("The octagon is only touching the left side.") {
 			Coordinate2D pos1(-2, 0);
 			THEN("Touching polygons are not overlapping.")
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 		}
 		WHEN("The octagon is only touching the right side.") {
 			Coordinate2D pos1(5, 0);
 			THEN("They are not overlapping.")
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 		}
 		WHEN("They are significantly apart.") {
 			Coordinate2D pos1(20, 50);
 			THEN("They do not overlap.")
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 		}
 		WHEN("The octagon is only touching the top.") {
 			Coordinate2D pos1(1, -4);
 			THEN("They are not overlapping.")
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 		}
 		WHEN("The octagon is edged out of the top left.") {
 			Coordinate2D pos1(-0.66f, -3.9f);
 			THEN("They are not overlapping.")
-				CHECK_FALSE(sat::performSAT(p, pos1, o, pos2, out_norm, out_dist));
+				CHECK_FALSE(sat::performSAT(&p, pos1, &o, pos2, out_norm, out_dist));
 		}
 	}
 }

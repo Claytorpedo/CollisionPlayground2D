@@ -42,35 +42,31 @@ inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const Shape* cons
 	return axes;
 }
 
+const static units::Fraction MAX_TIME = 1.0f; // Using interval [0,1].
 // Tests the axes of one polygon against the other using SAT. Checks if they are currently overlapping, or will overlap in the future (SAT test and sweep test).
 // Note that out_enterTime, out_exitTime, and out_mtv_dist need to be set to defaults on the first call.
-// offset   - the position of first - second.
-// velocity - the velocity of the first polygon, or firstVel - secondVel (we act as if only first is moving).
-// mtv_norm - the normal for a current collision.
-// mtv_dist - the distance for the MTV in a current collision.
-// out_norm - the normal for future collisions.
-// out_enterTime - the first time when all axes overlap. Should be set to < 0 on first call.
-// out_exitTime  - the first time after overlap where not all axes overlap anymore. Should be set to the inverval's maximum on first call.
+// offset      - the position of first - second.
+// relativeVel - the velocity of first - second (we act as if only first is moving).
+// out_norm    - the normal of collision, or direction of separation for the case where the shapes are already overlapping.
+// out_t       - the time of collision, or the distance to move for the case where the shapes are already overlapping.
 // Returns the type of collision: NONE, a current MTV collision, or a future SWEEP collision on the interval [0, MAX].
-const static units::Fraction MAX_TIME = 1.0f; // Using interval [0,1].
-inline sat::HybridResult _hybrid_SAT(const Polygon& first, const Polygon& second, const units::Coordinate2D& offset, const units::Coordinate2D& velocity,
-          units::Coordinate2D& out_mtv_norm, units::Coordinate& out_mtv_dist, units::Coordinate2D& out_norm, units::Fraction& out_enterTime, units::Fraction& out_exitTime) {
-	bool isOverlapping = out_enterTime < 0.0f; // If we've computed an enter time before, then the shapes are not currently overlapping.
-	units::Coordinate testDist, overlap1, overlap2;
-	units::Fraction speed, testEnter, testExit;
-	units::Coordinate2D axis;
+inline sat::HybridResult _perform_hybrid_SAT(const Shape* const first, const Shape* const second, const units::Coordinate2D& offset,
+                                             const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+	const std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(first, second);
+	bool areCurrentlyOverlapping = true; // Start by assuming they are overlapping.
+	units::Coordinate mtv_dist(-1), testDist, overlap1, overlap2;
+	units::Fraction speed, enterTime(-1), exitTime(MAX_TIME), testEnter, testExit;
+	units::Coordinate2D mtv_norm, sweep_norm;
 	Projection projFirst, projSecond;
-	const std::size_t size = first.size();
-	for (std::size_t i = 0; i < size; ++i) {
-		axis = first.getEdgeNorm(i);   // Axis to project along.
-		projFirst = first.getProjection(axis);
-		projSecond = second.getProjection(axis);
-		projFirst += offset.dot(axis); // Apply offset between the two polygons' positions.
+	for (std::size_t i = 0; i < axes.size(); ++i) {
+		projFirst = first->getProjection(axes[i]);
+		projSecond = second->getProjection(axes[i]);
+		projFirst += offset.dot(axes[i]); // Apply offset between the two polygons' positions.
 		overlap1 = projFirst.max - projSecond.min - constants::EPSILON;
 		overlap2 = projSecond.max - projFirst.min - constants::EPSILON;
-		speed = axis.dot(velocity); // Speed projected along this axis.
+		speed = relativeVel.dot(axes[i]); // Speed projected along this axis.
 		if (overlap1 < 0.0f || overlap2 < 0.0f) { // Not currently overlapping.
-			isOverlapping = false;
+			areCurrentlyOverlapping = false;
 			if (speed == 0)
 				return sat::HybridResult::NONE; // Not moving on this axis (moving parallel, or not at all). They will never meet.
 			// Overlaps now tell us how far apart they are on this axis. Divide by speed on this axis to find if/when they will overlap.
@@ -83,61 +79,38 @@ inline sat::HybridResult _hybrid_SAT(const Polygon& first, const Polygon& second
 			}
 			if (testEnter < 0.0f)
 				return sat::HybridResult::NONE; // They are moving apart on this axis.
-			if (testEnter > out_enterTime) {
-				out_enterTime = testEnter; // We want the latest time: the first time when all axes overlap.
+			if (testEnter > enterTime) {
+				enterTime = testEnter; // We want the latest time: the first time when all axes overlap.
 				// The last axis to overlap will have the collision normal.
-				out_norm = projFirst.min < projSecond.min ? -axis : axis; // Collision normal is relative to the first polygon.
+				sweep_norm = projFirst.min < projSecond.min ? -axes[i] : axes[i]; // Collision normal is relative to the first shape.
 			}
-			if (testExit < out_exitTime)
-				out_exitTime = testExit; // Keep track of earliest exit time: some axis may stop overlapping before all axes overlap.
-			if (out_enterTime > MAX_TIME || out_enterTime > out_exitTime)
+			if (testExit < exitTime)
+				exitTime = testExit; // Keep track of earliest exit time: some axis may stop overlapping before all axes overlap.
+			if (enterTime > MAX_TIME || enterTime > exitTime)
 				return sat::HybridResult::NONE; // Either don't collide on this time interval, or won't ever with the direction of motion.
 		} else { // They are currently overlapping on this axis.
-			// Find when the time when they stop overlapping on this axis (start time == 0 == now).
-			if (speed != 0) {
+			if (speed != 0) { // Find when the time when they stop overlapping on this axis (start time == 0 == now).
 				testExit = (speed < 0 ? (-overlap1) : overlap2) / speed;
-				if (testExit < out_exitTime)
-					out_exitTime = testExit;
-				if (out_enterTime > out_exitTime) // There is no interval where all axes have overlap.
+				if (testExit < exitTime)
+					exitTime = testExit;
+				if (enterTime > exitTime) // There is no interval where all axes have overlap.
 					return sat::HybridResult::NONE;
 			}
-			if (isOverlapping) { // Regular MTV checks.
-				// Find separation for this axis (assumes pushing out the first polygon).
-				if (projFirst.min < projSecond.min) {
-					testDist = overlap1 + constants::EPSILON;
-					axis = -axis; // Ensure right direction to push out the first polygon.
-				} else {
-					testDist = overlap2 + constants::EPSILON;
-				}
-				if (out_mtv_dist == -1 || testDist < out_mtv_dist) {
-					out_mtv_dist = testDist;
-					out_mtv_norm = axis;
+			if (areCurrentlyOverlapping) { // Regular MTV checks.
+				testDist = (projFirst.min < projSecond.min ? overlap1 : overlap2) + constants::EPSILON; // Find separation for this axis.
+				if (mtv_dist == -1 || testDist < mtv_dist) {
+					mtv_dist = testDist;
+					mtv_norm = projFirst.min < projSecond.min ? -axes[i] : axes[i]; // Pushout direction for the first shape.
 				}
 			}
 		}
 	}
-	return isOverlapping ? sat::HybridResult::MTV : sat::HybridResult::SWEEP;
-}
-// Performs full hybrid SAT on two polygons.
-// Sets all the default values required for the hybird SAT test, and checks the results.
-inline sat::HybridResult _perform_hybrid_SAT(const Polygon& first, const Polygon& second, const units::Coordinate2D& offset,
-                              const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t) {
-	units::Coordinate mtv_dist(-1); // Default value for MTV.
-	units::Coordinate2D mtv_norm1(0, 0), mtv_norm2(0, 0), norm1(0, 0), norm2(0, 0);
-	units::Fraction enterTime(-1), exitTime(MAX_TIME); // Enter time < 0; max time is the end of the interval.
-	if (_hybrid_SAT(first, second, offset, relativeVel, mtv_norm1, mtv_dist, norm1, enterTime, exitTime) == sat::HybridResult::NONE)
-		return sat::HybridResult::NONE;
-	units::Fraction tempEnter = enterTime;
-	units::Coordinate tempDist = mtv_dist;
-	sat::HybridResult type = _hybrid_SAT(second, first, -offset, -relativeVel, mtv_norm2, mtv_dist, norm2, enterTime, exitTime);
-	if (type == sat::HybridResult::NONE)
-		return sat::HybridResult::NONE;
-	if (type == sat::HybridResult::MTV) {
-		out_norm = tempDist > mtv_dist ? -mtv_norm2 : mtv_norm1;
+	if (areCurrentlyOverlapping) {
+		out_norm = mtv_norm;
 		out_t = mtv_dist;
 		return sat::HybridResult::MTV;
-	} // SWEEP
-	out_norm = tempEnter < enterTime ? -norm2 : norm1;
+	}
+	out_norm = sweep_norm;
 	out_t = enterTime;
 	return sat::HybridResult::SWEEP;
 }
@@ -178,7 +151,7 @@ bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstP
 	for (std::size_t i = 0; i < axes.size(); ++i) {
 		projFirst = first->getProjection(axes[i]);
 		projSecond = second->getProjection(axes[i]);
-		projFirst += offset.dot(axes[i]); // Apply offset between the two polygons' positions.
+		projFirst += offset.dot(axes[i]); // Apply offset between the two shapes' positions.
 		overlap1 = projFirst.max - projSecond.min;
 		overlap2 = projSecond.max - projFirst.min;
 		if (overlap1 < constants::EPSILON || overlap2 < constants::EPSILON)
@@ -186,7 +159,7 @@ bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstP
 		// Find separation for this axis.
 		if (projFirst.min < projSecond.min) {
 			testDist = overlap1;
-			testNorm = -axes[i]; // Ensure right direction to pushout the first polygon.
+			testNorm = -axes[i]; // Ensure right direction to pushout the first shape.
 		} else {
 			testDist = overlap2;
 			testNorm = axes[i];
@@ -201,15 +174,15 @@ bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstP
 	return true;
 }
 
-sat::HybridResult sat::performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-	const Polygon& second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+sat::HybridResult sat::performHybridSAT(const Shape* const first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+	const Shape* const second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t) {
 	if (firstDelta.isZero()) // No movement, just do regular SAT.
-		return performSAT(&first, firstPos, &second, secondPos, out_norm, out_t) ? sat::HybridResult::MTV : sat::HybridResult::NONE;
+		return performSAT(first, firstPos, second, secondPos, out_norm, out_t) ? sat::HybridResult::MTV : sat::HybridResult::NONE;
 	return _perform_hybrid_SAT(first, second, firstPos - secondPos, firstDelta, out_norm, out_t);
 }
 
-sat::HybridResult sat::performHybridSAT(const Polygon& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-	const Polygon& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+sat::HybridResult sat::performHybridSAT(const Shape* const first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+	const Shape* const second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t) {
 	const units::Coordinate2D delta = firstDelta - secondDelta; // Treat second as if it is stationary.
 	return performHybridSAT(first, firstPos, delta, second, secondPos, out_norm, out_t);
 }

@@ -26,7 +26,7 @@ sat::HybridResult Movable::_find_closest_collision(const CollisionMap* const col
 	std::vector<Collidable*> objs = collisionMap->getColliding(*this, delta);
 	sat::HybridResult result;
 	for (std::size_t i = 0; i < objs.size(); ++i) {
-		result = sat::performHybridSAT(*info.collider, info.currentPosition, delta, *static_cast<const Polygon*>(objs[i]->getCollider()), objs[i]->getPosition(), testNorm, testInterval);
+		result = sat::performHybridSAT(info.collider, info.currentPosition, delta, objs[i]->getCollider(), objs[i]->getPosition(), testNorm, testInterval);
 		if (result == sat::HybridResult::SWEEP) {
 			info.isCollision = true;
 			if (interval > testInterval) {

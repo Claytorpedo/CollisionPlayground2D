@@ -201,7 +201,7 @@ int main (int argc, char* args[]) {
 		mover.update(elapsedTime, &objs);
 
 		graphics.clear();
-		Polygon collider(*(static_cast<const Polygon* const>(mover.getCollider())));
+		Polygon collider(*mover.getCollider());
 		collider.translate(mover.getPosition());
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 #ifdef DEBUG

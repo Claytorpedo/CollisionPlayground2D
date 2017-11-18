@@ -25,7 +25,7 @@ public:
 	void setPosition(const units::Coordinate2D position);
 
 	const units::Coordinate2D& getPosition() const;
-	const Shape* const getCollider() const;
+	const Polygon* const getCollider() const;
 
 	void moveLeft();
 	void moveRight();

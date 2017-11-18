@@ -7,7 +7,6 @@
 #include "../Units.h"
 #include "../Constants.h"
 #include "Shape.h"
-#include "Polygon.h"
 #include "SAT.h"
 #include "CollisionMap.h"
 
@@ -55,10 +54,10 @@ sat::HybridResult Movable::_find_closest_collision(const CollisionMap* const col
 	return sat::HybridResult::SWEEP;
 }
 
-units::Coordinate2D Movable::move(const units::Coordinate2D& origin, const Polygon& collider,
-	                                 const units::Coordinate2D& delta, const CollisionMap* const collisionMap) {
+units::Coordinate2D Movable::move(const units::Coordinate2D& origin, const Shape* const collider,
+                                  const units::Coordinate2D& delta, const CollisionMap* const collisionMap) {
 	const units::Coordinate originalDist = delta.magnitude();
-	CollisionInfo info(&collider, origin, delta/originalDist, originalDist);
+	CollisionInfo info(collider, origin, delta/originalDist, originalDist);
 	if (delta.isZero())
 		return origin; // Nowhere to move.
 	switch (type) {

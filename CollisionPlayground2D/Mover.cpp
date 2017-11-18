@@ -36,7 +36,7 @@ void Mover::update_position(const units::MS elapsedTime, const units::Velocity m
 		velocity_.y = isPos ? (velocity_.y < 0 ? 0.0f : velocity_.y) : (velocity_.y > 0 ? 0.0f : velocity_.y);
 	}
 	const units::Coordinate2D delta(velocity_*(units::Coordinate)(elapsedTime));
-	position_ = Movable::move(position_, collider_, delta, map);
+	position_ = Movable::move(position_, &collider_, delta, map);
 }
 
 void Mover::setPosition(units::Coordinate2D position) {
@@ -47,7 +47,7 @@ const units::Coordinate2D& Mover::getPosition() const {
 	return position_;
 }
 
-const Shape* const Mover::getCollider() const {
+const Polygon* const Mover::getCollider() const {
 	return &collider_;
 }
 

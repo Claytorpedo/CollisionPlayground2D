@@ -285,9 +285,9 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 	}
 }
 
-SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum translation vector).", "[SAT]") {
-	GIVEN("The polygon to be moved is a rectangle, and the stationary one is a triangle.") {
-		Polygon p(Rectangle(0, 0, 1, 1).toPoly());
+SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum translation vector).", "[sat]") {
+	GIVEN("The shape to be moved is a rectangle, and the stationary one is a triangle.") {
+		Rectangle p(0, 0, 1, 1);
 		Polygon o(shapes::rightTri);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;
@@ -333,7 +333,7 @@ SCENARIO("Two polygons are overlapping, and need to be separated (by the minimum
 		}
 	}
 	GIVEN("A large rectangle, and a smaller triangle.") {
-		Polygon p(Rectangle(0, 0, 100, 100).toPoly());
+		Rectangle p(0, 0, 100, 100);
 		Polygon o(shapes::rightTri);
 		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
 		Coordinate out_dist;

@@ -8,8 +8,10 @@
 
 #include "../Constants.h"
 #include "../Units.h"
+#include "../Geometry/Movable.h"
 
 #define ApproxEps(x) Approx(x).margin(constants::EPSILON)
+#define ApproxCollides(x) Approx(x).margin(Movable::COLLISION_BUFFER) // For collision resolution, where perfect accuracy isn't as important.
 
 using namespace units;
 

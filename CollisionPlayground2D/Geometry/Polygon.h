@@ -88,7 +88,7 @@ public:
 	static Polygon translate(const Polygon& p, const units::Coordinate2D& delta);
 
 	// For accessing the values of the vertices of the polygon. Note no safety checks.
-	inline units::Coordinate2D operator[](std::size_t index) const { return vertices_[index]; }
+	inline const units::Coordinate2D& operator[](std::size_t index) const { return vertices_[index]; }
 	// Get the number of vertices in the polygon.
 	inline std::size_t size() const { return vertices_.size(); }
 	// Check if the polygon has any vertices.

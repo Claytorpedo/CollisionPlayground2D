@@ -51,10 +51,8 @@ public:
 
 	// Get normalized counter-clockwise edge normal for the polygon at a given index.
 	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
-	units::Coordinate2D getEdgeNorm(std::size_t index);
-	// Get normalized counter-clockwise edge normal for the polygon at a given index.
-	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
-	units::Coordinate2D getEdgeNorm(std::size_t index) const;
+	const units::Coordinate2D& getEdgeNorm(std::size_t index) const;
+	units::Coordinate2D& getEdgeNorm(std::size_t index);
 	// Compute all normals for the polygon.
 	void computeNormals();
 
@@ -95,7 +93,8 @@ public:
 	inline bool isEmpty() const { return vertices_.empty(); }
 
 private:
-	std::vector<units::Coordinate2D> vertices_, edge_normals_;
+	std::vector<units::Coordinate2D> vertices_;
+	mutable std::vector<units::Coordinate2D> edge_normals_;
 	units::Coordinate x_min_, x_max_, y_min_, y_max_;
 
 	// Find the bounding box for the polygon and cache the values.

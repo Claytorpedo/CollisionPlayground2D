@@ -77,7 +77,7 @@ Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
 	return Polygon(vertices);
 }
 
-units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) {
+const units::Coordinate2D& Polygon::getEdgeNorm(std::size_t index) const {
 	if (!edge_normals_[index].isZero())
 		return edge_normals_[index];
 	const units::Coordinate2D first = vertices_[index];
@@ -85,12 +85,8 @@ units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) {
 	edge_normals_[index] = units::Coordinate2D(first.y - second.y, second.x - first.x).normalize();
 	return edge_normals_[index];
 }
-units::Coordinate2D Polygon::getEdgeNorm(std::size_t index) const {
-	if (!edge_normals_[index].isZero())
-		return edge_normals_[index];
-	const units::Coordinate2D first = vertices_[index];
-	const units::Coordinate2D second = vertices_[index + 1 >= vertices_.size() ? 0 : index + 1];
-	return units::Coordinate2D(first.y - second.y, second.x - first.x).normalize();
+units::Coordinate2D& Polygon::getEdgeNorm(std::size_t index) {
+	return const_cast<units::Coordinate2D&>(static_cast<const Polygon&>(*this).getEdgeNorm(index));
 }
 
 void Polygon::computeNormals() {

@@ -3,17 +3,17 @@
 #define _WALL_H
 
 #include "Collidable.h"
-#include "Shape.h"
+#include "ShapeContainer.h"
 
 class Wall : public Collidable {
 public:
-	Wall(Shape* shape);
-	Wall(Shape* shape, const units::Coordinate2D& position);
+	Wall(const ShapeContainer& shape);
+	Wall(const ShapeContainer& shape, const units::Coordinate2D& position);
 	~Wall();
 	const units::Coordinate2D& getPosition() const;
-	const Shape* const getCollider() const;
+	const ShapeContainer& getCollider() const;
 private:
-	Shape* shape_;
+	ShapeContainer shape_;
 	units::Coordinate2D position_;
 };
 

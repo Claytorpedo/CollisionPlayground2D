@@ -1,5 +1,6 @@
 #include "Mover.h"
 
+#include "Geometry/ShapeContainer.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMap.h"
 #include "Util.h"
@@ -9,11 +10,16 @@ const units::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (units:
 const units::Acceleration Mover::ACCELERATION = 0.0025f;
 const units::Acceleration Mover::DECELERATION = 0.004f;
 
-Mover::Mover(Movable::CollisionType type, units::Coordinate2D position, Polygon collider) : Movable(type), position_(position), collider_(collider) {
-	collider_.computeNormals();
+void Mover::_init() const {
+	if (collider_.type() == ShapeType::POLYGON)
+		collider_.poly().computeNormals();
 }
-Mover::Mover(units::Coordinate2D position, Polygon collider) : position_(position), collider_(collider) {
-	collider_.computeNormals();
+
+Mover::Mover(Movable::CollisionType type, const ShapeContainer& collider, const units::Coordinate2D& position) : Movable(type), collider_(collider), position_(position) {
+	_init();
+}
+Mover::Mover(const ShapeContainer& collider, const units::Coordinate2D& position) : collider_(collider), position_(position) {
+	_init();
 }
 
 void Mover::update(const units::MS elapsedTime, const CollisionMap* const map) {
@@ -36,7 +42,7 @@ void Mover::update_position(const units::MS elapsedTime, const units::Velocity m
 		velocity_.y = isPos ? (velocity_.y < 0 ? 0.0f : velocity_.y) : (velocity_.y > 0 ? 0.0f : velocity_.y);
 	}
 	const units::Coordinate2D delta(velocity_*(units::Coordinate)(elapsedTime));
-	position_ = Movable::move(position_, &collider_, delta, map);
+	position_ = Movable::move(collider_, position_, delta, map);
 }
 
 void Mover::setPosition(units::Coordinate2D position) {
@@ -47,8 +53,8 @@ const units::Coordinate2D& Mover::getPosition() const {
 	return position_;
 }
 
-const Polygon* const Mover::getCollider() const {
-	return &collider_;
+const ShapeContainer& Mover::getCollider() const {
+	return collider_;
 }
 
 void Mover::moveLeft()  { acceleration_.x = -ACCELERATION; }

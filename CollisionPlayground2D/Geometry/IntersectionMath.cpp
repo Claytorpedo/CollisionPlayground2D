@@ -7,6 +7,7 @@
 #include "LineSegment.h"
 #include "Ray.h"
 #include "Shape.h"
+#include "ShapeContainer.h"
 #include "Rectangle.h"
 #include "SAT.h"
 
@@ -243,13 +244,13 @@ namespace isect {
 			   first.top()    < second.bottom() &&
 			   first.bottom() > second.top();
 	}
-	bool intersects(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos) {
-		if (!intersects(first->getAABB() + firstPos, second->getAABB() + secondPos)) // Bounds test for quick out.
+	bool intersects(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos) {
+		if (!intersects(first.shape().getAABB() + firstPos, second.shape().getAABB() + secondPos)) // Bounds test for quick out.
 			return false;
 		return sat::performSAT(first, firstPos, second, secondPos);
 	}
-	bool intersects(const Shape* const first, const Shape* const second) {
-		if (!intersects(first->getAABB(), second->getAABB())) // Bounds test for quick out.
+	bool intersects(const ShapeContainer& first, const ShapeContainer& second) {
+		if (!intersects(first.shape().getAABB(), second.shape().getAABB())) // Bounds test for quick out.
 			return false;
 		return sat::performSAT(first, second);
 	}

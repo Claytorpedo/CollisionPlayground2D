@@ -4,14 +4,13 @@
 
 #include "../Units.h"
 
-class Shape;
-class Rectangle;
+class ShapeContainer;
 
 class Collidable {
 public:
 	virtual ~Collidable() {}
 	virtual const units::Coordinate2D& getPosition() const = 0;
-	virtual const Shape* const getCollider() const = 0;
+	virtual const ShapeContainer& getCollider() const = 0;
 };
 
 #endif //_COLLIDABLE_H

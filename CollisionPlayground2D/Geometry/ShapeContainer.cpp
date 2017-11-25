@@ -24,6 +24,7 @@ ShapeContainer::ShapeContainer(ShapeContainer&& other) : type_(other.type_) {
 ShapeContainer& ShapeContainer::operator=(const ShapeContainer& other) {
 	if (this == &other)
 		return *this;
+	delete shape_;
 	type_ = other.type_;
 	__CLONE_SHAPE(other);
 	return *this;
@@ -31,6 +32,7 @@ ShapeContainer& ShapeContainer::operator=(const ShapeContainer& other) {
 ShapeContainer& ShapeContainer::operator=(ShapeContainer&& other) {
 	if (this == &other)
 		return *this;
+	delete shape_;
 	type_ = other.type_;
 	other.shape_ = nullptr;
 	__MOVE_SHAPE(other);

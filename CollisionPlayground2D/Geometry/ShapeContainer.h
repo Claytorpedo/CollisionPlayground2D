@@ -6,13 +6,16 @@
 #include "Polygon.h"
 #include "Rectangle.h"
 
+enum class ShapeType {
+	EMPTY,
+	RECTANGLE,
+	POLYGON,
+};
+
 class ShapeContainer {
 public:
-	enum class ShapeType {
-		RECTANGLE,
-		POLYGON,
-	};
 	~ShapeContainer() { delete shape_; }
+	ShapeContainer()                   : type_(ShapeType::EMPTY), shape_(nullptr) {}
 	ShapeContainer(Polygon* const p)   : type_(ShapeType::POLYGON), poly_(p), shape_(poly_) {}
 	ShapeContainer(Rectangle* const r) : type_(ShapeType::RECTANGLE), rect_(r), shape_(rect_) {}
 	ShapeContainer(const ShapeContainer& other);

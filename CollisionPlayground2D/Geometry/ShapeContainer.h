@@ -16,8 +16,10 @@ class ShapeContainer {
 public:
 	~ShapeContainer() { delete shape_; }
 	ShapeContainer()                   : type_(ShapeType::EMPTY), shape_(nullptr) {}
+	ShapeContainer(const Polygon& p)   : type_(ShapeType::POLYGON), poly_(new Polygon(p)), shape_(poly_) {}
 	ShapeContainer(Polygon* const p)   : type_(ShapeType::POLYGON), poly_(p), shape_(poly_) {}
 	ShapeContainer(Rectangle* const r) : type_(ShapeType::RECTANGLE), rect_(r), shape_(rect_) {}
+	ShapeContainer(const Rectangle& r) : type_(ShapeType::RECTANGLE), rect_(new Rectangle(r)), shape_(rect_) {}
 	ShapeContainer(const ShapeContainer& other);
 	ShapeContainer(ShapeContainer&& other);
 	ShapeContainer& operator=(const ShapeContainer& other);

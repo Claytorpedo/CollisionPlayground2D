@@ -5,7 +5,7 @@
 
 class LineSegment;
 class Ray;
-class Shape;
+class ShapeContainer;
 class Rectangle;
 
 namespace isect {
@@ -34,8 +34,8 @@ namespace isect {
 	// Note that "touching" shapes are not considered intersecting if they have no overlap.
 
 	bool intersects(const Rectangle& first, const Rectangle& second);
-	bool intersects(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos);
-	bool intersects(const Shape* const first, const Shape* const second);
+	bool intersects(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos);
+	bool intersects(const ShapeContainer& first, const ShapeContainer& second);
 }
 
 #endif // _INTERSECTION_MATH_H

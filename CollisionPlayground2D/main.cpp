@@ -32,7 +32,7 @@ public:
 	}
 	void add(std::vector<Polygon> polys) {
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			Wall* w = new Wall(new Polygon(polys[i]));
+			Wall* w = new Wall(ShapeContainer(new Polygon(polys[i])));
 			obstacles_.push_back(w);
 		}
 	}
@@ -120,7 +120,7 @@ Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangl
 	while(true) {
 		bool isOccupied = false;
 		for (std::size_t i = 0; i < polys.size(); ++i) {
-			if (isect::intersects(&collider, position, &polys[i], units::Coordinate2D(0,0))) {
+			if (isect::intersects(collider, position, polys[i], units::Coordinate2D(0,0))) {
 				isOccupied = true;
 				collider = Polygon::generate(twister, Rectangle());
 				position = units::Coordinate2D(distX(twister), distY(twister));
@@ -132,7 +132,7 @@ Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangl
 			break;
 	}
 	std::cout << "Mover has entered the level.\n";
-	return Mover(position, collider);
+	return Mover(ShapeContainer(collider), position);
 }
 
 int main (int argc, char* args[]) {
@@ -201,11 +201,11 @@ int main (int argc, char* args[]) {
 		mover.update(elapsedTime, &objs);
 
 		graphics.clear();
-		Polygon collider(*mover.getCollider());
+		Polygon collider(mover.getCollider().poly()); // We know it's a polygon, because we made it above.
 		collider.translate(mover.getPosition());
 		for (std::size_t i = 0; i < polys.size(); ++i) {
 #ifdef DEBUG
-			isect::intersects(&collider, &polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+			isect::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
 			drawPoly(polys[i], graphics);
 #else
 			graphics.setRenderColour(0, 100, 255);

@@ -3,7 +3,7 @@
 #define _MOVER_H
 
 #include "Geometry/Movable.h"
-#include "Geometry/Polygon.h"
+#include "Geometry/ShapeContainer.h"
 #include "Units.h"
 
 class CollisionMap;
@@ -16,8 +16,8 @@ public:
 	static const units::Acceleration DECELERATION;
 
 	Mover() {}
-	Mover(Movable::CollisionType type, units::Coordinate2D position, Polygon collider);
-	Mover(units::Coordinate2D position, Polygon collider);
+	Mover(Movable::CollisionType type, const ShapeContainer& collider, const units::Coordinate2D& position);
+	Mover(const ShapeContainer& collider, const units::Coordinate2D& position);
 	~Mover() {}
 
 	void update(const units::MS elapsedTime, const CollisionMap* const map);
@@ -25,7 +25,7 @@ public:
 	void setPosition(const units::Coordinate2D position);
 
 	const units::Coordinate2D& getPosition() const;
-	const Polygon* const getCollider() const;
+	const ShapeContainer& getCollider() const;
 
 	void moveLeft();
 	void moveRight();
@@ -35,13 +35,14 @@ public:
 	void stopMovingVertical();
 	void stopMoving();
 private:
+	ShapeContainer collider_;
 	units::Coordinate2D position_;
-	Polygon collider_;
 
 	units::Acceleration2D acceleration_;
 	units::Velocity2D velocity_;
 
 	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap* const polys);
+	void _init() const;
 };
 
 #endif // _MOVER_H

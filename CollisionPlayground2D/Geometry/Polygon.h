@@ -22,8 +22,7 @@ public:
 	// The final vertex connects with the first vertex.
 	Polygon(std::vector<units::Coordinate2D> vertices);
 	Polygon(std::vector<units::Coordinate2D> vertices, std::vector<units::Coordinate2D> edgeNormals);
-	Polygon(const Polygon& poly);
-	~Polygon();
+	virtual ~Polygon() = default;
 
 	// Randomly generate a polygon.
 	// region is a bounding box defining the region to place the polygon's center in (part of the polygon can be outside this region).
@@ -52,9 +51,8 @@ public:
 	// Get normalized counter-clockwise edge normal for the polygon at a given index.
 	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
 	const units::Coordinate2D& getEdgeNorm(std::size_t index) const;
-	units::Coordinate2D& getEdgeNorm(std::size_t index);
 	// Compute all normals for the polygon.
-	void computeNormals();
+	void computeNormals() const;
 
 	// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
 	void expand(const units::Coordinate expandAmount);

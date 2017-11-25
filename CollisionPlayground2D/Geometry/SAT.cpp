@@ -9,32 +9,37 @@
 #include "Polygon.h"
 #include "Rectangle.h"
 #include "Projection.h"
+#include "ShapeContainer.h"
+
 
 /*
 System for finding the separating axes for the given shapes.
-This is a little messy by nature.
 Determine the type of shape the first one is, then see if it forms a special case when paired with the second shape.
 Returns true if it encounteres a special case that handled both shapes.
 */
-inline bool _get_separating_axes(const Shape* const first, const Shape* const second, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
-	if (const Polygon* const p = dynamic_cast<const Polygon* const>(first)) {
-		axes.reserve(axes.size() + p->size());
-		for (std::size_t i = 0; i < p->size(); ++i)
-			axes.push_back(p->getEdgeNorm(i));
-	} else if (dynamic_cast<const Rectangle* const>(first)) {
+inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContainer& second, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
+	switch (first.type()) {
+	case (ShapeType::RECTANGLE):
 		axes.push_back(units::Coordinate2D(1, 0)); // Rectangles are axis-alligned.
 		axes.push_back(units::Coordinate2D(0, 1));
-		if (isFirstCall && dynamic_cast<const Rectangle* const>(second)) // Special case: will share axes.
+		if (isFirstCall && second.type() == ShapeType::RECTANGLE) // Rectangles will share axes.
 			return true;
-	} else {
+		break;
+	case (ShapeType::POLYGON):
+		axes.reserve(axes.size() + first.poly().size());
+		for (std::size_t i = 0; i < first.poly().size(); ++i)
+			axes.push_back(first.poly().getEdgeNorm(i));
+		break;
+	default:
 		DBG_WARN("Unhandled shape type for SAT. Converting to polygon.");
-		Polygon p = first->toPoly();
+		Polygon p = first.shape().toPoly();
 		for (std::size_t i = 0; i < p.size(); ++i)
 			axes.push_back(p.getEdgeNorm(i));
 	}
 	return false;
 }
-inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const Shape* const first, const Shape* const second) {
+// Gets the separating axes for two shapes.
+inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second) {
 	std::vector<units::Coordinate2D> axes;
 	if (_get_separating_axes(first, second, axes, true))
 		return axes;
@@ -45,22 +50,22 @@ inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const Shape* cons
 const static units::Fraction MAX_TIME = 1.0f; // Using interval [0,1].
 // Tests the axes of one polygon against the other using SAT. Checks if they are currently overlapping, or will overlap in the future (SAT test and sweep test).
 // Note that out_enterTime, out_exitTime, and out_mtv_dist need to be set to defaults on the first call.
+// axes        - the separating axes for these shapes.
 // offset      - the position of first - second.
 // relativeVel - the velocity of first - second (we act as if only first is moving).
 // out_norm    - the normal of collision, or direction of separation for the case where the shapes are already overlapping.
 // out_t       - the time of collision, or the distance to move for the case where the shapes are already overlapping.
 // Returns the type of collision: NONE, a current MTV collision, or a future SWEEP collision on the interval [0, MAX].
-inline sat::HybridResult _perform_hybrid_SAT(const Shape* const first, const Shape* const second, const units::Coordinate2D& offset,
+inline sat::HybridResult _perform_hybrid_SAT(const Shape& first, const Shape& second, const std::vector<units::Coordinate2D>& axes, const units::Coordinate2D& offset,
                                              const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t) {
-	const std::vector<units::Coordinate2D> axes = sat::getSeparatingAxes(first, second);
 	bool areCurrentlyOverlapping = true; // Start by assuming they are overlapping.
 	units::Coordinate mtv_dist(-1), testDist, overlap1, overlap2;
 	units::Fraction speed, enterTime(-1), exitTime(MAX_TIME), testEnter, testExit;
 	units::Coordinate2D mtv_norm, sweep_norm;
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
-		projFirst = first->getProjection(axes[i]);
-		projSecond = second->getProjection(axes[i]);
+		projFirst = first.getProjection(axes[i]);
+		projSecond = second.getProjection(axes[i]);
 		projFirst += offset.dot(axes[i]); // Apply offset between the two polygons' positions.
 		overlap1 = projFirst.max - projSecond.min - constants::EPSILON;
 		overlap2 = projSecond.max - projFirst.min - constants::EPSILON;
@@ -115,25 +120,27 @@ inline sat::HybridResult _perform_hybrid_SAT(const Shape* const first, const Sha
 	return sat::HybridResult::SWEEP;
 }
 
-bool sat::performSAT(const Shape* const first, const Shape* const second) {
+bool sat::performSAT(const ShapeContainer& first, const ShapeContainer& second) {
 	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second));
+	const Shape &firstShape(first.shape()), &secondShape(second.shape());
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
-		projFirst = first->getProjection(axes[i]);
-		projSecond = second->getProjection(axes[i]);
+		projFirst = firstShape.getProjection(axes[i]);
+		projSecond = secondShape.getProjection(axes[i]);
 		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
 			return false;
 	}
 	return true;
 }
 
-bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos) {
+bool sat::performSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos) {
 	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second));
 	const units::Coordinate2D offset(firstPos - secondPos);
+	const Shape &firstShape(first.shape()), &secondShape(second.shape());
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
-		projFirst = first->getProjection(axes[i]);
-		projSecond = second->getProjection(axes[i]);
+		projFirst = firstShape.getProjection(axes[i]);
+		projSecond = secondShape.getProjection(axes[i]);
 		projFirst += offset.dot(axes[i]); // Apply offset between the two shapes' positions.
 		if (projFirst.min + constants::EPSILON > projSecond.max || projFirst.max < projSecond.min + constants::EPSILON)
 			return false;
@@ -141,16 +148,17 @@ bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstP
 	return true;
 }
 
-bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstPos, const Shape* const second, const units::Coordinate2D& secondPos,
+bool sat::performSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos,
                      units::Coordinate2D& out_norm, units::Coordinate& out_dist) {
 	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second));
 	const units::Coordinate2D offset(firstPos - secondPos);
+	const Shape &firstShape(first.shape()), &secondShape(second.shape());
 	units::Coordinate2D norm, testNorm;
 	units::Coordinate overlap1, overlap2, minDist(-1), testDist;
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
-		projFirst = first->getProjection(axes[i]);
-		projSecond = second->getProjection(axes[i]);
+		projFirst = firstShape.getProjection(axes[i]);
+		projSecond = secondShape.getProjection(axes[i]);
 		projFirst += offset.dot(axes[i]); // Apply offset between the two shapes' positions.
 		overlap1 = projFirst.max - projSecond.min;
 		overlap2 = projSecond.max - projFirst.min;
@@ -174,15 +182,15 @@ bool sat::performSAT(const Shape* const first, const units::Coordinate2D& firstP
 	return true;
 }
 
-sat::HybridResult sat::performHybridSAT(const Shape* const first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-	const Shape* const second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+sat::HybridResult sat::performHybridSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+                                        const ShapeContainer& second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t) {
 	if (firstDelta.isZero()) // No movement, just do regular SAT.
 		return performSAT(first, firstPos, second, secondPos, out_norm, out_t) ? sat::HybridResult::MTV : sat::HybridResult::NONE;
-	return _perform_hybrid_SAT(first, second, firstPos - secondPos, firstDelta, out_norm, out_t);
+	return _perform_hybrid_SAT(first.shape(), second.shape(), sat::getSeparatingAxes(first, second), firstPos - secondPos, firstDelta, out_norm, out_t);
 }
 
-sat::HybridResult sat::performHybridSAT(const Shape* const first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
-	const Shape* const second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+sat::HybridResult sat::performHybridSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
+                                        const ShapeContainer& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t) {
 	const units::Coordinate2D delta = firstDelta - secondDelta; // Treat second as if it is stationary.
 	return performHybridSAT(first, firstPos, delta, second, secondPos, out_norm, out_t);
 }

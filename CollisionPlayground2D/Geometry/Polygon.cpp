@@ -17,8 +17,6 @@ Polygon::Polygon(std::vector<units::Coordinate2D> vertices, std::vector<units::C
 	             : vertices_(vertices), edge_normals_(edgeNormals), x_min_(), x_max_(), y_min_(), y_max_() {
 	_find_bounds();
 }
-Polygon::Polygon(const Polygon& poly) : vertices_(poly.vertices_), edge_normals_(poly.edge_normals_), x_min_(poly.left()), x_max_(poly.right()), y_min_(poly.top()), y_max_(poly.bottom()) {}
-Polygon::~Polygon() {}
 
 void Polygon::_find_bounds() {
 	if (vertices_.empty()) {
@@ -85,11 +83,8 @@ const units::Coordinate2D& Polygon::getEdgeNorm(std::size_t index) const {
 	edge_normals_[index] = units::Coordinate2D(first.y - second.y, second.x - first.x).normalize();
 	return edge_normals_[index];
 }
-units::Coordinate2D& Polygon::getEdgeNorm(std::size_t index) {
-	return const_cast<units::Coordinate2D&>(static_cast<const Polygon&>(*this).getEdgeNorm(index));
-}
 
-void Polygon::computeNormals() {
+void Polygon::computeNormals() const {
 	for (std::size_t i = 0; i < edge_normals_.size(); ++i)
 		getEdgeNorm(i);
 }

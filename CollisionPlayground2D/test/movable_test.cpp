@@ -8,6 +8,7 @@
 #include "../Geometry/Wall.h"
 #include "../Geometry/CollisionMap.h"
 #include "../Units.h"
+#include "../Geometry/ShapeContainer.h"
 #include "../Geometry/Polygon.h"
 #include "../Geometry/Rectangle.h"
 
@@ -15,18 +16,16 @@ using namespace units;
 
 
 struct MovableTest : public Movable {
-	Shape* collider;
+	ShapeContainer collider;
 	Coordinate2D position;
 
-	MovableTest(Movable::CollisionType type, Shape* collider) : Movable(type), collider(collider) {}
-	MovableTest(Movable::CollisionType type, Shape* collider, Coordinate2D position) : Movable(type), collider(collider), position(position) {}
-	~MovableTest() {
-		delete collider;
-	}
+	MovableTest(Movable::CollisionType type, const ShapeContainer& collider) : Movable(type), collider(collider) {}
+	MovableTest(Movable::CollisionType type, const ShapeContainer& collider, Coordinate2D position) : Movable(type), collider(collider), position(position) {}
+	~MovableTest() {}
 	const Coordinate2D& getPosition() const { return position;  }
-	const Shape* const getCollider() const { return collider; }
+	const ShapeContainer& getCollider() const { return collider; }
 	void move(const Coordinate2D& delta, const CollisionMap& map) {
-		position = Movable::move(position, collider, delta, &map);
+		position = Movable::move(collider, position, delta, &map);
 	}
 };
 
@@ -40,10 +39,10 @@ public:
 	virtual const std::vector<Collidable*> getColliding(const Collidable& collider, const units::Coordinate2D& delta) const {
 		return std::vector<Collidable*>(obstacles_.begin(), obstacles_.end());
 	}
-	void add(Shape* obstacle) {
+	void add(const ShapeContainer& obstacle) {
 		obstacles_.push_back(new Wall(obstacle));
 	}
-	void add(Shape* obstacle, const Coordinate2D& position) {
+	void add(const ShapeContainer& obstacle, const Coordinate2D& position) {
 		obstacles_.push_back(new Wall(obstacle, position));
 	}
 	void clear() {
@@ -58,9 +57,9 @@ private:
 SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflection]") {
 	CollisionMapTest map;
 	GIVEN("The movable is a right triangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Polygon(shapes::rightTri));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Polygon(shapes::rightTri)));
 		GIVEN("The stationary collidable is a rectangle.") {
-			map.add(new Rectangle(0, 0, 1, 1));
+			map.add(Rectangle(0, 0, 1, 1));
 			WHEN("The collider misses the rectangle.") {
 				Coordinate2D origin(0, -10);
 				Coordinate2D delta(10, 0);
@@ -101,7 +100,7 @@ SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflectio
 			}
 		}
 		GIVEN("The stationary collidable is a triangle with a matching edge.") {
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(0, 5));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(0, 5));
 			WHEN("The movable collides with the matching edge.") {
 				Coordinate2D origin(0.5f, 0);
 				Coordinate2D dir(0, 1);
@@ -120,9 +119,9 @@ SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflectio
 		}
 	}
 	GIVEN("The movable is a rectangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Rectangle(0, 0, 1, 1));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rectangle(0, 0, 1, 1)));
 		GIVEN("The stationary collidable is an octagon.") {
-			map.add(new Polygon(shapes::octagon));
+			map.add(Polygon(shapes::octagon));
 			WHEN("The rectangle hits the octagon on the octagon's edge.") {
 				Coordinate2D origin(3, 0);
 				Coordinate2D dir(Coordinate2D(-1, 0.5f).normalize());
@@ -145,10 +144,10 @@ SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflectio
 SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][deflection]") {
 	CollisionMapTest map;
 	GIVEN("The movable is a rectangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Rectangle(0, 0, 1, 1));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rectangle(0, 0, 1, 1)));
 		GIVEN("Two stationary rectangles form a wall in mover's path.") {
-			map.add(new Rectangle(-3, 0.5f, 1, 1));
-			map.add(new Rectangle(-3, -0.5f, 1, 1));
+			map.add(Rectangle(-3, 0.5f, 1, 1));
+			map.add(Rectangle(-3, -0.5f, 1, 1));
 			WHEN("The mover moves left into them.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(-1, 0);
@@ -164,8 +163,8 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 			}
 		}
 		GIVEN("Two stationary rectangles, one to the left and one below the mover.") {
-			map.add(new Rectangle(-2, 2, 1, 2));
-			map.add(new Rectangle(-1, 4, 1, 1));
+			map.add(Rectangle(-2, 2, 1, 2));
+			map.add(Rectangle(-1, 4, 1, 1));
 			WHEN("The mover moves down-left.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(Coordinate2D(-1, 1).normalize());
@@ -182,12 +181,12 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 			}
 		}
 		GIVEN("A series of shapes.") {
-			map.add(new Rectangle(2, 2, 1, 1));
-			map.add(new Rectangle(2, 3, 1, 1));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(0.5f, 5));
-			map.add(new Rectangle(4, 9, 1, 1));
-			map.add(new Rectangle(5, 9, 1, 1));
-			map.add(new Rectangle(6, 8, 1, 0.5f));
+			map.add(Rectangle(2, 2, 1, 1));
+			map.add(Rectangle(2, 3, 1, 1));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(0.5f, 5));
+			map.add(Rectangle(4, 9, 1, 1));
+			map.add(Rectangle(5, 9, 1, 1));
+			map.add(Rectangle(6, 8, 1, 0.5f));
 			WHEN("The mover moves down-right.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(Coordinate2D(1, 1).normalize());
@@ -205,10 +204,10 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 		}
 	}
 	GIVEN("The movable is an isosceles triangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Polygon(shapes::isoTri));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Polygon(shapes::isoTri)));
 		GIVEN("Two stationary rectangles form a wall in mover's path.") {
-			map.add(new Rectangle(-3, 0.5f, 1, 1));
-			map.add(new Rectangle(-3, -0.5f, 1, 1));
+			map.add(Rectangle(-3, 0.5f, 1, 1));
+			map.add(Rectangle(-3, -0.5f, 1, 1));
 			WHEN("The mover moves left into them.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(-1, 0);
@@ -224,12 +223,12 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 			}
 		}
 		GIVEN("A series of shapes.") {
-			map.add(new Rectangle(2, 2, 1, 1));
-			map.add(new Rectangle(2, 3, 1, 1));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(0.5f, 5));
-			map.add(new Rectangle(4, 9, 1, 1));
-			map.add(new Rectangle(5, 9, 1, 1));
-			map.add(new Rectangle(6, 7.5f, 1, 0.5f));
+			map.add(Rectangle(2, 2, 1, 1));
+			map.add(Rectangle(2, 3, 1, 1));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(0.5f, 5));
+			map.add(Rectangle(4, 9, 1, 1));
+			map.add(Rectangle(5, 9, 1, 1));
+			map.add(Rectangle(6, 7.5f, 1, 0.5f));
 			WHEN("The mover moves down-right.") {
 				Coordinate2D origin(-1, 0);
 				Coordinate2D dir(Coordinate2D(1, 2).normalize());
@@ -251,10 +250,10 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 	CollisionMapTest map;
 	GIVEN("The mover is a rectangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Rectangle(0, 0, 1, 1));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rectangle(0, 0, 1, 1)));
 		GIVEN("A wedge formed by two triangles, with no room for the mover.") {
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(-1, 0), Coordinate2D(0, 1), Coordinate2D(0.5f, 0)}));
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(0.5f, 0), Coordinate2D(1, 1), Coordinate2D(2, 0)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(-1, 0), Coordinate2D(0, 1), Coordinate2D(0.5f, 0)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(0.5f, 0), Coordinate2D(1, 1), Coordinate2D(2, 0)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coordinate2D origin(0, 5);
 				Coordinate2D dir(Coordinate2D(0, -1).normalize());
@@ -269,8 +268,8 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			}
 		}
 		GIVEN("A wedge formed by two triangles, that the mover can move halfway down between.") {
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(-2, 0), Coordinate2D(-0.5f, 1), Coordinate2D(0.5f, 0)}));
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(0.5f, 0), Coordinate2D(1.5f, 1), Coordinate2D(2, 0)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(-2, 0), Coordinate2D(-0.5f, 1), Coordinate2D(0.5f, 0)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(0.5f, 0), Coordinate2D(1.5f, 1), Coordinate2D(2, 0)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coordinate2D origin(0, 5);
 				Coordinate2D dir(Coordinate2D(0, -1).normalize());
@@ -310,10 +309,10 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 		}
 	}
 	GIVEN("The mover is an isosceles triangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Polygon(shapes::isoTri));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Polygon(shapes::isoTri)));
 		GIVEN("A wedge formed by two triangles, that fit the mover perfectly.") {
-			map.add(new Polygon(std::vector<Coordinate2D>{ Coordinate2D(0, 0), Coordinate2D(-1, -1), Coordinate2D(-2, 0) }));
-			map.add(new Polygon(std::vector<Coordinate2D>{ Coordinate2D(-2, 0), Coordinate2D(-3, -1), Coordinate2D(-4, 0) }));
+			map.add(Polygon(std::vector<Coordinate2D>{ Coordinate2D(0, 0), Coordinate2D(-1, -1), Coordinate2D(-2, 0) }));
+			map.add(Polygon(std::vector<Coordinate2D>{ Coordinate2D(-2, 0), Coordinate2D(-3, -1), Coordinate2D(-4, 0) }));
 			WHEN("The mover moves down into the wedge.") {
 				Coordinate2D origin(-3, -5);
 				Coordinate2D dir(Coordinate2D(0, 1).normalize());
@@ -328,8 +327,8 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			}
 		}
 		GIVEN("A wedge formed by two triangles, that are spaced slightly apart.") {
-			map.add(new Polygon(std::vector<Coordinate2D>{ Coordinate2D(0, 0), Coordinate2D(-1, -1), Coordinate2D(-2, 0) }));
-			map.add(new Polygon(std::vector<Coordinate2D>{ Coordinate2D(-2.5f, 0), Coordinate2D(-3.5f, -1), Coordinate2D(-4.5f, 0) }));
+			map.add(Polygon(std::vector<Coordinate2D>{ Coordinate2D(0, 0), Coordinate2D(-1, -1), Coordinate2D(-2, 0) }));
+			map.add(Polygon(std::vector<Coordinate2D>{ Coordinate2D(-2.5f, 0), Coordinate2D(-3.5f, -1), Coordinate2D(-4.5f, 0) }));
 			WHEN("The mover moves down into the wedge.") {
 				Coordinate2D origin(-3, -5);
 				Coordinate2D dir(Coordinate2D(0, 1).normalize());
@@ -345,12 +344,12 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 		}
 	}
 	GIVEN("The mover is an octagon.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Polygon(shapes::octagon));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Polygon(shapes::octagon)));
 		GIVEN("A wedge formed by several shapes, that fit the octagon perfectly.") {
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(-2, 0), Coordinate2D(-1.5f, -1.5f), Coordinate2D(-2, -1)}));
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(-1.5f, -1.5f), Coordinate2D(0, -2), Coordinate2D(-1, -2)}));
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(0, -2), Coordinate2D(1.5f, -1.5f), Coordinate2D(1, -2)}));
-			map.add(new Polygon(std::vector<Coordinate2D>{Coordinate2D(1.5f, -1.5f), Coordinate2D(2, 0), Coordinate2D(2, -2)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(-2, 0), Coordinate2D(-1.5f, -1.5f), Coordinate2D(-2, -1)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(-1.5f, -1.5f), Coordinate2D(0, -2), Coordinate2D(-1, -2)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(0, -2), Coordinate2D(1.5f, -1.5f), Coordinate2D(1, -2)}));
+			map.add(Polygon(std::vector<Coordinate2D>{Coordinate2D(1.5f, -1.5f), Coordinate2D(2, 0), Coordinate2D(2, -2)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coordinate2D origin(0, 5);
 				Coordinate2D dir(Coordinate2D(0, -1).normalize());
@@ -383,10 +382,10 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 	CollisionMapTest map;
 	GIVEN("The mover is a rectangle.") {
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Rectangle(0, 0, 1, 1));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rectangle(0, 0, 1, 1)));
 		GIVEN("Two rectangles form a corridr.") {
-			map.add(new Rectangle(-1, -2, 1, 12));
-			map.add(new Rectangle(1, 0, 1, 10));
+			map.add(Rectangle(-1, -2, 1, 12));
+			map.add(Rectangle(1, 0, 1, 10));
 			WHEN("The mover moves down into the corridor.") {
 				Coordinate2D origin(0, -2);
 				Coordinate2D dir(Coordinate2D(0, 1).normalize());
@@ -413,11 +412,11 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 			}
 		}
 		GIVEN("Rectangles form a corridor with a stopper at the end.") {
-			map.add(new Rectangle(-1, 1, 1, 1));
-			map.add(new Rectangle(1, 1, 1, 1));
-			map.add(new Rectangle(-1, 2, 1, 5));
-			map.add(new Rectangle(1, 2, 1, 5));
-			map.add(new Rectangle(0, 7, 1, 1));
+			map.add(Rectangle(-1, 1, 1, 1));
+			map.add(Rectangle(1, 1, 1, 1));
+			map.add(Rectangle(-1, 2, 1, 5));
+			map.add(Rectangle(1, 2, 1, 5));
+			map.add(Rectangle(0, 7, 1, 1));
 			WHEN("The mover moves down into the corridor.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(Coordinate2D(0, 1).normalize());
@@ -432,14 +431,14 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 			}
 		}
 		GIVEN("Triangles form a diagonal corridor.") {
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(0, 1));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(1, 0));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(1, 2));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(2, 1));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(2, 3));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(3, 2));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(3, 4));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(4, 3));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(0, 1));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(1, 0));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(1, 2));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(2, 1));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(2, 3));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(3, 2));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(3, 4));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(4, 3));
 			WHEN("The mover moves diagonally through the corridor.") {
 				Coordinate2D origin(0, 0);
 				Coordinate2D dir(Coordinate2D(1, 1).normalize());
@@ -456,19 +455,19 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 	}
 	GIVEN("The mover is a rectangle, slightly smaller than a full unit.") {
 		// Allow the mover to deflect down a tight corridor, by taking the collision buffer into account.
-		MovableTest mover(Movable::CollisionType::DEFLECTION, new Rectangle(0, 0, 1 - Movable::COLLISION_BUFFER, 1 - Movable::COLLISION_BUFFER));
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rectangle(0, 0, 1 - Movable::COLLISION_BUFFER, 1 - Movable::COLLISION_BUFFER)));
 		GIVEN("Several shapes form a capped corridor with a bend in the middle.") {
-			map.add(new Rectangle(-1, 1, 1, 10));
-			map.add(new Rectangle(1, 1, 1, 9));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(0, 12));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(1, 11));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(1, 13));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(2, 12));
-			map.add(new Polygon(shapes::edgeTriR), Coordinate2D(2, 14));
-			map.add(new Polygon(shapes::rightTri), Coordinate2D(3, 13));
-			map.add(new Rectangle(2, 15, 1, 3));
-			map.add(new Rectangle(4, 14, 1, 4));
-			map.add(new Rectangle(3, 19, 1, 1));
+			map.add(Rectangle(-1, 1, 1, 10));
+			map.add(Rectangle(1, 1, 1, 9));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(0, 12));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(1, 11));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(1, 13));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(2, 12));
+			map.add(Polygon(shapes::edgeTriR), Coordinate2D(2, 14));
+			map.add(Polygon(shapes::rightTri), Coordinate2D(3, 13));
+			map.add(Rectangle(2, 15, 1, 3));
+			map.add(Rectangle(4, 14, 1, 4));
+			map.add(Rectangle(3, 19, 1, 1));
 			WHEN("The mover moves down through the corridor.") {
 				Coordinate2D origin(Movable::COLLISION_BUFFER * 0.5f, 0);
 				Coordinate2D dir(Coordinate2D(0, 1).normalize());

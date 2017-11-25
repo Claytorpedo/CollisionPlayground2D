@@ -140,5 +140,8 @@
     <ClInclude Include="test\catch.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Geometry\ShapeContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

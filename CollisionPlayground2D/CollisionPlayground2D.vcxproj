@@ -154,6 +154,7 @@
     <ClInclude Include="Geometry\Rectangle.h" />
     <ClInclude Include="Geometry\SAT.h" />
     <ClInclude Include="Geometry\Shape.h" />
+    <ClInclude Include="Geometry\ShapeContainer.h" />
     <ClInclude Include="Geometry\Wall.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="Input.h" />

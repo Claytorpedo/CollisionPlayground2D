@@ -12,7 +12,7 @@ Projection Rectangle::getProjection(const units::Coordinate2D& axis) const {
 	proj = axis.dot(topRight());
 	if (proj < min)
 		min = proj;
-	else
+	else // Max and min are the same right now.
 		max = proj;
 	proj = axis.dot(bottomLeft());
 	if (proj < min)
@@ -25,6 +25,27 @@ Projection Rectangle::getProjection(const units::Coordinate2D& axis) const {
 	else if (proj > max)
 		max = proj;
 	return Projection(min, max);
+}
+
+units::Coordinate2D Rectangle::getClosestTo(const units::Coordinate2D point) const {
+	units::Coordinate minDist((point - topLeft()).magnitude2()), testDist;
+	units::Coordinate2D closest(topLeft());
+	testDist = (point - topRight()).magnitude2();
+	if (testDist < minDist) {
+		minDist = testDist;
+		closest = topRight();
+	}
+	testDist = (point - bottomRight()).magnitude2();
+	if (testDist < minDist) {
+		minDist = testDist;
+		closest = bottomRight();
+	}
+	testDist = (point - bottomLeft()).magnitude2();
+	if (testDist < minDist) {
+		minDist = testDist;
+		closest = bottomLeft();
+	}
+	return closest;
 }
 
 Polygon Rectangle::toPoly() const {

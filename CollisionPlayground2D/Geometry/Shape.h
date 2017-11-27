@@ -34,6 +34,8 @@ public:
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
 	// Get the axis-aligned bounding box for a shape.
 	virtual Rectangle getAABB() const;
+	// Find the closest vertex/point to a given point.
+	virtual units::Coordinate2D getClosestTo(const units::Coordinate2D& point) const;
 
 	// Get x or y coodrinate in a given direction.
 	units::Coordinate side(direction::Direction side) const;

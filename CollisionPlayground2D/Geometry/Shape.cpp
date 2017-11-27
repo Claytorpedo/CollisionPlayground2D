@@ -33,3 +33,7 @@ Polygon Shape::extend(const units::Coordinate2D& dir, const units::Coordinate di
 Rectangle Shape::getAABB() const {
 	return Rectangle(left(), top(), right() - left(), bottom() - top());
 }
+
+units::Coordinate2D Shape::getClosestTo(const units::Coordinate2D& point) const {
+	return this->toPoly().getClosestTo(point);
+}

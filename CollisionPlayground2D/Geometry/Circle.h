@@ -24,6 +24,7 @@ public:
 	inline virtual units::Coordinate bottom() const { return center.y + radius; }
 
 	virtual Projection getProjection(const units::Coordinate2D& axis) const;
+	virtual units::Coordinate2D getClosestTo(const units::Coordinate2D& point) const; // Gets closest point on the circle.
 	virtual Polygon toPoly() const;
 };
 

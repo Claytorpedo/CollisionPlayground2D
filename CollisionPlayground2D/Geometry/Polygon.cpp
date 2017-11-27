@@ -324,6 +324,19 @@ Polygon Polygon::translate(const Polygon& p, const units::Coordinate2D& delta) {
 	return t;
 }
 
+units::Coordinate2D Polygon::getClosestTo(const units::Coordinate2D& point) const {
+	units::Coordinate minDist(-1), testDist;
+	units::Coordinate2D closest;
+	for (std::size_t i = 0; i < vertices_.size(); ++i) {
+		testDist = (point - vertices_[i]).magnitude2();
+		if (minDist == -1 || testDist < minDist) {
+			minDist = testDist;
+			closest = vertices_[i];
+		}
+	}
+	return closest;
+}
+
 Polygon Polygon::toPoly() const {
 	return Polygon(*this);
 }

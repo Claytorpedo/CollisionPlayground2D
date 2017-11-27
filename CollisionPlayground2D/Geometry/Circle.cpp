@@ -13,6 +13,11 @@ Projection Circle::getProjection(const units::Coordinate2D& axis) const {
 	return Projection(proj - radius, proj + radius);
 }
 
+units::Coordinate2D Circle::getClosestTo(const units::Coordinate2D& point) const {
+	const units::Coordinate2D dir((point - center).normalize());
+	return dir * radius;
+}
+
 Polygon Circle::toPoly() const {
 	// Approximate a circle with line segments.
 	std::vector<units::Coordinate2D> vertices;

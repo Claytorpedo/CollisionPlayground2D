@@ -48,6 +48,10 @@ public:
 	// Extend a polygon by projecting it along a direction by dist.
 	virtual Polygon extend(const units::Coordinate2D& dir, const units::Coordinate dist) const;
 
+	// Find the closest vertex to the given point.
+	// Note: this doesn't disqualify the edge case were the closest vertex could be on the "far" side of the polygon.
+	virtual units::Coordinate2D getClosestTo(const units::Coordinate2D& point) const;
+
 	// Get normalized counter-clockwise edge normal for the polygon at a given index.
 	// Edges are indexed by vertex order, e.g. edge 0 is made from vertex 0 and 1.
 	const units::Coordinate2D& getEdgeNorm(std::size_t index) const;

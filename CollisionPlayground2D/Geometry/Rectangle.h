@@ -38,6 +38,7 @@ public:
 	inline bool isInside(const Rectangle& o) const; // See if this rectangle is contained by another one.
 	
 	virtual Projection getProjection(const units::Coordinate2D& axis) const;
+	virtual units::Coordinate2D getClosestTo(const units::Coordinate2D point) const; // Gets closest corner of the rectangle.
 	virtual Polygon toPoly() const;
 };
 

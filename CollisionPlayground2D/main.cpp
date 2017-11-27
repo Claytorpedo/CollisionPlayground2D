@@ -12,6 +12,7 @@
 #include "Mover.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"
+#include "Geometry/Circle.h"
 #include "Geometry/IntersectionMath.h"
 #include "Geometry/CollisionMap.h"
 #include "Geometry/Wall.h"
@@ -98,18 +99,6 @@ void drawPolyEdgeNormals(const Polygon& p, Graphics& graphics) {
 }
 
 // -------------------------------------------------------------------------------------
-
-Polygon genCircle(units::Coordinate2D cen, units::Coordinate radius, Uint8 numSegs=15) {
-	// Approximate a circle with line segments.
-	std::vector<units::Coordinate2D> vertices(numSegs);
-	const units::Coordinate f(constants::TAU / static_cast<units::Coordinate>(numSegs));
-	for (Uint8 i = 0; i < numSegs; ++i) {
-		const units::Coordinate theta(f*static_cast<units::Coordinate>(i));
-		const units::Coordinate2D pos(radius * cosf(theta), radius * sinf(theta));
-		vertices[numSegs - i - 1] = cen + pos;
-	}
-	return Polygon(vertices);
-}
 
 Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangle& region) {
 	Polygon collider = Polygon::generate(twister, Rectangle());

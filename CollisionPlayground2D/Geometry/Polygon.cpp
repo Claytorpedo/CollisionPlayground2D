@@ -6,6 +6,8 @@
 
 #include "Rectangle.h"
 #include "Projection.h"
+#include "../Units.h"
+#include "../Constants.h"
 
 const units::Coordinate Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;
 

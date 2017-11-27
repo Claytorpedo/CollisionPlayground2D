@@ -1,20 +1,17 @@
-#ifndef RECTANGLE_H_
-#define RECTANGLE_H_
+#ifndef _RECTANGLE_H
+#define _RECTANGLE_H
 
 #include "Shape.h"
 #include "Polygon.h"
-#include "../Constants.h"
 #include "Projection.h"
-
-using namespace units;
 
 class Rectangle : public Shape {
 public:
-	Coordinate x, y, w, h;
+	units::Coordinate x, y, w, h;
 
 	Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {}
-	Rectangle(Coordinate x, Coordinate y, Coordinate w, Coordinate h) : x(x), y(y), w(w), h(h) {}
-	Rectangle(Coordinate2D topLeft, Coordinate w, Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
+	Rectangle(units::Coordinate x, units::Coordinate y, units::Coordinate w, units::Coordinate h) : x(x), y(y), w(w), h(h) {}
+	Rectangle(units::Coordinate2D topLeft, units::Coordinate w, units::Coordinate h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
 	Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
 	// Translate by a vector.
@@ -22,57 +19,26 @@ public:
 	// Translate by a vector.
 	inline Rectangle operator+(const units::Coordinate2D& c) { return Rectangle(x + c.x, y + c.y, w, h); }
 
-	inline Coordinate2D position() const { return Coordinate2D(x, y); }
-	inline Coordinate2D center()   const { return Coordinate2D(x + w*0.5f, y + h*0.5f); }
-	inline Coordinate center_x() const { return x + w*0.5f; }
-	inline Coordinate center_y() const { return y + h*0.5f; }
-	inline Coordinate width()    const { return w; }
-	inline Coordinate height()   const { return h; }
-	inline virtual Coordinate left()   const { return x; }
-	inline virtual Coordinate right()  const { return x + w; }
-	inline virtual Coordinate top()    const { return y; }
-	inline virtual Coordinate bottom() const { return y + h; }
+	inline units::Coordinate2D position() const { return units::Coordinate2D(x, y); }
+	inline units::Coordinate2D center()   const { return units::Coordinate2D(x + w*0.5f, y + h*0.5f); }
+	inline units::Coordinate center_x() const { return x + w*0.5f; }
+	inline units::Coordinate center_y() const { return y + h*0.5f; }
+	inline units::Coordinate width()    const { return w; }
+	inline units::Coordinate height()   const { return h; }
+	inline virtual units::Coordinate left()   const { return x; }
+	inline virtual units::Coordinate right()  const { return x + w; }
+	inline virtual units::Coordinate top()    const { return y; }
+	inline virtual units::Coordinate bottom() const { return y + h; }
 
-	inline Coordinate2D topLeft()     const { return Coordinate2D(left(),  top()); }
-	inline Coordinate2D topRight()    const { return Coordinate2D(right(), top()); }
-	inline Coordinate2D bottomLeft()  const { return Coordinate2D(left(),  bottom()); }
-	inline Coordinate2D bottomRight() const { return Coordinate2D(right(), bottom()); }
+	inline units::Coordinate2D topLeft()     const { return units::Coordinate2D(left(),  top()); }
+	inline units::Coordinate2D topRight()    const { return units::Coordinate2D(right(), top()); }
+	inline units::Coordinate2D bottomLeft()  const { return units::Coordinate2D(left(),  bottom()); }
+	inline units::Coordinate2D bottomRight() const { return units::Coordinate2D(right(), bottom()); }
 
-	inline bool isInside(const Rectangle& o) const {
-		return right() <= o.right() + constants::EPSILON && bottom() <= o.bottom() + constants::EPSILON && 
-		       left() >= o.left() - constants::EPSILON   && top() >= o.top() - constants::EPSILON;
-	}
+	inline bool isInside(const Rectangle& o) const; // See if this rectangle is contained by another one.
 	
-	virtual Projection getProjection(const units::Coordinate2D& axis) const {
-		units::Coordinate proj(axis.dot(topLeft()));
-		units::Coordinate min(proj), max(proj);
-		proj = axis.dot(topRight());
-		if (proj < min)
-			min = proj;
-		else
-			max = proj;
-		proj = axis.dot(bottomLeft());
-		if (proj < min)
-			min = proj;
-		else if (proj > max)
-			max = proj;
-		proj = axis.dot(bottomRight());
-		if (proj < min)
-			min = proj;
-		else if (proj > max)
-			max = proj;
-		return Projection(min, max);
-	}
-
-	virtual Polygon toPoly() const {
-		std::vector<units::Coordinate2D> vertices;
-		vertices.reserve(4);
-		vertices.push_back(topLeft());
-		vertices.push_back(bottomLeft());
-		vertices.push_back(bottomRight());
-		vertices.push_back(topRight());
-		return Polygon(vertices);
-	}
+	virtual Projection getProjection(const units::Coordinate2D& axis) const;
+	virtual Polygon toPoly() const;
 };
 
-#endif // RECTANGLE_H_
+#endif // _RECTANGLE_H_

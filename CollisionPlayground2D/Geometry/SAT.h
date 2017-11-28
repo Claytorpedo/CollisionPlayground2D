@@ -45,10 +45,10 @@ namespace sat {
 	HybridResult performHybridSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,
 		const ShapeContainer& second, const units::Coordinate2D& secondPos, const units::Coordinate2D& secondDelta, units::Coordinate2D& out_norm, units::Fraction& out_t);
 
-	// Given two shapes, find the axes of separation for them.
+	// Given two shapes, find the axes of separation for them. Offset is first's position - second's position.
 	// If given an unknown shape type, converts the shape to a polygon and uses that.
 	// Returns a vector of normalized separating axes.
-	std::vector<units::Coordinate2D> getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second);
+	std::vector<units::Coordinate2D> getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset=units::Coordinate2D(0,0));
 }
 
 #endif // _SAT_H

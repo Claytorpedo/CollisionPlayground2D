@@ -17,7 +17,7 @@ System for finding the separating axes for the given shapes.
 Determine the type of shape the first one is, then see if it forms a special case when paired with the second shape.
 Returns true if it encounteres a special case that handled both shapes.
 */
-inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContainer& second, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
+inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
 	switch (first.type()) {
 	case (ShapeType::RECTANGLE):
 		axes.push_back(units::Coordinate2D(1, 0)); // Rectangles are axis-alligned.
@@ -30,6 +30,14 @@ inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContain
 		for (std::size_t i = 0; i < first.poly().size(); ++i)
 			axes.push_back(first.poly().getEdgeNorm(i));
 		break;
+	case (ShapeType::CIRCLE):
+		if (isFirstCall && second.type() == ShapeType::CIRCLE) { // Only one axis for two circles.
+			axes.push_back(( (first.circle().center + offset) - second.circle().center).normalize());
+			return true;
+		}
+		// Get axis from circle to the cloeset point/vertex on the other shape.
+		axes.push_back((second.shape().getClosestTo(first.circle().center + offset) - (first.circle().center + offset)).normalize());
+		break;
 	default:
 		DBG_WARN("Unhandled shape type for SAT. Converting to polygon.");
 		Polygon p = first.shape().toPoly();
@@ -39,11 +47,11 @@ inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContain
 	return false;
 }
 // Gets the separating axes for two shapes.
-inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second) {
+inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset) {
 	std::vector<units::Coordinate2D> axes;
-	if (_get_separating_axes(first, second, axes, true))
+	if (_get_separating_axes(first, second, offset, axes, true))
 		return axes;
-	_get_separating_axes(second, first, axes, false);
+	_get_separating_axes(second, first, offset, axes, false);
 	return axes;
 }
 
@@ -134,8 +142,8 @@ bool sat::performSAT(const ShapeContainer& first, const ShapeContainer& second) 
 }
 
 bool sat::performSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos) {
-	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second));
 	const units::Coordinate2D offset(firstPos - secondPos);
+	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second, offset));
 	const Shape &firstShape(first.shape()), &secondShape(second.shape());
 	Projection projFirst, projSecond;
 	for (std::size_t i = 0; i < axes.size(); ++i) {
@@ -150,8 +158,8 @@ bool sat::performSAT(const ShapeContainer& first, const units::Coordinate2D& fir
 
 bool sat::performSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos,
                      units::Coordinate2D& out_norm, units::Coordinate& out_dist) {
-	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second));
 	const units::Coordinate2D offset(firstPos - secondPos);
+	const std::vector<units::Coordinate2D> axes(getSeparatingAxes(first, second, offset));
 	const Shape &firstShape(first.shape()), &secondShape(second.shape());
 	units::Coordinate2D norm, testNorm;
 	units::Coordinate overlap1, overlap2, minDist(-1), testDist;
@@ -186,7 +194,8 @@ sat::HybridResult sat::performHybridSAT(const ShapeContainer& first, const units
                                         const ShapeContainer& second, const units::Coordinate2D& secondPos, units::Coordinate2D& out_norm, units::Fraction& out_t) {
 	if (firstDelta.isZero()) // No movement, just do regular SAT.
 		return performSAT(first, firstPos, second, secondPos, out_norm, out_t) ? sat::HybridResult::MTV : sat::HybridResult::NONE;
-	return _perform_hybrid_SAT(first.shape(), second.shape(), sat::getSeparatingAxes(first, second), firstPos - secondPos, firstDelta, out_norm, out_t);
+	const units::Coordinate2D offset(firstPos - secondPos);
+	return _perform_hybrid_SAT(first.shape(), second.shape(), sat::getSeparatingAxes(first, second, offset), offset, firstDelta, out_norm, out_t);
 }
 
 sat::HybridResult sat::performHybridSAT(const ShapeContainer& first, const units::Coordinate2D& firstPos, const units::Coordinate2D& firstDelta,

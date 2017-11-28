@@ -9,6 +9,7 @@
 #include "../Geometry/ShapeContainer.h"
 #include "../Geometry/Polygon.h"
 #include "../Geometry/Rectangle.h"
+#include "../Geometry/Circle.h"
 
 using namespace units;
 
@@ -136,6 +137,66 @@ SCENARIO("Testing two shapes for overlap.", "[sat]") {
 				o.translate(-1, 0);
 				THEN("They overlap.")
 					CHECK(sat::performSAT(p, o));
+			}
+		}
+	}
+	GIVEN("A circle.") {
+		Circle c(5);
+		GIVEN("Another circle") {
+			Circle c2(5);
+			WHEN("The circles have significant overlap.") {
+				c2.center = Coordinate2D(0, 8);
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, c2));
+			}
+			WHEN("Their edges are touching.") {
+				c2.center = Coordinate2D(10, 0);
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, c2));
+			}
+			WHEN("Their centers are the same position.") {
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, c2));
+			}
+		}
+		GIVEN("A rectangle.") {
+			Rectangle r(0, 0, 2, 2);
+			WHEN("The circle is overlapping an edge.") {
+				r += Coordinate2D(-1, 4.9f);
+				CHECK(sat::performSAT(c, r));
+			}
+			WHEN("The circle is overlapping a corner.") {
+				r += Coordinate2D(1, 1).normalize() * 4.9f;
+				CHECK(sat::performSAT(c, r));
+			}
+			WHEN("The circle is touching an edge, but not overlapping.") {
+				r += Coordinate2D(-1, 5);
+				CHECK_FALSE(sat::performSAT(c, r));
+			}
+			WHEN("The circle is close to a corner, but not touching.") {
+				r += Coordinate2D(1, 1).normalize() * 5.1f;
+				CHECK_FALSE(sat::performSAT(c, r));
+			}
+			WHEN("The circle is touching a corner, but not overlapping.") {
+				r += Coordinate2D(1, 1).normalize() * 5.0f;
+				CHECK_FALSE(sat::performSAT(c, r));
+			}
+		}
+		GIVEN("An octagon.") {
+			Polygon p(shapes::octagon);
+			WHEN("The circle is touching a vertex, but not overlapping.") {
+				p.translate(7, 0);
+				THEN("They don't overlap.")
+					CHECK_FALSE(sat::performSAT(c, p));
+			}
+			WHEN("The circle is overlapping a vertex.") {
+				p.translate(6.9f, 0);
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, p));
+			}
+			WHEN("The circle is in the middle of the octagon.") {
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, p));
 			}
 		}
 	}
@@ -281,6 +342,82 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 				Coordinate2D pos2(-1, 0);
 				THEN("They overlap.")
 					CHECK(sat::performSAT(p, pos1, o, pos2));
+			}
+		}
+	}
+	GIVEN("A circle.") {
+		Circle c(5);
+		GIVEN("Another circle") {
+			Circle c2(5);
+			WHEN("The circles have significant overlap.") {
+				Coordinate2D pos1(0, -4);
+				Coordinate2D pos2(0, 4);
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, pos1, c2, pos2));
+			}
+			WHEN("Their edges are touching.") {
+				Coordinate2D pos1(-5, 0);
+				Coordinate2D pos2(5, 0);
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, pos1, c2, pos2));
+			}
+			WHEN("Their centers are the same position.") {
+				Coordinate2D pos1(10, 11);
+				Coordinate2D pos2(10, 11);
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, pos1, c2, pos2));
+			}
+		}
+		GIVEN("A rectangle.") {
+			Rectangle r(0, 0, 2, 2);
+			WHEN("The circle is overlapping an edge.") {
+				Coordinate2D pos1(1, 0);
+				Coordinate2D pos2(0, 4.9f);
+				CHECK(sat::performSAT(c, pos1, r, pos2));
+			}
+			WHEN("The circle is overlapping a corner.") {
+				Coordinate2D dir(Coordinate2D(1, 1).normalize());
+				Coordinate2D pos1(dir * 2.0f);
+				Coordinate2D pos2(dir * 6.9f);
+				CHECK(sat::performSAT(c, pos1, r, pos2));
+			}
+			WHEN("The circle is touching an edge, but not overlapping.") {
+				Coordinate2D pos1(1, 0);
+				Coordinate2D pos2(0, 5);
+				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+			}
+			WHEN("The circle is close to a corner, but not touching.") {
+				Coordinate2D dir(Coordinate2D(1, 1).normalize());
+				Coordinate2D pos1(dir * -3.1f);
+				Coordinate2D pos2(dir * 2.0f);
+				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+			}
+			WHEN("The circle is touching a corner, but not overlapping.") {
+				Coordinate2D dir(Coordinate2D(1, 1).normalize());
+				Coordinate2D pos1(dir * -3.0f);
+				Coordinate2D pos2(dir * 2.0f);
+				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+			}
+		}
+		GIVEN("An octagon.") {
+			Polygon p(shapes::octagon);
+			WHEN("The circle is touching a vertex, but not overlapping.") {
+				Coordinate2D pos1(-1, 0);
+				Coordinate2D pos2(6, 0);
+				THEN("They don't overlap.")
+					CHECK_FALSE(sat::performSAT(c, pos1, p, pos2));
+			}
+			WHEN("The circle is overlapping a vertex.") {
+				Coordinate2D pos1(-1, 0);
+				Coordinate2D pos2(5.9f, 0);
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, pos1, p, pos2));
+			}
+			WHEN("The circle is in the middle of the octagon.") {
+				Coordinate2D pos1(1, 2);
+				Coordinate2D pos2(1, 2);
+				THEN("They overlap.")
+					CHECK(sat::performSAT(c, pos1, p, pos2));
 			}
 		}
 	}

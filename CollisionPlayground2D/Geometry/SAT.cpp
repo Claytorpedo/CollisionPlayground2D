@@ -17,12 +17,12 @@ System for finding the separating axes for the given shapes.
 Determine the type of shape the first one is, then see if it forms a special case when paired with the second shape.
 Returns true if it encounteres a special case that handled both shapes.
 */
-inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset, std::vector<units::Coordinate2D>& axes, bool isFirstCall) {
+inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset, std::vector<units::Coordinate2D>& axes) {
 	switch (first.type()) {
 	case (ShapeType::RECTANGLE):
 		axes.push_back(units::Coordinate2D(1, 0)); // Rectangles are axis-alligned.
 		axes.push_back(units::Coordinate2D(0, 1));
-		if (isFirstCall && second.type() == ShapeType::RECTANGLE) // Rectangles will share axes.
+		if (second.type() == ShapeType::RECTANGLE) // Rectangles will share axes.
 			return true;
 		break;
 	case (ShapeType::POLYGON):
@@ -31,12 +31,18 @@ inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContain
 			axes.push_back(first.poly().getEdgeNorm(i));
 		break;
 	case (ShapeType::CIRCLE):
-		if (isFirstCall && second.type() == ShapeType::CIRCLE) { // Only one axis for two circles.
-			axes.push_back(( (first.circle().center + offset) - second.circle().center).normalize());
+	{
+		const units::Coordinate2D firstPos(first.circle().center + offset);
+		if (second.type() == ShapeType::CIRCLE) { // Only one axis for two circles.
+			const units::Coordinate2D axis = firstPos - second.circle().center;
+			axes.push_back(axis.x == 0 && axis.y == 0 ? units::Coordinate2D(0, 1) : axis.normalize());
 			return true;
 		}
 		// Get axis from circle to the cloeset point/vertex on the other shape.
-		axes.push_back((second.shape().getClosestTo(first.circle().center + offset) - (first.circle().center + offset)).normalize());
+		const units::Coordinate2D axis = second.shape().getClosestTo(firstPos) - firstPos;
+		if (axis.x != 0 || axis.y != 0) // If this is a zero vector, they are already overlapping, and can be separated with other axes.
+			axes.push_back(axis.normalize());
+	}
 		break;
 	default:
 		DBG_WARN("Unhandled shape type for SAT. Converting to polygon.");
@@ -49,9 +55,9 @@ inline bool _get_separating_axes(const ShapeContainer& first, const ShapeContain
 // Gets the separating axes for two shapes.
 inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset) {
 	std::vector<units::Coordinate2D> axes;
-	if (_get_separating_axes(first, second, offset, axes, true))
+	if (_get_separating_axes(first, second, offset, axes))
 		return axes;
-	_get_separating_axes(second, first, offset, axes, false);
+	_get_separating_axes(second, first, -offset, axes);
 	return axes;
 }
 

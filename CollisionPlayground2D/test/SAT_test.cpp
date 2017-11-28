@@ -163,23 +163,28 @@ SCENARIO("Testing two shapes for overlap.", "[sat]") {
 			Rectangle r(0, 0, 2, 2);
 			WHEN("The circle is overlapping an edge.") {
 				r += Coordinate2D(-1, 4.9f);
-				CHECK(sat::performSAT(c, r));
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, r));
 			}
 			WHEN("The circle is overlapping a corner.") {
 				r += Coordinate2D(1, 1).normalize() * 4.9f;
-				CHECK(sat::performSAT(c, r));
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, r));
 			}
 			WHEN("The circle is touching an edge, but not overlapping.") {
 				r += Coordinate2D(-1, 5);
-				CHECK_FALSE(sat::performSAT(c, r));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, r));
 			}
 			WHEN("The circle is close to a corner, but not touching.") {
 				r += Coordinate2D(1, 1).normalize() * 5.1f;
-				CHECK_FALSE(sat::performSAT(c, r));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, r));
 			}
 			WHEN("The circle is touching a corner, but not overlapping.") {
 				r += Coordinate2D(1, 1).normalize() * 5.0f;
-				CHECK_FALSE(sat::performSAT(c, r));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, r));
 			}
 		}
 		GIVEN("An octagon.") {
@@ -373,30 +378,35 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 			WHEN("The circle is overlapping an edge.") {
 				Coordinate2D pos1(1, 0);
 				Coordinate2D pos2(0, 4.9f);
-				CHECK(sat::performSAT(c, pos1, r, pos2));
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, pos1, r, pos2));
 			}
 			WHEN("The circle is overlapping a corner.") {
 				Coordinate2D dir(Coordinate2D(1, 1).normalize());
 				Coordinate2D pos1(dir * 2.0f);
 				Coordinate2D pos2(dir * 6.9f);
-				CHECK(sat::performSAT(c, pos1, r, pos2));
+				THEN("They are overlapping.")
+					CHECK(sat::performSAT(c, pos1, r, pos2));
 			}
 			WHEN("The circle is touching an edge, but not overlapping.") {
 				Coordinate2D pos1(1, 0);
 				Coordinate2D pos2(0, 5);
-				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
 			}
 			WHEN("The circle is close to a corner, but not touching.") {
 				Coordinate2D dir(Coordinate2D(1, 1).normalize());
 				Coordinate2D pos1(dir * -3.1f);
 				Coordinate2D pos2(dir * 2.0f);
-				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
 			}
 			WHEN("The circle is touching a corner, but not overlapping.") {
 				Coordinate2D dir(Coordinate2D(1, 1).normalize());
 				Coordinate2D pos1(dir * -3.0f);
 				Coordinate2D pos2(dir * 2.0f);
-				CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
+				THEN("They are not overlapping.")
+					CHECK_FALSE(sat::performSAT(c, pos1, r, pos2));
 			}
 		}
 		GIVEN("An octagon.") {
@@ -424,11 +434,12 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 }
 
 SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum translation vector).", "[sat]") {
+	Coordinate2D out_norm;
+	Coordinate out_dist;
 	GIVEN("The shape to be moved is a rectangle, and the stationary one is a triangle.") {
 		Rectangle p(0, 0, 1, 1);
 		Polygon o(shapes::rightTri);
-		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
-		Coordinate out_dist;
+		Coordinate2D pos1(0, 0), pos2(0, 0);
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
 			pos1 = Coordinate2D(0.8f, 0);
 			THEN("The rectangle is separated out of the triangle to the right.") {
@@ -473,8 +484,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 	GIVEN("A large rectangle, and a smaller triangle.") {
 		Rectangle p(0, 0, 100, 100);
 		Polygon o(shapes::rightTri);
-		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
-		Coordinate out_dist;
+		Coordinate2D pos1(0, 0), pos2(0, 0);
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
 			pos1 = Coordinate2D(0.8f, 0);
 			THEN("The rectangle is separated out of the triangle to the right.") {
@@ -571,8 +581,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 		std::vector<Coordinate2D> large;
 		for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) large.push_back(shapes::rightTri[i] * 100.0f);
 		Polygon o(large);
-		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
-		Coordinate out_dist;
+		Coordinate2D pos1(0, 0), pos2(0, 0);
 		WHEN("The small triangle overlaps the large one along its hypotenuse.") {
 			pos1 = Coordinate2D(50, 50);
 			THEN("The small triangle is separated left-downward.") {
@@ -594,11 +603,87 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 			}
 		}
 	}
+	GIVEN("A circle.") {
+		Circle c(5);
+		GIVEN("Another circle") {
+			Circle c2(5);
+			WHEN("The circles have significant overlap.") {
+				Coordinate2D pos1(0, -4);
+				Coordinate2D pos2(0, 4);
+				THEN("The first circle is separated upwards.") {
+					Coordinate2D expected_norm(0, -1);
+					CHECK(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_dist == ApproxEps(2.0f));
+				}
+			}
+			WHEN("Their centers are the same position.") {
+				Coordinate2D pos1(10, 11);
+				Coordinate2D pos2(10, 11);
+				THEN("They are separated (in any direction).") {
+					CHECK(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
+					CHECK( (out_norm.x != 0.0f || out_norm.y != 0.0f) ); // Not a zero vector.
+					CHECK(out_dist == ApproxEps(10.0f));
+				}
+			}
+		}
+		GIVEN("A rectangle.") {
+			Rectangle r(0, 0, 2, 2);
+			WHEN("The circle is overlapping an edge.") {
+				Coordinate2D pos1(1, 0);
+				Coordinate2D pos2(0, 4.9f);
+				THEN("The circle is pushed out upwards by the edge normal.") {
+					CHECK(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
+					CHECK(out_norm.x == ApproxEps(0));
+					CHECK(out_norm.y == ApproxEps(-1));
+					CHECK(out_dist == ApproxEps(0.1f));
+				}
+			}
+			WHEN("The circle is overlapping a corner.") {
+				Coordinate2D dir(Coordinate2D(1, 1).normalize());
+				Coordinate2D pos1(dir * 2.0f);
+				Coordinate2D pos2(dir * 6.9f);
+				THEN("The circle is pushed out diagonally, along its axis with the corner.") {
+					Coordinate2D expected_norm(-dir);
+					CHECK(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_dist == ApproxEps(0.1f));
+				}
+			}
+		}
+		GIVEN("An octagon.") {
+			Polygon p(shapes::octagon);
+			WHEN("The circle is overlapping a vertex.") {
+				Coordinate2D pos1(-1, 0);
+				Coordinate2D pos2(5.9f, 0);
+				THEN("The circle is pushed out left, along its axis with the vertex..") {
+					CHECK(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
+					CHECK(out_norm.x == ApproxEps(-1));
+					CHECK(out_norm.y == ApproxEps(0));
+					CHECK(out_dist == ApproxEps(0.1f));
+				}
+			}
+			WHEN("The circle is in the middle of the octagon.") {
+				Coordinate2D pos1(1, 2);
+				Coordinate2D pos2(1, 2);
+				THEN("The circle is pushed out of one of the octagon's faces.") {
+					// Find the distance out of one of the octagon's faces.
+					Coordinate2D dir(Coordinate2D(0.5f, 1.5f).normalize());
+					Coordinate cosTheta(Coordinate2D(0, 1).dot(dir));
+					Coordinate outDist = 5.0f + cosTheta * 2.0f; // Radius + cosTheta * octagon_height.
+					CHECK(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
+					CHECK((out_norm.x != 0.0f || out_norm.y != 0.0f)); // Not a zero vector.
+					CHECK(out_dist == ApproxEps(outDist));
+				}
+			}
+		}
+	}
 	GIVEN("An octagon and arbitrary convex shape.") {
 		Polygon p(shapes::octagon);
 		Polygon o(shapes::arb);
-		Coordinate2D pos1(0, 0), pos2(0, 0), out_norm;
-		Coordinate out_dist;
+		Coordinate2D pos1(0, 0), pos2(0, 0);
 		WHEN("They octagon overlaps the arbitrary shape's left side.") {
 			pos1 = Coordinate2D(4, 0);
 			THEN("The octagon is separated out to the right.") {

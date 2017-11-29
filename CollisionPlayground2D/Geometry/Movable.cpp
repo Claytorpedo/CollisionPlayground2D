@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include "DebugLogger.h"
 #include "../Units.h"
@@ -133,7 +134,11 @@ void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap*
 
 bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap) {
 	DBG_LOG("Debugging MTV collision...");
+	std::vector<units::Coordinate2D> positions;
+	positions.reserve(COLLISION_DEBUG_MAX_ATTEMPTS + 1); // Keep track of current position, in case we oscillate between objects.
+	positions.push_back(info.currentPosition);
 	info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
+	positions.push_back(info.currentPosition);
 	for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
 		std::vector<Collidable*> objs = collisionMap->getColliding(*this);
 		info.isCollision = false;
@@ -148,6 +153,11 @@ bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const co
 			return true; // Situation resolved. No longer overlapping anything.
 		}
 		info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;;
+		if (i >= 1 && std::find(positions.begin(), positions.end(), info.currentPosition) != positions.end()) {
+			DBG_ERR("MTV collision can not be resolved. Movable is oscillating between objects.");
+			return false;
+		}
+		positions.push_back(info.currentPosition);
 	}
 	DBG_WARN("Max debug attempts (" << COLLISION_DEBUG_MAX_ATTEMPTS << ") used. MTV collision may not be resolved.");
 	return false; // May not be resolved.

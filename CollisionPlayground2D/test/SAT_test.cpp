@@ -612,7 +612,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 				Coordinate2D pos2(0, 4);
 				THEN("The first circle is separated upwards.") {
 					Coordinate2D expected_norm(0, -1);
-					CHECK(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					CHECK(out_dist == ApproxEps(2.0f));
@@ -622,7 +622,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 				Coordinate2D pos1(10, 11);
 				Coordinate2D pos2(10, 11);
 				THEN("They are separated (in any direction).") {
-					CHECK(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, c2, pos2, out_norm, out_dist));
 					CHECK( (out_norm.x != 0.0f || out_norm.y != 0.0f) ); // Not a zero vector.
 					CHECK(out_dist == ApproxEps(10.0f));
 				}
@@ -634,7 +634,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 				Coordinate2D pos1(1, 0);
 				Coordinate2D pos2(0, 4.9f);
 				THEN("The circle is pushed out upwards by the edge normal.") {
-					CHECK(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
 					CHECK(out_norm.x == ApproxEps(0));
 					CHECK(out_norm.y == ApproxEps(-1));
 					CHECK(out_dist == ApproxEps(0.1f));
@@ -646,7 +646,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 				Coordinate2D pos2(dir * 6.9f);
 				THEN("The circle is pushed out diagonally, along its axis with the corner.") {
 					Coordinate2D expected_norm(-dir);
-					CHECK(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, r, pos2, out_norm, out_dist));
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					CHECK(out_dist == ApproxEps(0.1f));
@@ -659,7 +659,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 				Coordinate2D pos1(-1, 0);
 				Coordinate2D pos2(5.9f, 0);
 				THEN("The circle is pushed out left, along its axis with the vertex..") {
-					CHECK(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
 					CHECK(out_norm.x == ApproxEps(-1));
 					CHECK(out_norm.y == ApproxEps(0));
 					CHECK(out_dist == ApproxEps(0.1f));
@@ -673,7 +673,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 					Coordinate2D dir(Coordinate2D(0.5f, 1.5f).normalize());
 					Coordinate cosTheta(Coordinate2D(0, 1).dot(dir));
 					Coordinate outDist = 5.0f + cosTheta * 2.0f; // Radius + cosTheta * octagon_height.
-					CHECK(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
+					REQUIRE(sat::performSAT(c, pos1, p, pos2, out_norm, out_dist));
 					CHECK((out_norm.x != 0.0f || out_norm.y != 0.0f)); // Not a zero vector.
 					CHECK(out_dist == ApproxEps(outDist));
 				}

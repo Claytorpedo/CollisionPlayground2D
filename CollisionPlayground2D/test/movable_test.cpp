@@ -446,7 +446,7 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 				mover.position = origin;
 				mover.move(dir*dist, map);
 				THEN("It moves through without collision.") {
-					Coordinate expected = std::sqrt(50);
+					Coordinate expected(std::sqrt(50.0f));
 					CHECK(mover.position.x == ApproxEps(expected));
 					CHECK(mover.position.y == ApproxEps(expected));
 				}

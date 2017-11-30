@@ -4,10 +4,12 @@
 
 #include "../Units.h"
 #include "../Constants.h"
+#include "geom_math.h"
 #include "DebugLogger.h"
 #include "Shape.h"
 #include "Polygon.h"
 #include "Rectangle.h"
+#include "Circle.h"
 #include "Projection.h"
 #include "ShapeContainer.h"
 
@@ -59,6 +61,68 @@ inline std::vector<units::Coordinate2D> sat::getSeparatingAxes(const ShapeContai
 		return axes;
 	_get_separating_axes(second, first, -offset, axes);
 	return axes;
+}
+
+inline sat::HybridResult _circle_circle_hybrid_SAT(const Circle& first, const Circle& second, const units::Coordinate2D& offset,
+                                                   const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+	const units::Coordinate2D firstPos(first.center + offset);
+	const units::Coordinate2D separation(firstPos - second.center);
+	const units::Coordinate dist2(separation.magnitude2());
+	const units::Coordinate fullRad(first.radius + second.radius - constants::EPSILON); // Radius of both minus eps, for comparison.
+	const units::Coordinate fullRad2(fullRad * fullRad);
+	if (dist2 <= fullRad2) { // They are currently overlapping.
+		const units::Coordinate dist(std::sqrt(dist2));
+		out_t = first.radius + second.radius - dist;
+		out_norm = separation / dist; // Normalize.
+		return sat::HybridResult::MTV;
+	}
+	const units::Coordinate2D closestTo(geom_math::closestPointOnLine(firstPos, firstPos + relativeVel, second.center));
+	const units::Coordinate closestDist2((second.center - closestTo).magnitude2());
+	if (closestDist2 >= fullRad2)
+		return sat::HybridResult::NONE; // They are not on a collision course.
+	// They will collide some time in the future.
+	const units::Coordinate distFromClosestToCollision(std::sqrt(fullRad2 - closestDist2)); // Solve triangle.
+	const units::Coordinate deltaLen2(relativeVel.magnitude2());
+	const units::Coordinate deltaLen(std::sqrt(deltaLen2));
+	const units::Coordinate2D deltaDir(relativeVel / deltaLen);
+	// Determine the point of collision.
+	const units::Coordinate2D collisionPoint(closestTo - distFromClosestToCollision * deltaDir);
+	const units::Coordinate distFromFirst2((collisionPoint - firstPos).magnitude2());
+	if (distFromFirst2 > deltaLen2)
+		return sat::HybridResult::NONE; // It collides too far in the future.
+	out_t = std::sqrt(distFromFirst2) / deltaLen;
+	out_norm = (collisionPoint - second.center).normalize();
+	return sat::HybridResult::SWEEP;
+}
+inline sat::HybridResult _circle_poly_hybrid_SAT(const Circle& first, const Polygon& second, const units::Coordinate2D& offset,
+                                                 const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t) {
+	// Get axes on other shape and do hybrid sat, logging best t and norm.
+
+	// Get axes from circle to poly to finish up MTV test. Don't log t or norm for this.
+
+	// Get vertices on poly on opposide side of delta dir.
+
+	// Do tests with vertices, similar to circle circle, with attention paid to early out cases.
+	// >> find points with ray tests, and then do inside tests and whatever.
+	// >> probably still need closest dist to line test to detect the pass-by case
+	return sat::HybridResult::NONE;
+}
+
+// Handle special cases for hybrid SAT.
+inline bool _handle_hybrid_sat_special_cases(const ShapeContainer& first, const ShapeContainer& second, const units::Coordinate2D& offset,
+                                            const units::Coordinate2D& relativeVel, units::Coordinate2D& out_norm, units::Fraction& out_t, sat::HybridResult& r) {
+	if (first.type() == ShapeType::CIRCLE) {
+		if (second.type() == ShapeType::CIRCLE)
+			r = _circle_circle_hybrid_SAT(first.circle(), second.circle(), offset, relativeVel, out_norm, out_t);
+		else
+			r = _circle_poly_hybrid_SAT(first.circle(), second.shape().toPoly(), offset, relativeVel, out_norm, out_t);
+		return true;
+	} else if (second.type() == ShapeType::CIRCLE) {
+		r = _circle_poly_hybrid_SAT(second.circle(), first.shape().toPoly(), -offset, -relativeVel, out_norm, out_t);
+		out_norm = -out_norm; // Give normal relative to first shape.
+		return true;;
+	}
+	return false;
 }
 
 const static units::Fraction MAX_TIME = 1.0f; // Using interval [0,1].
@@ -201,6 +265,9 @@ sat::HybridResult sat::performHybridSAT(const ShapeContainer& first, const units
 	if (firstDelta.isZero()) // No movement, just do regular SAT.
 		return performSAT(first, firstPos, second, secondPos, out_norm, out_t) ? sat::HybridResult::MTV : sat::HybridResult::NONE;
 	const units::Coordinate2D offset(firstPos - secondPos);
+	HybridResult r;
+	if (_handle_hybrid_sat_special_cases(first, second, offset, firstDelta, out_norm, out_t, r))
+		return r;
 	return _perform_hybrid_SAT(first.shape(), second.shape(), sat::getSeparatingAxes(first, second, offset), offset, firstDelta, out_norm, out_t);
 }
 

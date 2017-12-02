@@ -13,11 +13,11 @@ namespace units {
 	typedef float        Velocity;     // Coordinate / MS
 	typedef float        Acceleration; // Coordinate / MS / MS
 
-	typedef Vector2D<Coordinate>    Coordinate2D;
-	typedef Vector2D<Pixel>         Pixel2D;
-	typedef Vector2D<Tile>          Tile2D;
-	typedef Vector2D<Velocity>      Velocity2D;
-	typedef Vector2D<Acceleration>  Acceleration2D;
+	typedef geom::Vec2<Coordinate>    Coordinate2D;
+	typedef geom::Vec2<Pixel>         Pixel2D;
+	typedef geom::Vec2<Tile>          Tile2D;
+	typedef geom::Vec2<Velocity>      Velocity2D;
+	typedef geom::Vec2<Acceleration>  Acceleration2D;
 }
 
 #endif // _UNITS_H_

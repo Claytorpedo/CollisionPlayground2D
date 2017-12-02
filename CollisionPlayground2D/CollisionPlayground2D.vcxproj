@@ -137,6 +137,7 @@
     </ClCompile>
     <ClInclude Include="Geometry\Circle.h" />
     <ClInclude Include="Geometry\Collidable.h" />
+    <ClInclude Include="Geometry\Geometry.h" />
     <ClInclude Include="Geometry\geom_math.h" />
     <ClInclude Include="Geometry\Movable.h" />
     <ClInclude Include="Geometry\CollisionMap.h" />
@@ -154,8 +155,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants.h" />
-    <ClInclude Include="Direction.h" />
+    <ClInclude Include="Geometry\Constants.h" />
+    <ClInclude Include="Geometry\Direction.h" />
     <ClInclude Include="Geometry\LineSegment.h" />
     <ClInclude Include="Geometry\DebugLogger.h" />
     <ClInclude Include="Geometry\Polygon.h" />
@@ -178,9 +179,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Units.h" />
-    <ClInclude Include="Util.h" />
-    <ClInclude Include="Vector2D.h" />
+    <ClInclude Include="Geometry\Units.h" />
+    <ClInclude Include="Geometry\Util.h" />
+    <ClInclude Include="Geometry\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

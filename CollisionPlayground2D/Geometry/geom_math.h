@@ -2,7 +2,7 @@
 #ifndef _GEOM_MATH_H
 #define _GEOM_MATH_H
 
-#include "../Units.h"
+#include "Units.h"
 
 class Ray;
 

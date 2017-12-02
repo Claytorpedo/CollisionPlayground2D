@@ -2,8 +2,8 @@
 #ifndef _SHAPE_H
 #define _SHAPE_H
 
-#include "../Units.h"
-#include "../Direction.h"
+#include "Units.h"
+#include "Direction.h"
 
 class Polygon;
 class Rectangle;

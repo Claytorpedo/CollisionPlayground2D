@@ -1,7 +1,7 @@
 #ifndef _INTERSECTION_MATH_H
 #define _INTERSECTION_MATH_H
 
-#include "../Units.h"
+#include "Units.h"
 
 class LineSegment;
 class Ray;

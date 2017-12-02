@@ -1,5 +1,5 @@
 #include "Rectangle.h"
-#include "../Constants.h"
+#include "Constants.h"
 
 inline bool Rectangle::isInside(const Rectangle& o) const {
 	return right() <= o.right() + constants::EPSILON && bottom() <= o.bottom() + constants::EPSILON &&

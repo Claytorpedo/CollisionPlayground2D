@@ -1,8 +1,8 @@
 #include "IntersectionMath.h"
 
-#include "../Units.h"
-#include "../Util.h"
-#include "../Constants.h"
+#include "Units.h"
+#include "Util.h"
+#include "Constants.h"
 
 #include "LineSegment.h"
 #include "Ray.h"

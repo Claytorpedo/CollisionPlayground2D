@@ -6,9 +6,9 @@
 
 #include "Input.h"
 #include "Graphics.h"
-#include "Constants.h"
-#include "Units.h"
-#include "Util.h"
+#include "Geometry/Constants.h"
+#include "Geometry/Units.h"
+#include "Geometry/Util.h"
 #include "Mover.h"
 #include "Geometry/Rectangle.h"
 #include "Geometry/Polygon.h"

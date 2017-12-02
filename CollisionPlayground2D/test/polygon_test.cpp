@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include "../Units.h"
-#include "../Util.h"
-#include "../Constants.h"
+#include "../Geometry/Units.h"
+#include "../Geometry/Util.h"
+#include "../Geometry/Constants.h"
 #include "../Geometry/Rectangle.h"
 #include "../Geometry/Polygon.h"
 

@@ -1,7 +1,7 @@
 #ifndef _RAY_H
 #define _RAY_H
 
-#include "../Units.h"
+#include "Units.h"
 
 class Ray {
 public:

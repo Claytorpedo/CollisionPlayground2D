@@ -1,6 +1,7 @@
 #include "geom_math.h"
 
 #include "Ray.h"
+#include "Units.h"
 
 namespace geom_math {
 	units::Coordinate2D closestPointOnLine(const Ray& ray, const units::Coordinate2D& point) {

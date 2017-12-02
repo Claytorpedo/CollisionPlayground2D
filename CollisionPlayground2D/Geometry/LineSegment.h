@@ -1,7 +1,7 @@
 #ifndef _LINE_SEGMENT_H
 #define _LINE_SEGMENT_H
 
-#include "../Units.h"
+#include "Units.h"
 
 class LineSegment {
 

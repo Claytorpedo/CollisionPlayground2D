@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "../Units.h"
-#include "../Constants.h"
+#include "../Geometry/Units.h"
+#include "../Geometry/Constants.h"
 #include "../Geometry/SAT.h"
 #include "../Geometry/ShapeContainer.h"
 #include "../Geometry/Polygon.h"

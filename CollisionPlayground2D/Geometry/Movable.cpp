@@ -5,8 +5,8 @@
 #include <algorithm>
 
 #include "DebugLogger.h"
-#include "../Units.h"
-#include "../Constants.h"
+#include "Units.h"
+#include "Constants.h"
 #include "Shape.h"
 #include "SAT.h"
 #include "CollisionMap.h"

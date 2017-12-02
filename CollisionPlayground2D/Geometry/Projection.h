@@ -2,7 +2,7 @@
 #ifndef _PROJECTION_H
 #define _PROJECTION_H
 
-#include "../Units.h"
+#include "Units.h"
 
 // Simple struct for containing a min and max value.
 struct Projection {

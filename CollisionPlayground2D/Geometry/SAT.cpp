@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "../Units.h"
-#include "../Constants.h"
+#include "Units.h"
+#include "Constants.h"
 #include "geom_math.h"
 #include "DebugLogger.h"
 #include "Shape.h"

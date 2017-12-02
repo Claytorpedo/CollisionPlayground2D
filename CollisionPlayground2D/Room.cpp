@@ -8,10 +8,10 @@
 #include <iostream>
 
 #include "Graphics.h"
-#include "Units.h"
-#include "Constants.h"
-#include "Util.h"
-#include "Direction.h"
+#include "Geometry/Units.h"
+#include "Geometry/Constants.h"
+#include "Geometry/Util.h"
+#include "Geometry/Direction.h"
 #include "Geometry/Shape.h"
 
 const Uint8 Room::HEIGHT = 12 * 4;

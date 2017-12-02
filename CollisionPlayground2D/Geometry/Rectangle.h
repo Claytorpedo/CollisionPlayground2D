@@ -1,6 +1,7 @@
 #ifndef _RECTANGLE_H
 #define _RECTANGLE_H
 
+#include "Units.h"
 #include "Shape.h"
 #include "Polygon.h"
 #include "Projection.h"

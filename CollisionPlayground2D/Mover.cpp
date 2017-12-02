@@ -3,7 +3,7 @@
 #include "Geometry/ShapeContainer.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMap.h"
-#include "Util.h"
+#include "Geometry/Util.h"
 
 const units::Velocity     Mover::MAX_SPEED = 0.3f;
 const units::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (units::Velocity)std::sin(constants::PI / 4.0f);

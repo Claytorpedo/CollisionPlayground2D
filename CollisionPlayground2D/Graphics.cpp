@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "Geometry/Rectangle.h"
-#include "Constants.h"
+#include "Geometry/Constants.h"
 
 Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {}
 Graphics::~Graphics() {

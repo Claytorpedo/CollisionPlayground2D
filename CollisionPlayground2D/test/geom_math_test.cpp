@@ -4,7 +4,7 @@
 #include "../Geometry/geom_math.h"
 
 #include "../Geometry/Ray.h"
-#include "../Units.h"
+#include "../Geometry/Units.h"
 
 SCENARIO("Getting the closest point on a line to a point, from a line made with two points.", "[geom_math]") {
 	GIVEN("A horizontal line through origin.") {

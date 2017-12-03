@@ -1,23 +1,12 @@
-#ifndef _UNITS_H_
-#define _UNITS_H_
+#ifndef _GEOM_UNITS_H_
+#define _GEOM_UNITS_H_
 
 #include "Vector2D.h"
 
-namespace units {
-	typedef float        Fraction;
-	typedef float        Coordinate;
-	typedef int          Pixel;
-	typedef int          Tile;
-	typedef unsigned int MS;
-	typedef unsigned int FPS;
-	typedef float        Velocity;     // Coordinate / MS
-	typedef float        Acceleration; // Coordinate / MS / MS
+namespace geom {
+	typedef float        gFloat;
+	typedef int          gInt;
 
-	typedef geom::Vec2<Coordinate>    Coordinate2D;
-	typedef geom::Vec2<Pixel>         Pixel2D;
-	typedef geom::Vec2<Tile>          Tile2D;
-	typedef geom::Vec2<Velocity>      Velocity2D;
-	typedef geom::Vec2<Acceleration>  Acceleration2D;
+	typedef geom::Vec2<gFloat> Coord2;
 }
-
-#endif // _UNITS_H_
+#endif // _GEOM_UNITS_H_

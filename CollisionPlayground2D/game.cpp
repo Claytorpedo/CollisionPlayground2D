@@ -11,15 +11,9 @@
 #include "Graphics.h"
 #include "Mover.h"
 
-#include "Geometry/Constants.h"
-#include "Geometry/Units.h"
-#include "Geometry/Util.h"
-#include "Geometry/Rectangle.h"
-#include "Geometry/Polygon.h"
-#include "Geometry/Circle.h"
-#include "Geometry/IntersectionMath.h"
-#include "Geometry/CollisionMap.h"
-#include "Geometry/Wall.h"
+#include "Geometry/Geometry.h"
+
+using namespace geom;
 
 namespace game {
 
@@ -115,7 +109,7 @@ namespace game {
 		while (true) {
 			bool isOccupied = false;
 			for (std::size_t i = 0; i < polys.size(); ++i) {
-				if (isect::intersects(collider, position, polys[i], geom::Coord2(0,0))) {
+				if (geom::intersects(collider, position, polys[i], geom::Coord2(0,0))) {
 					isOccupied = true;
 					collider = Polygon::generate(twister, Rectangle());
 					position = geom::Coord2(distX(twister), distY(twister));
@@ -135,7 +129,7 @@ namespace game {
 		Graphics graphics;
 		game::MS currentTime, previousTime, elapsedTime;
 
-		if (!graphics.init()) {
+		if (!graphics.init(game::SCREEN_WIDTH, game::SCREEN_HEIGHT)) {
 			std::cerr << "Error: Failed to initialize graphics.\n";
 			closeWithError();
 			return -1;
@@ -200,7 +194,7 @@ namespace game {
 			collider.translate(mover.getPosition());
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 	#ifdef DEBUG
-				isect::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+				geom::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
 				drawPoly(polys[i], graphics);
 	#else
 				graphics.setRenderColour(0, 100, 255);

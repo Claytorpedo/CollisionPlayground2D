@@ -1,5 +1,6 @@
-#ifndef _UTIL_H_
-#define _UTIL_H_
+#pragma once
+#ifndef _GEOM_UTIL_H_
+#define _GEOM_UTIL_H_
 
 #include <cmath>
 
@@ -34,4 +35,4 @@ namespace geom {
 	}
 }
 
-#endif // _UTIL_H_
+#endif // _GEOM_UTIL_H_

@@ -1,5 +1,6 @@
-#ifndef _VECTOR2D_H
-#define _VECTOR2D_H
+#pragma once
+#ifndef _GEOM_VECTOR2D_H
+#define _GEOM_VECTOR2D_H
 
 #include <cmath>
 

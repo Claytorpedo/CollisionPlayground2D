@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _GEOM_UNITS_H_
 #define _GEOM_UNITS_H_
 

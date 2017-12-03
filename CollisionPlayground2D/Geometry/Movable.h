@@ -1,77 +1,78 @@
 #pragma once
-#ifndef _MOVABLE_H
-#define _MOVABLE_H
+#ifndef _GEOM_MOVABLE_H
+#define _GEOM_MOVABLE_H
 
 #include "Units.h"
 #include "Collidable.h"
 #include "Shape.h"
 #include "SAT.h"
 
-class CollisionMap;
+namespace geom {
+	class CollisionMap;
 
-class Movable : public Collidable {
-public:
-	// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
-	// Acts as if making the polygon slightly larger.
-	static const units::Coordinate COLLISION_BUFFER;
-	// Minimum movement to consider when looking to see if the collider is stuck in a wedge (if moving more than this, considered not stuck).
-	static const units::Coordinate WEDGE_MOVE_THRESH;
-	// Number of attempts to resolve a situation where shapes are already overlapping.
-	static const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS;
-	// How many loops the collision algorithm can perform before stopping.
-	static const unsigned int COLLISION_ALG_MAX_DEPTH;
+	class Movable : public Collidable {
+	public:
+		// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.
+		// Acts as if making the polygon slightly larger.
+		static const gFloat COLLISION_BUFFER;
+		// Minimum movement to consider when looking to see if the collider is stuck in a wedge (if moving more than this, considered not stuck).
+		static const gFloat WEDGE_MOVE_THRESH;
+		// Number of attempts to resolve a situation where shapes are already overlapping.
+		static const unsigned int COLLISION_DEBUG_MAX_ATTEMPTS;
+		// How many loops the collision algorithm can perform before stopping.
+		static const unsigned int COLLISION_ALG_MAX_DEPTH;
 
-	// Get the buffer amount to maintain to avoid moving to a collision state.
-	static inline units::Coordinate getPushoutDistance(const units::Coordinate2D& travelDir, const units::Coordinate2D& collisionNormal) {
-		// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
-		return -(COLLISION_BUFFER / collisionNormal.dot(travelDir));
-	}
-	enum class CollisionType {
-		NONE,       // Collisions are ignored (noclip).
-		DEFLECTION, // Collisions result in deflection along edges.
-		REVERSE,    // Collisions result in reversing direction.
-		REFLECT,    // Collisions result in reflecting/bouncing off edges.
-		_DEBUG_     // There is an error that must be resolved (the shapes are overlapping).
+		// Get the buffer amount to maintain to avoid moving to a collision state.
+		static inline gFloat getPushoutDistance(const Coord2& travelDir, const Coord2& collisionNormal) {
+			// buffer_dist / cos(theta) = hypotenuse; cos(theta) = norm * dir (norm should be reversed, but we can just negate the end product).
+			return -(COLLISION_BUFFER / collisionNormal.dot(travelDir));
+		}
+		enum class CollisionType {
+			NONE,       // Collisions are ignored (noclip).
+			DEFLECTION, // Collisions result in deflection along edges.
+			REVERSE,    // Collisions result in reversing direction.
+			REFLECT,    // Collisions result in reflecting/bouncing off edges.
+			_DEBUG_     // There is an error that must be resolved (the shapes are overlapping).
+		};
+
+		struct CollisionInfo {
+			bool isCollision;                      // Whether a collision occurred.
+			const ShapeContainer& collider;        // The collider for collision testing.
+			const Coord2 originalDir; // Original direction of the delta vector.
+			Coord2 currentDir;        // Direction the collider is currently travelling in.
+			gFloat remainingDist;       // Distance left for the collider to move.
+			gFloat moveDist;            // Distance collidable can move before a collision occurs.
+			Coord2 currentPosition;   // The collider's current position.
+			Coord2 normal;            // Collision normal. Not necessarily normalized.
+			CollisionInfo(const ShapeContainer& collider, Coord2 position, Coord2 dir, gFloat dist) :
+				isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
+				moveDist(0), currentPosition(position), normal(0, 0) {}
+		};
+		Movable() : type(CollisionType::DEFLECTION) {}
+		Movable(CollisionType type) : type(type) {}
+		virtual ~Movable() = 0;
+
+		// Takes the collidable's bounding shape, its origin, the delta it is moving in, and the objects it can collide with.
+		// Calls onCollision when collisions occur, if any special action is to be taken.
+		// Returns the final position of the collider.
+		Coord2 move(const ShapeContainer& collider, const Coord2& origin,
+			const Coord2& delta, const CollisionMap* const collisionMap);
+	protected:
+		CollisionType type;
+
+		// What to do on collision. This can be used to handle special collisions.
+		// Default implementation simply returns true, to continue the algorithm.
+		// Return true if the algorithm should continue as normal, false if it should stop.
+		virtual bool onCollision(CollisionInfo& info);
+
+	private:
+		// Find the nearest collision from a map of collidables.
+		sat::HybridResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
+		// Algorithm for deflecting-type collisions.
+		void _move_deflection(CollisionInfo& info, const CollisionMap* const collisionMap);
+		// Attempt to fix currently-overlaping collisions.
+		// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
+		bool _debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap);
 	};
-
-	struct CollisionInfo {
-		bool isCollision;                      // Whether a collision occurred.
-		const ShapeContainer& collider;        // The collider for collision testing.
-		const units::Coordinate2D originalDir; // Original direction of the delta vector.
-		units::Coordinate2D currentDir;        // Direction the collider is currently travelling in.
-		units::Coordinate remainingDist;       // Distance left for the collider to move.
-		units::Coordinate moveDist;            // Distance collidable can move before a collision occurs.
-		units::Coordinate2D currentPosition;   // The collider's current position.
-		units::Coordinate2D normal;            // Collision normal. Not necessarily normalized.
-		CollisionInfo(const ShapeContainer& collider, units::Coordinate2D position, units::Coordinate2D dir, units::Coordinate dist) :
-			isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
-			moveDist(0), currentPosition(position), normal(0,0) {}
-	};
-	Movable() : type(CollisionType::DEFLECTION) {}
-	Movable(CollisionType type) : type(type) {}
-	virtual ~Movable() = 0;
-
-	// Takes the collidable's bounding shape, its origin, the delta it is moving in, and the objects it can collide with.
-	// Calls onCollision when collisions occur, if any special action is to be taken.
-	// Returns the final position of the collider.
-	units::Coordinate2D move(const ShapeContainer& collider, const units::Coordinate2D& origin,
-	                        const units::Coordinate2D& delta, const CollisionMap* const collisionMap);
-protected:
-	CollisionType type;
-
-	// What to do on collision. This can be used to handle special collisions.
-	// Default implementation simply returns true, to continue the algorithm.
-	// Return true if the algorithm should continue as normal, false if it should stop.
-	virtual bool onCollision(CollisionInfo& info);
-
-private:
-	// Find the nearest collision from a map of collidables.
-	sat::HybridResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
-	// Algorithm for deflecting-type collisions.
-	void _move_deflection(CollisionInfo& info, const CollisionMap* const collisionMap);
-	// Attempt to fix currently-overlaping collisions.
-	// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
-	bool _debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap);
-};
-
-#endif //_MOVABLE_H
+}
+#endif //_GEOM_MOVABLE_H

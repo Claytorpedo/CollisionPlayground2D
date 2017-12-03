@@ -1,16 +1,17 @@
 #pragma once
-#ifndef _COLLIDABLE_H
-#define _COLLIDABLE_H
+#ifndef _GEOM_COLLIDABLE_H
+#define _GEOM_COLLIDABLE_H
 
 #include "Units.h"
 
-class ShapeContainer;
+namespace geom {
+	class ShapeContainer;
 
-class Collidable {
-public:
-	virtual ~Collidable() {}
-	virtual const units::Coordinate2D& getPosition() const = 0;
-	virtual const ShapeContainer& getCollider() const = 0;
-};
-
-#endif //_COLLIDABLE_H
+	class Collidable {
+	public:
+		virtual ~Collidable() {}
+		virtual const Coord2& getPosition() const = 0;
+		virtual const ShapeContainer& getCollider() const = 0;
+	};
+}
+#endif //_GEOM_COLLIDABLE_H

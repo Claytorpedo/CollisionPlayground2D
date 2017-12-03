@@ -2,30 +2,31 @@
 #ifndef _MOVER_H
 #define _MOVER_H
 
+#include "Units.h"
 #include "Geometry/Movable.h"
 #include "Geometry/ShapeContainer.h"
 #include "Geometry/Units.h"
 
-class CollisionMap;
+namespace geom { class CollisionMap; }
 
-class Mover : public Movable {
+class Mover : public geom::Movable {
 public:
-	static const units::Velocity     MAX_SPEED;
-	static const units::Velocity     MAX_DIAGONAL_SPEED;
-	static const units::Acceleration ACCELERATION;
-	static const units::Acceleration DECELERATION;
+	static const game::Velocity     MAX_SPEED;
+	static const game::Velocity     MAX_DIAGONAL_SPEED;
+	static const game::Acceleration ACCELERATION;
+	static const game::Acceleration DECELERATION;
 
 	Mover() {}
-	Mover(Movable::CollisionType type, const ShapeContainer& collider, const units::Coordinate2D& position);
-	Mover(const ShapeContainer& collider, const units::Coordinate2D& position);
+	Mover(geom::Movable::CollisionType type, const geom::ShapeContainer& collider, const geom::Coord2& position);
+	Mover(const geom::ShapeContainer& collider, const geom::Coord2& position);
 	~Mover() {}
 
-	void update(const units::MS elapsedTime, const CollisionMap* const map);
+	void update(const game::MS elapsedTime, const geom::CollisionMap* const map);
 
-	void setPosition(const units::Coordinate2D position);
+	void setPosition(const geom::Coord2& position);
 
-	const units::Coordinate2D& getPosition() const;
-	const ShapeContainer& getCollider() const;
+	const geom::Coord2& getPosition() const;
+	const geom::ShapeContainer& getCollider() const;
 
 	void moveLeft();
 	void moveRight();
@@ -35,13 +36,13 @@ public:
 	void stopMovingVertical();
 	void stopMoving();
 private:
-	ShapeContainer collider_;
-	units::Coordinate2D position_;
+	geom::ShapeContainer collider_;
+	geom::Coord2 position_;
 
-	units::Acceleration2D acceleration_;
-	units::Velocity2D velocity_;
+	game::Acceleration2D acceleration_;
+	game::Velocity2D velocity_;
 
-	void update_position(const units::MS elapsedTime, const units::Velocity maxSpeed, const CollisionMap* const polys);
+	void update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap* const polys);
 	void _init() const;
 };
 

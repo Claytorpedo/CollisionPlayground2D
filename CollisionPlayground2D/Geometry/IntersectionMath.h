@@ -1,19 +1,20 @@
-#ifndef _INTERSECTION_MATH_H
-#define _INTERSECTION_MATH_H
+#pragma once
+#ifndef _GEOM_INTERSECTION_MATH_H
+#define _GEOM_INTERSECTION_MATH_H
 
 #include "Units.h"
 
-class LineSegment;
-class Ray;
-class ShapeContainer;
-class Rectangle;
+namespace geom {
+	class LineSegment;
+	class Ray;
+	class ShapeContainer;
+	class Rectangle;
 
-namespace isect {
 	// Intersections with points. No need to output a point of collision. -------------------------------------------------
 
-	bool intersects(const Rectangle& r, const units::Coordinate2D p);
-	bool intersects(const LineSegment& l, const units::Coordinate2D p);
-	bool intersects(const Ray& r, const units::Coordinate2D p);
+	bool intersects(const Rectangle& r, const Coord2& p);
+	bool intersects(const LineSegment& l, const Coord2& p);
+	bool intersects(const Ray& r, const Coord2& p);
 
 	// Intersection functions that return true/false, and do not find the specific point of collision. --------------------
 
@@ -23,9 +24,9 @@ namespace isect {
 	// Intersection functions that also output the point of collision, if a collision occurred. ----------------------------
 	
 	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to a's start point.
-	bool intersects(const LineSegment& a, const LineSegment& b, units::Coordinate2D& out_intersection);
+	bool intersects(const LineSegment& a, const LineSegment& b, Coord2& out_intersection);
 	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to the ray's origin.
-	bool intersects(const Ray& r, const LineSegment& l, units::Coordinate2D& out_intersection);
+	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection);
 
 	// Intersections of shapes with primatives -----------------------------------------------------------------------------
 	bool intersects(const Rectangle& r, const LineSegment& l);
@@ -34,8 +35,8 @@ namespace isect {
 	// Note that "touching" shapes are not considered intersecting if they have no overlap.
 
 	bool intersects(const Rectangle& first, const Rectangle& second);
-	bool intersects(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos);
+	bool intersects(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos);
 	bool intersects(const ShapeContainer& first, const ShapeContainer& second);
 }
 
-#endif // _INTERSECTION_MATH_H
+#endif // _GEOM_INTERSECTION_MATH_H

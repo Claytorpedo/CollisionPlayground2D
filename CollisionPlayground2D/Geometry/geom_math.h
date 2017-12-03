@@ -4,14 +4,14 @@
 
 #include "Units.h"
 
-class Ray;
-
 // Additional geometry math.
-namespace geom_math {
+namespace geom {
+	class Ray;
+
 	// Find the closest point on a line (made from a ray) to a given point.
-	units::Coordinate2D closestPointOnLine(const Ray& ray, const units::Coordinate2D& point);
+	Coord2 closestPointOnLine(const Ray& ray, const Coord2& point);
 	// Find the closest point on a line (made from two points) to a given point.
-	units::Coordinate2D closestPointOnLine(const units::Coordinate2D& line1, const units::Coordinate2D& line2, const units::Coordinate2D& point);
+	Coord2 closestPointOnLine(const Coord2& line1, const Coord2& line2, const Coord2& point);
 }
 
 #endif // _GEOM_MATH_H

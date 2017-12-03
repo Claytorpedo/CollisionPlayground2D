@@ -110,6 +110,7 @@
     <ClCompile Include="Geometry\IntersectionMath.cpp" />
     <ClCompile Include="Geometry\Rectangle.cpp" />
     <ClCompile Include="Geometry\ShapeContainer.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="test\catch_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -135,8 +136,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="game.h" />
     <ClInclude Include="Geometry\Circle.h" />
     <ClInclude Include="Geometry\Collidable.h" />
+    <ClInclude Include="Units.h" />
     <ClInclude Include="Geometry\Geometry.h" />
     <ClInclude Include="Geometry\geom_math.h" />
     <ClInclude Include="Geometry\Movable.h" />
@@ -150,9 +154,10 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Mover.cpp" />
     <ClCompile Include="Room.cpp" />
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClInclude Include="Util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry\Constants.h" />

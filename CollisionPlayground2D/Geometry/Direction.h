@@ -1,34 +1,33 @@
-#ifndef _DIRECTION_H
-#define _DIRECTION_H
+#pragma once
+#ifndef _GEOM_DIRECTION_H
+#define _GEOM_DIRECTION_H
 
+namespace geom {
+	enum class Direction {
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT,
+		NONE,
+		TOTAL_DIRECTIONS
+	};
 
-namespace direction {
-   enum Direction {
-     UP,
-	 DOWN,
-	 LEFT,
-	 RIGHT,
-	 NONE,
-	 TOTAL_DIRECTIONS
-   };
+	inline Direction oppositeDirection(Direction direction) {
+		if (direction == Direction::UP)
+			return Direction::DOWN;
+		if (direction == Direction::DOWN)
+			return Direction::UP;
+		if (direction == Direction::LEFT)
+			return Direction::RIGHT;
+		if (direction == Direction::RIGHT)
+			return Direction::LEFT;
+		return Direction::NONE;
+	}
+	inline bool isHorizontal(Direction direction) { return direction == Direction::LEFT || direction == Direction::RIGHT; }
+	inline bool isVertical(Direction direction) { return direction == Direction::UP || direction == Direction::DOWN; }
+	inline bool hasDirection(Direction direction) { return isHorizontal(direction) || isVertical(direction); }
 
-   inline Direction oppositeDirection(Direction direction) {
-	   if (direction == UP)
-		   return DOWN;
-	   if (direction == DOWN)
-		   return UP;
-	   if (direction == LEFT)
-		   return RIGHT;
-	   if (direction == RIGHT)
-		   return LEFT;
-	   return NONE;
-   }
-   inline bool isHorizontal(Direction direction) { return direction == LEFT || direction == RIGHT;}
-   inline bool isVertical(Direction direction)	 { return direction == UP   || direction == DOWN;}
-   inline bool hasDirection(Direction direction) { return isHorizontal(direction) || isVertical(direction);}
-
-   inline bool isMax(Direction side) { return side == RIGHT || side == DOWN; }
-   inline bool isMin(Direction side) { return side == LEFT  || side == UP; }
+	inline bool isMax(Direction side) { return side == Direction::RIGHT || side == Direction::DOWN; }
+	inline bool isMin(Direction side) { return side == Direction::LEFT || side == Direction::UP; }
 }
-
-#endif // _DIRECTION_H
+#endif // _GEOM_DIRECTION_H

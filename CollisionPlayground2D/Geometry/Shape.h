@@ -5,12 +5,12 @@
 #include "Units.h"
 #include "Direction.h"
 
-class Polygon;
-class Rectangle;
-struct Projection;
-
 // Parent class for geometry objects.
 namespace geom {
+	class Polygon;
+	class Rectangle;
+	struct Projection;
+
 	class Shape {
 	public:
 		virtual ~Shape() {}

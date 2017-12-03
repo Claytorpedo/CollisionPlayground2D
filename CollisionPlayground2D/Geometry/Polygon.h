@@ -7,11 +7,11 @@
 #include <vector>
 #include <random>
 
-class Rectangle;
-struct Projection;
-
 // Convex polygon with counterclockwise winding.
 namespace geom {
+	class Rectangle;
+	struct Projection;
+
 	class Polygon : public Shape {
 	public:
 		// Used when determining if two vectors are perpendicular.

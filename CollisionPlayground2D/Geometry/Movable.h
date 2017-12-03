@@ -7,9 +7,9 @@
 #include "Shape.h"
 #include "SAT.h"
 
-class CollisionMap;
-
 namespace geom {
+	class CollisionMap;
+
 	class Movable : public Collidable {
 	public:
 		// Keep a small space buffer around a polygon when moving towards it, to avoid moving into a currently-colliding state.

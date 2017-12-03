@@ -4,9 +4,9 @@
 
 #include "Units.h"
 
-class ShapeContainer;
-
 namespace geom {
+	class ShapeContainer;
+
 	class Collidable {
 	public:
 		virtual ~Collidable() {}

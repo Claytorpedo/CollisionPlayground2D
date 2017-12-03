@@ -6,9 +6,9 @@
 
 #include "Units.h"
 
-class ShapeContainer;
-
 namespace geom {
+	class ShapeContainer;
+
 	// Separating Axis Theorem tests.
 	// For all tests, "touching" shapes are not considered intersecting: they must overlap.
 	namespace sat {

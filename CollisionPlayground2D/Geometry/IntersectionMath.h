@@ -1,14 +1,15 @@
+#pragma once
 #ifndef _GEOM_INTERSECTION_MATH_H
 #define _GEOM_INTERSECTION_MATH_H
 
 #include "Units.h"
 
-class LineSegment;
-class Ray;
-class ShapeContainer;
-class Rectangle;
-
 namespace geom {
+	class LineSegment;
+	class Ray;
+	class ShapeContainer;
+	class Rectangle;
+
 	// Intersections with points. No need to output a point of collision. -------------------------------------------------
 
 	bool intersects(const Rectangle& r, const Coord2& p);

@@ -1,7 +1,7 @@
 #include "IntersectionMath.h"
 
 #include "Units.h"
-#include "Util.h"
+#include "math.h"
 #include "Constants.h"
 
 #include "LineSegment.h"
@@ -105,7 +105,7 @@ namespace geom {
 
 		// Check if either or both segments are a point.
 		if (a.isPoint()) {
-			if (util::almostEquals(a.start.x, b.start.x) && util::almostEquals(a.start.y, b.start.y)) {
+			if (math::almostEquals(a.start.x, b.start.x) && math::almostEquals(a.start.y, b.start.y)) {
 				// This catches the case where o is also a point.
 				out_intersection = a.start;
 				return true;

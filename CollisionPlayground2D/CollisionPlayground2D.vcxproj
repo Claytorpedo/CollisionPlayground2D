@@ -105,7 +105,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Geometry\Circle.cpp" />
-    <ClCompile Include="Geometry\geom_math.cpp" />
+    <ClCompile Include="Geometry\math.cpp" />
     <ClCompile Include="Geometry\Movable.cpp" />
     <ClCompile Include="Geometry\IntersectionMath.cpp" />
     <ClCompile Include="Geometry\Rectangle.cpp" />
@@ -115,7 +115,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="test\geom_math_test.cpp">
+    <ClCompile Include="test\math_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
@@ -142,7 +142,7 @@
     <ClInclude Include="Geometry\Collidable.h" />
     <ClInclude Include="Units.h" />
     <ClInclude Include="Geometry\Geometry.h" />
-    <ClInclude Include="Geometry\geom_math.h" />
+    <ClInclude Include="Geometry\math.h" />
     <ClInclude Include="Geometry\Movable.h" />
     <ClInclude Include="Geometry\CollisionMap.h" />
     <ClInclude Include="Geometry\IntersectionMath.h" />
@@ -185,7 +185,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="Geometry\Units.h" />
-    <ClInclude Include="Geometry\Util.h" />
     <ClInclude Include="Geometry\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

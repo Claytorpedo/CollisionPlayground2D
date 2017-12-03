@@ -3,7 +3,7 @@
 #include "Geometry/ShapeContainer.h"
 #include "Geometry/Polygon.h"
 #include "Geometry/CollisionMap.h"
-#include "Geometry/Util.h"
+#include "Geometry/math.h"
 
 const game::Velocity     Mover::MAX_SPEED = 0.3f;
 const game::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (game::Velocity)std::sin(geom::constants::PI / 4.0f);
@@ -23,14 +23,14 @@ Mover::Mover(const geom::ShapeContainer& collider, const geom::Coord2& position)
 }
 
 void Mover::update(const game::MS elapsedTime, const geom::CollisionMap* const map) {
-	const game::Velocity maxSpeed = (!geom::util::almostZero(acceleration_.x) && !geom::util::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
+	const game::Velocity maxSpeed = (!geom::math::almostZero(acceleration_.x) && !geom::math::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
 	update_position(elapsedTime, maxSpeed, map);
 }
 
 void Mover::update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap* const map) {
 	velocity_ += acceleration_ * (geom::gFloat)(elapsedTime);
-	velocity_.x = geom::util::clamp(velocity_.x, -maxSpeed, maxSpeed);
-	velocity_.y = geom::util::clamp(velocity_.y, -maxSpeed, maxSpeed);
+	velocity_.x = geom::math::clamp(velocity_.x, -maxSpeed, maxSpeed);
+	velocity_.y = geom::math::clamp(velocity_.y, -maxSpeed, maxSpeed);
 	if (acceleration_.x == 0 && velocity_.x != 0) {
 		const bool isPos(velocity_.x > 0);
 		velocity_.x += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;

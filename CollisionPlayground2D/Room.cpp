@@ -13,7 +13,6 @@
 #include "Graphics.h"
 #include "Geometry/Units.h"
 #include "Geometry/Constants.h"
-#include "Geometry/Util.h"
 #include "Geometry/Direction.h"
 #include "Geometry/Shape.h"
 
@@ -47,10 +46,10 @@ void Room::markCollidingTiles(const geom::Shape& collider, const geom::Coord2& o
 
 	// Starting value for the outer loop (the side of the bounding box on the opposite side of the delta direction at the origin).
 	const game::Tile outerAxisStart = isOuterAxisX ? game::util::coordToTile(origin.x + collider.side(oppositeDirection(outerDir))) : 
-	                                                  game::util::coordToTile(origin.y + collider.side(oppositeDirection(outerDir)));
+	                                                 game::util::coordToTile(origin.y + collider.side(oppositeDirection(outerDir)));
 	// End value for the outer loop (the side of the bounding box on the side of the delta direction at the destination).
 	const game::Tile outerAxisEnd   = isOuterAxisX ? game::util::coordToTile(destination.x + collider.side(outerDir)) : 
-	                                                  game::util::coordToTile(destination.y + collider.side(outerDir));
+	                                                 game::util::coordToTile(destination.y + collider.side(outerDir));
 
 	/* To determine where to start and stop for the inner loop, we first find the ultimate starting and stopping values
 	   (where the inner loop will start on the first iteration of the outer loop, and where the inner loop will end on 
@@ -94,9 +93,9 @@ void Room::markCollidingTiles(const geom::Shape& collider, const geom::Coord2& o
 		const game::Tile calculatedEnd =   game::util::coordToTile(slope * (game::util::tileToCoord(i) + innerAxisEndTileSide   - innerAxisEndOrigin  ) + innerAxisEndOffset);
 		// Clamp values by limits.
 		const game::Tile start = isMax(innerDir) ? ( calculatedStart < innerAxisStart ? innerAxisStart : calculatedStart ) :
-		                                            ( calculatedStart > innerAxisStart ? innerAxisStart : calculatedStart);
+		                                           ( calculatedStart > innerAxisStart ? innerAxisStart : calculatedStart);
 		const game::Tile end =   isMax(innerDir) ? ( calculatedEnd > innerAxisEnd ? innerAxisEnd : calculatedEnd ) :
-		                                            ( calculatedEnd < innerAxisEnd ? innerAxisEnd : calculatedEnd );
+		                                           ( calculatedEnd < innerAxisEnd ? innerAxisEnd : calculatedEnd );
 
 		for (game::Tile k = start; k != end + innerIncr; k += innerIncr) {
 			const game::Tile row = isOuterAxisX ? k : i;

@@ -7,7 +7,6 @@
 #include "Vector2D.h"
 #include "Units.h"
 #include "Constants.h"
-#include "Util.h"
 
 #include "Ray.h"
 #include "LineSegment.h"
@@ -19,7 +18,7 @@
 #include "Movable.h"
 #include "Wall.h"
 
-#include "geom_math.h"
+#include "math.h"
 #include "IntersectionMath.h"
 #include "SAT.h"
 

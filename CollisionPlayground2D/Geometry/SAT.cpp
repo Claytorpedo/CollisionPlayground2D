@@ -4,7 +4,7 @@
 
 #include "Units.h"
 #include "Constants.h"
-#include "geom_math.h"
+#include "math.h"
 #include "DebugLogger.h"
 #include "Shape.h"
 #include "Polygon.h"
@@ -77,7 +77,7 @@ namespace geom {
 				out_norm = separation / dist; // Normalize.
 				return HybridResult::MTV;
 			}
-			const Coord2 closestTo(closestPointOnLine(firstPos, firstPos + relativeVel, second.center));
+			const Coord2 closestTo(math::closestPointOnLine(firstPos, firstPos + relativeVel, second.center));
 			const gFloat closestDist2((second.center - closestTo).magnitude2());
 			if (closestDist2 >= fullRad2)
 				return HybridResult::NONE; // They are not on a collision course.

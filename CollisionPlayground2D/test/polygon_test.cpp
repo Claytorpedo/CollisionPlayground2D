@@ -4,12 +4,13 @@
 #include <vector>
 
 #include "../Geometry/Units.h"
-#include "../Geometry/Util.h"
+#include "../Geometry/math.h"
 #include "../Geometry/Constants.h"
 #include "../Geometry/Rectangle.h"
 #include "../Geometry/Polygon.h"
 
-using namespace geom;
+using geom::Polygon;
+using geom::Rectangle;
 
 SCENARIO("Translate a polygon.", "[poly]") {
 	GIVEN("An octogon.") {
@@ -177,7 +178,7 @@ bool _polygons_equal(Polygon p, Polygon o) {
 	std::size_t offset;
 	bool found = false;
 	for (std::size_t i = 0; i < o.size(); ++i) {
-		if (util::almostEquals(p[0], o[i])) {
+		if (geom::math::almostEquals(p[0], o[i])) {
 			found = true;
 			offset = i;
 		}
@@ -190,7 +191,7 @@ bool _polygons_equal(Polygon p, Polygon o) {
 	std::size_t second;
 	for (std::size_t i = 1; i < p.size(); ++i) {
 		second = i + offset >= o.size() ? (i + offset) - o.size() : i + offset;
-		if ( !geom::util::almostEquals(p[i], o[second]) ) {
+		if ( !geom::math::almostEquals(p[i], o[second]) ) {
 			warnPoly(p, i);
 			return false;
 		}
@@ -198,7 +199,7 @@ bool _polygons_equal(Polygon p, Polygon o) {
 	// Test normals.
 	for (std::size_t i = 0; i < p.size(); ++i) {
 		second = i + offset >= o.size() ? (i + offset) - o.size() : i + offset;
-		if (!util::almostEquals(p.getEdgeNorm(i), o.getEdgeNorm(second))) {
+		if (!geom::math::almostEquals(p.getEdgeNorm(i), o.getEdgeNorm(second))) {
 			WARN("Error: Polygon o does not contain the edge normal (" << p.getEdgeNorm(i).x << ", " << p.getEdgeNorm(i).y << ").");
 			printf("Got (%f, %f)\n", o.getEdgeNorm(i).x, o.getEdgeNorm(i).y);
 			printf("Polygon p:\n");

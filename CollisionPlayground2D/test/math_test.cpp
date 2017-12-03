@@ -1,7 +1,7 @@
 #include "catch.hpp"
 #include "definitions.h"
 
-#include "../Geometry/geom_math.h"
+#include "../Geometry/math.h"
 
 #include "../Geometry/Ray.h"
 #include "../Geometry/Units.h"
@@ -16,7 +16,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 0);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -25,7 +25,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 10);
 			THEN("The closest point is the x-coordinate.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -34,7 +34,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, -10);
 			THEN("The closest point is the x-coordinate.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -46,7 +46,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(0, -10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -55,7 +55,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(-10, -10);
 			THEN("The closest point is the y-coordinate.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -64,7 +64,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, -10);
 			THEN("The closest point is the y-coordinate.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -76,7 +76,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -85,7 +85,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(6, 10);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(8, 8);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -94,7 +94,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 16);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(13, 13);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -106,7 +106,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 5);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -115,7 +115,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 10);
 			THEN("The closest point is the x-coordinate and line's y coordinate.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -124,7 +124,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, -10);
 			THEN("The closest point is the x-coordinate and line's y coordinate.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -136,7 +136,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(-1, -10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -145,7 +145,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(-10, -10);
 			THEN("The closest point is the y-coordinate and the line's x coordinate.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -154,7 +154,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, -10);
 			THEN("The closest point is the y-coordinate and the line's x coordinate.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -166,7 +166,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(2, -3);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(2, -3);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -175,7 +175,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(6, 10);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(10.5f, 5.5f);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -184,7 +184,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made with 
 			Coord2 p(10, 16);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(15.5f, 10.5f);
-				Coord2 result = geom::closestPointOnLine(l1, l2, p);
+				Coord2 result = geom::math::closestPointOnLine(l1, l2, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -199,7 +199,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 0);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -208,7 +208,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 10);
 			THEN("The closest point is the x-coordinate.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -217,7 +217,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, -10);
 			THEN("The closest point is the x-coordinate.") {
 				Coord2 expected(10, 0);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -229,7 +229,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(0, -10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -238,7 +238,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(-10, -10);
 			THEN("The closest point is the y-coordinate.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -247,7 +247,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, -10);
 			THEN("The closest point is the y-coordinate.") {
 				Coord2 expected(0, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -259,7 +259,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -268,7 +268,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(6, 10);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(8, 8);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -277,7 +277,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 16);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(13, 13);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -289,7 +289,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 5);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -298,7 +298,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 10);
 			THEN("The closest point is the x-coordinate and line's y coordinate.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -307,7 +307,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, -10);
 			THEN("The closest point is the x-coordinate and line's y coordinate.") {
 				Coord2 expected(10, 5);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -319,7 +319,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(-1, -10);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -328,7 +328,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(-10, -10);
 			THEN("The closest point is the y-coordinate and the line's x coordinate.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -337,7 +337,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, -10);
 			THEN("The closest point is the y-coordinate and the line's x coordinate.") {
 				Coord2 expected(-1, -10);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -349,7 +349,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(2, -3);
 			THEN("The closest point is the point itself.") {
 				Coord2 expected(2, -3);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -358,7 +358,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(6, 10);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(10.5f, 5.5f);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}
@@ -367,7 +367,7 @@ SCENARIO("Getting the closest point on a line to a point, from a line made by a 
 			Coord2 p(10, 16);
 			THEN("The closest point is perpendicular with the line.") {
 				Coord2 expected(15.5f, 10.5f);
-				Coord2 result = geom::closestPointOnLine(r, p);
+				Coord2 result = geom::math::closestPointOnLine(r, p);
 				CHECK(result.x == ApproxEps(expected.x));
 				CHECK(result.y == ApproxEps(expected.y));
 			}

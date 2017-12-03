@@ -69,16 +69,16 @@
     <ClCompile Include="Geometry\Rectangle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Geometry\geom_math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test\geom_math_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Geometry\math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\math_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -146,16 +146,10 @@
     <ClInclude Include="Geometry\Circle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry\geom_math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Geometry\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\Units.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Geometry\Util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\Vector2D.h">
@@ -177,6 +171,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

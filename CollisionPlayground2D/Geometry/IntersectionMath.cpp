@@ -11,42 +11,42 @@
 #include "Rectangle.h"
 #include "SAT.h"
 
-namespace isect {
+namespace geom {
 
 	// ------------------------------- Point intersections --------------------------------------------------
 
-	bool intersects(const Rectangle& r, const units::Coordinate2D p) {
+	bool intersects(const Rectangle& r, const Coord2& p) {
 		return (p.x >= (r.left()   - constants::EPSILON) && 
 			    p.x <= (r.right()  + constants::EPSILON) && 
 			    p.y >= (r.top()    - constants::EPSILON) && 
 			    p.y <= (r.bottom() + constants::EPSILON));
 	}
-	bool intersects(const LineSegment& l, const units::Coordinate2D p) {
+	bool intersects(const LineSegment& l, const Coord2& p) {
 		// Check bounding box.
 		if ((p.x + constants::EPSILON) < l.min_x() || (p.x - constants::EPSILON) > l.max_x() ||
 			(p.y + constants::EPSILON) < l.min_y() || (p.y - constants::EPSILON) > l.max_y()) {
 				return false;
 		}
-		const units::Coordinate denom = l.end.x - l.start.x;
+		const gFloat denom = l.end.x - l.start.x;
 		if (std::abs(denom) < constants::EPSILON) {
 			// Vertical line. Bounding box check guarantees intersection.
 			return true;
 		}
-		const units::Coordinate numer = l.end.y - l.start.y;
+		const gFloat numer = l.end.y - l.start.y;
 		if (std::abs(numer) < constants::EPSILON) {
 			// Horizontal line. Bounding box check guarantees intersection.
 			return true;
 		}
 		// Some diagonal line. Apply line equation to test the point.
 		// We've already bounds checked, and checked for division by zero.
-		const units::Coordinate slope = numer/denom;
-		const units::Coordinate intercept = l.start.y - slope*l.start.x; // b = y - mx
-		const units::Coordinate q = slope*p.x + intercept; // y = mx + b
+		const gFloat slope = numer/denom;
+		const gFloat intercept = l.start.y - slope*l.start.x; // b = y - mx
+		const gFloat q = slope*p.x + intercept; // y = mx + b
 		// Check with line equation.
 		return std::abs(q - p.y) < constants::EPSILON;
 	}
 
-	bool intersects(const Ray& r, const units::Coordinate2D p) {
+	bool intersects(const Ray& r, const Coord2& p) {
 		// Bounds test. Point must be either at origin, or away from the origin in the direction of the ray.
 		if ((r.dir.y >= 0 ? ((p.y + constants::EPSILON) < r.origin.y) : ((p.y - constants::EPSILON) > r.origin.y)) ||
 			(r.dir.x >= 0 ? ((p.x + constants::EPSILON) < r.origin.x) : ((p.x - constants::EPSILON) > r.origin.x))) {
@@ -64,21 +64,21 @@ namespace isect {
 		}
 		// Check for a point on the line created by the ray.
 		// We've already bounds checked, and checked for division by zero.
-		const units::Coordinate slope = r.dir.y / r.dir.x;
-		const units::Coordinate intercept = r.origin.y - slope*r.origin.x; // b = y - mx
-		const units::Coordinate q = slope*p.x + intercept; // y = mx + b
+		const gFloat slope = r.dir.y / r.dir.x;
+		const gFloat intercept = r.origin.y - slope*r.origin.x; // b = y - mx
+		const gFloat q = slope*p.x + intercept; // y = mx + b
 		return std::abs(q - p.y) < constants::EPSILON; 
 	}
 
 	// ---------------------------- No output point intersections --------------------------------------------
 
 	namespace {
-		inline char _compute_direction(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c ) {
-			const units::Coordinate p = (c.x - a.x) * (b.y - a.y);
-			const units::Coordinate q = (b.x - a.x) * (c.y - a.y);
+		inline char _compute_direction(const Coord2& a, const Coord2& b, const Coord2& c ) {
+			const gFloat p = (c.x - a.x) * (b.y - a.y);
+			const gFloat q = (b.x - a.x) * (c.y - a.y);
 			return p < q ? -1 : p > q ? 1 : 0;
 		}
-		inline bool _is_on_segment(const units::Coordinate2D& a, const units::Coordinate2D& b, const units::Coordinate2D& c) {
+		inline bool _is_on_segment(const Coord2& a, const Coord2& b, const Coord2& c) {
 			return	(a.x <= c.x || b.x <= c.x) && (c.x <= a.x || c.x <= b.x) &&
 				    (a.y <= c.y || b.y <= c.y) && (c.y <= a.y || c.y <= b.y);
 		}
@@ -98,7 +98,7 @@ namespace isect {
 
 	// --------------------------- Intersections with output point ----------------------------------------------------
 
-	bool intersects(const LineSegment& a, const LineSegment& b, units::Coordinate2D& out_intersection) {
+	bool intersects(const LineSegment& a, const LineSegment& b, Coord2& out_intersection) {
 		// Bounds test for early out.
 		if (a.min_x() > b.max_x() || a.max_x() < b.min_x() || a.min_y() > b.max_y() || a.max_y() < b.min_y())
 			return false;
@@ -123,20 +123,20 @@ namespace isect {
 			}
 			return false;
 		}
-		const units::Coordinate2D r = a.end - a.start;
-		const units::Coordinate2D s = b.end - b.start;
-		const units::Coordinate2D qp = b.start - a.start;
-		const units::Coordinate rxs = r.cross(s);
-		const units::Coordinate qpxr = qp.cross(r);
+		const Coord2 r = a.end - a.start;
+		const Coord2 s = b.end - b.start;
+		const Coord2 qp = b.start - a.start;
+		const gFloat rxs = r.cross(s);
+		const gFloat qpxr = qp.cross(r);
 		if (rxs == 0) {
 			if (qpxr != 0)
 				return false; // Parallel and non-intersecting.
 			// Lines are colinear. Test for overlap.
 			// Don't have to worry about r being zero, since we tested for points already.
-			const units::Coordinate r2 = r.magnitude2();
-			const units::Coordinate t0 = qp.dot(r) / r2;
-			const units::Coordinate s_dot_r = s.dot(r);
-			const units::Coordinate t1 = t0 + s_dot_r / r2;
+			const gFloat r2 = r.magnitude2();
+			const gFloat t0 = qp.dot(r) / r2;
+			const gFloat s_dot_r = s.dot(r);
+			const gFloat t1 = t0 + s_dot_r / r2;
 			if (s_dot_r < 0) {
 				if (0 <= t0 && t1 <= 1) {
 					// Get closest intersect (to start point) for the segment this is called on.
@@ -155,15 +155,15 @@ namespace isect {
 			return false; // Colinear with no overlap.
 		}
 		// Guaranteed that rxs != 0 here: lines are not parallel.
-		const units::Coordinate t = qp.cross(s) / rxs;
-		const units::Coordinate u = qpxr / rxs;
+		const gFloat t = qp.cross(s) / rxs;
+		const gFloat u = qpxr / rxs;
 		if (0 <= t && t <= 1 && 0 <= u && u <= 1) {
 			out_intersection = a.start + t*r;
 			return true;
 		}
 		return false;
 	}
-	bool intersects(const Ray& r, const LineSegment& l, units::Coordinate2D& out_intersection) {
+	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection) {
 		// Check if the line segment is really a point.
 		if (l.isPoint()) {
 			if (intersects(r, l.start)) {
@@ -177,22 +177,22 @@ namespace isect {
 			 (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
 				return false;
 
-		const units::Coordinate2D s = l.end - l.start;
-		const units::Coordinate2D qp = l.start - r.origin;
-		const units::Coordinate rxs = r.dir.cross(s);
-		const units::Coordinate qpxr = qp.cross(r.dir);
+		const Coord2 s = l.end - l.start;
+		const Coord2 qp = l.start - r.origin;
+		const gFloat rxs = r.dir.cross(s);
+		const gFloat qpxr = qp.cross(r.dir);
 		if (rxs == 0) {
 			if (qpxr != 0)
 				return false; // Parallel and non-intersecting.
 			// They are colinear. Test for overlap.
-			const units::Coordinate r2 = r.dir.magnitude2();
-			const units::Coordinate t0 = qp.dot(r.dir) / r2;
-			const units::Coordinate s_dot_r = s.dot(r.dir);
+			const gFloat r2 = r.dir.magnitude2();
+			const gFloat t0 = qp.dot(r.dir) / r2;
+			const gFloat s_dot_r = s.dot(r.dir);
 			if (s_dot_r < 0) {
 				if (0 <= t0) {
 					// Get closest intersept (to origin) for the ray.
 					// Either the interval of overlap happens somewhere after origin, or at origin.
-					const units::Coordinate t1 = t0 + s_dot_r / r2;
+					const gFloat t1 = t0 + s_dot_r / r2;
 					out_intersection = t1 > 0.0f ? r.origin + t1*r.dir : r.origin;
 					return true;
 				}
@@ -207,8 +207,8 @@ namespace isect {
 			return false; // Colinear with no overlap.
 		}
 		// Guaranteed that rxs != 0 here: they are not parallel.
-		const units::Coordinate t = qp.cross(s) / rxs;
-		const units::Coordinate u = qpxr / rxs;
+		const gFloat t = qp.cross(s) / rxs;
+		const gFloat u = qpxr / rxs;
 		if (0 <= t && 0 <= u && u <= 1) {
 			out_intersection = r.origin + t*r.dir;
 			return true;
@@ -244,7 +244,7 @@ namespace isect {
 			   first.top()    < second.bottom() &&
 			   first.bottom() > second.top();
 	}
-	bool intersects(const ShapeContainer& first, const units::Coordinate2D& firstPos, const ShapeContainer& second, const units::Coordinate2D& secondPos) {
+	bool intersects(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos) {
 		if (!intersects(first.shape().getAABB() + firstPos, second.shape().getAABB() + secondPos)) // Bounds test for quick out.
 			return false;
 		return sat::performSAT(first, firstPos, second, secondPos);

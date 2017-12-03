@@ -6,27 +6,29 @@
 #include "Units.h"
 #include "Constants.h"
 
-const std::size_t Circle::SEGS_IN_POLY = 20;
+namespace geom {
+	const std::size_t Circle::SEGS_IN_POLY = 20;
 
-Projection Circle::getProjection(const units::Coordinate2D& axis) const {
-	units::Coordinate proj(axis.dot(center));
-	return Projection(proj - radius, proj + radius);
-}
-
-units::Coordinate2D Circle::getClosestTo(const units::Coordinate2D& point) const {
-	const units::Coordinate2D dir((point - center).normalize());
-	return dir * radius;
-}
-
-Polygon Circle::toPoly() const {
-	// Approximate a circle with line segments.
-	std::vector<units::Coordinate2D> vertices;
-	vertices.reserve(SEGS_IN_POLY);
-	const units::Coordinate segSize(constants::TAU / static_cast<units::Coordinate>(SEGS_IN_POLY));
-	for (std::size_t i = SEGS_IN_POLY; i > 0; --i) { // Wind counter-clockwise.
-		const units::Coordinate theta(segSize * static_cast<units::Coordinate>(i));
-		const units::Coordinate2D pos(radius * cos(theta), radius * sin(theta));
-		vertices.push_back(center + pos);
+	Projection Circle::getProjection(const Coord2& axis) const {
+		gFloat proj(axis.dot(center));
+		return Projection(proj - radius, proj + radius);
 	}
-	return Polygon(vertices);
+
+	Coord2 Circle::getClosestTo(const Coord2& point) const {
+		const Coord2 dir((point - center).normalize());
+		return dir * radius;
+	}
+
+	Polygon Circle::toPoly() const {
+		// Approximate a circle with line segments.
+		std::vector<Coord2> vertices;
+		vertices.reserve(SEGS_IN_POLY);
+		const gFloat segSize(constants::TAU / static_cast<gFloat>(SEGS_IN_POLY));
+		for (std::size_t i = SEGS_IN_POLY; i > 0; --i) { // Wind counter-clockwise.
+			const gFloat theta(segSize * static_cast<gFloat>(i));
+			const Coord2 pos(radius * cos(theta), radius * sin(theta));
+			vertices.push_back(center + pos);
+		}
+		return Polygon(vertices);
+	}
 }

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CIRCLE_H
-#define _CIRCLE_H
+#ifndef _GEOM_CIRCLE_H
+#define _GEOM_CIRCLE_H
 
 #include "Shape.h"
 #include "Projection.h"
@@ -29,4 +29,4 @@ namespace geom {
 		virtual Polygon toPoly() const;
 	};
 }
-#endif // _CIRCLE_H
+#endif // _GEOM_CIRCLE_H

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _COLLISION_MAP_H
-#define _COLLISION_MAP_H
+#ifndef _GEOM_COLLISION_MAP_H
+#define _GEOM_COLLISION_MAP_H
 
 #include <vector>
 
@@ -19,4 +19,4 @@ namespace geom {
 		}
 	};
 }
-#endif // _COLLISION_MAP_H
+#endif // _GEOM_COLLISION_MAP_H

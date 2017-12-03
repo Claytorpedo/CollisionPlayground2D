@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _COLLIDABLE_H
-#define _COLLIDABLE_H
+#ifndef _GEOM_COLLIDABLE_H
+#define _GEOM_COLLIDABLE_H
 
 #include "Units.h"
 
@@ -14,4 +14,4 @@ namespace geom {
 		virtual const ShapeContainer& getCollider() const = 0;
 	};
 }
-#endif //_COLLIDABLE_H
+#endif //_GEOM_COLLIDABLE_H

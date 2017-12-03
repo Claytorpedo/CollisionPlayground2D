@@ -1,5 +1,5 @@
-#ifndef _INTERSECTION_MATH_H
-#define _INTERSECTION_MATH_H
+#ifndef _GEOM_INTERSECTION_MATH_H
+#define _GEOM_INTERSECTION_MATH_H
 
 #include "Units.h"
 
@@ -38,4 +38,4 @@ namespace geom {
 	bool intersects(const ShapeContainer& first, const ShapeContainer& second);
 }
 
-#endif // _INTERSECTION_MATH_H
+#endif // _GEOM_INTERSECTION_MATH_H

@@ -19,27 +19,29 @@
 		case(ShapeType::EMPTY):     shape_ = nullptr; \
 	}
 
-ShapeContainer::ShapeContainer(const ShapeContainer& other) : type_(other.type_) {
-	__CLONE_SHAPE(other);
-}
-ShapeContainer::ShapeContainer(ShapeContainer&& other) : type_(other.type_) {
-	__MOVE_SHAPE(other);
-}
-ShapeContainer& ShapeContainer::operator=(const ShapeContainer& other) {
-	if (this == &other)
+namespace geom {
+	ShapeContainer::ShapeContainer(const ShapeContainer& other) : type_(other.type_) {
+		__CLONE_SHAPE(other);
+	}
+	ShapeContainer::ShapeContainer(ShapeContainer&& other) : type_(other.type_) {
+		__MOVE_SHAPE(other);
+	}
+	ShapeContainer& ShapeContainer::operator=(const ShapeContainer& other) {
+		if (this == &other)
+			return *this;
+		delete shape_;
+		type_ = other.type_;
+		__CLONE_SHAPE(other);
 		return *this;
-	delete shape_;
-	type_ = other.type_;
-	__CLONE_SHAPE(other);
-	return *this;
-}
-ShapeContainer& ShapeContainer::operator=(ShapeContainer&& other) {
-	if (this == &other)
+	}
+	ShapeContainer& ShapeContainer::operator=(ShapeContainer&& other) {
+		if (this == &other)
+			return *this;
+		delete shape_;
+		type_ = other.type_;
+		__MOVE_SHAPE(other);
 		return *this;
-	delete shape_;
-	type_ = other.type_;
-	__MOVE_SHAPE(other);
-	return *this;
+	}
 }
 #undef __CLONE_SHAPE
 #undef __MOVE_SHAPE

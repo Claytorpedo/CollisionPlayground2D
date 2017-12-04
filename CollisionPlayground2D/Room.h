@@ -27,7 +27,7 @@ public:
 	// Render the viewable portion of the level to the screen.
 	void draw(Graphics& graphics);
 private:
-	std::vector< std::vector<geom::Rectangle> > background_tiles_;
+	std::vector< std::vector<geom::Rect> > background_tiles_;
 	std::vector< std::vector<bool> > is_marked_;
 };
 

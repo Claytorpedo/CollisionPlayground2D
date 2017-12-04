@@ -5,7 +5,7 @@
 
 #define __CLONE_SHAPE(other) \
 	switch (type_) { \
-		case(ShapeType::RECTANGLE): rect_ = new Rectangle(*other.rect_);  shape_ = rect_;   break; \
+		case(ShapeType::RECTANGLE): rect_ = new Rect(*other.rect_);  shape_ = rect_;   break; \
 		case(ShapeType::POLYGON):   poly_ = new Polygon(*other.poly_);    shape_ = poly_;   break; \
 		case(ShapeType::CIRCLE):    circle_ = new Circle(*other.circle_); shape_ = circle_; break; \
 		case(ShapeType::EMPTY):     shape_ = nullptr; \

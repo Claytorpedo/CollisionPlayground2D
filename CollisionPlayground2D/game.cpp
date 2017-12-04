@@ -100,8 +100,8 @@ namespace game {
 
 	// -------------------------------------------------------------------------------------
 
-	Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rectangle& region) {
-		Polygon collider = Polygon::generate(twister, Rectangle());
+	Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rect& region) {
+		Polygon collider = Polygon::generate(twister, Rect());
 		std::uniform_real_distribution<geom::gFloat> distX(region.left(), region.right());
 		std::uniform_real_distribution<geom::gFloat> distY(region.top(), region.bottom());
 		geom::Coord2 position(distX(twister), distY(twister));
@@ -111,7 +111,7 @@ namespace game {
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 				if (geom::intersects(collider, position, polys[i], geom::Coord2(0,0))) {
 					isOccupied = true;
-					collider = Polygon::generate(twister, Rectangle());
+					collider = Polygon::generate(twister, Rect());
 					position = geom::Coord2(distX(twister), distY(twister));
 					std::cout << "Spot occupied. Trying somewhere else...\n";
 					break;
@@ -136,7 +136,7 @@ namespace game {
 		}
 		std::random_device rd;
 		std::mt19937 twister(rd());
-		Rectangle region(util::tileToCoord(10), util::tileToCoord(5), game::SCREEN_WIDTH - util::tileToCoord(20), game::SCREEN_HEIGHT - util::tileToCoord(10));
+		Rect region(util::tileToCoord(10), util::tileToCoord(5), game::SCREEN_WIDTH - util::tileToCoord(20), game::SCREEN_HEIGHT - util::tileToCoord(10));
 
 		std::size_t numPolys(20);
 		std::vector<Polygon> polys;

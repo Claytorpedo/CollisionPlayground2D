@@ -31,8 +31,8 @@ namespace geom {
 		return p.extend(dir, dist);
 	}
 
-	Rectangle Shape::getAABB() const {
-		return Rectangle(left(), top(), right() - left(), bottom() - top());
+	Rect Shape::getAABB() const {
+		return Rect(left(), top(), right() - left(), bottom() - top());
 	}
 
 	Coord2 Shape::getClosestTo(const Coord2& point) const {

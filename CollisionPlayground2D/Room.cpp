@@ -21,9 +21,9 @@ const Uint8 Room::WIDTH = 20 * 4;
 
 Room::Room() {
 	for (Uint8 r = 0; r < HEIGHT; ++r) {
-		std::vector<geom::Rectangle> row;
+		std::vector<geom::Rect> row;
 		for (Uint8 c = 0; c < WIDTH; ++c) {
-			geom::Rectangle rect(game::util::tileToCoord(c), game::util::tileToCoord(r), game::util::tileToCoord(1), game::util::tileToCoord(1));
+			geom::Rect rect(game::util::tileToCoord(c), game::util::tileToCoord(r), game::util::tileToCoord(1), game::util::tileToCoord(1));
 			row.push_back(rect);
 		}
 		background_tiles_.push_back(row);
@@ -116,7 +116,7 @@ void Room::reset() {
 }
 
 namespace {
-	inline SDL_Rect _convert_to_SDL_rect(geom::Rectangle r) {
+	inline SDL_Rect _convert_to_SDL_rect(geom::Rect r) {
 		SDL_Rect rect = { static_cast<int>(r.x), static_cast<int>(r.y), static_cast<int>(r.w), static_cast<int>(r.h) };
 		return rect;
 	}

@@ -11,7 +11,7 @@
 #include "../Geometry/Polygon.h"
 #include "../Geometry/ShapeContainer.h"
 
-using geom::Rectangle;
+using geom::Rect;
 using geom::LineSegment;
 using geom::Ray;
 using geom::Polygon;
@@ -20,38 +20,38 @@ using geom::Coord2;
 
 TEST_CASE("Rectangle and coordinate intersections.", "[isect][rect][coord]") {
 	SECTION("A 0-sized rectangle is a coordinate, and should intersect with one.") {
-		Rectangle r(0, 0, 0, 0);
+		Rect r(0, 0, 0, 0);
 		Coord2 c(0, 0);
 		CHECK(geom::intersects(r, c));
-		r = Rectangle(1, 1, 0, 0);
+		r = Rect(1, 1, 0, 0);
 		c = Coord2(1, 1);
 		CHECK(geom::intersects(r, c));
-		r = Rectangle(-1, -2, 0, 0);
+		r = Rect(-1, -2, 0, 0);
 		c = Coord2(-1, -2);
 		CHECK(geom::intersects(r, c));
-		r = Rectangle(10.5f, -20.3f, 0, 0);
+		r = Rect(10.5f, -20.3f, 0, 0);
 		c = Coord2(10.5f, -20.3f);
 		CHECK(geom::intersects(r, c));
 	}
 	SECTION("A 0-sized rectangle and a different coordinate.") {
-		Rectangle r(0, 0, 0, 0);
+		Rect r(0, 0, 0, 0);
 		Coord2 c(1, 0);
 		CHECK_FALSE(geom::intersects(r, c));
-		r = Rectangle(1, 1, 0, 0);
+		r = Rect(1, 1, 0, 0);
 		c = Coord2(1, 0);
 		CHECK_FALSE(geom::intersects(r, c));
-		r = Rectangle(-1, 0, 0, 0);
+		r = Rect(-1, 0, 0, 0);
 		c = Coord2(1, 0);
 		CHECK_FALSE(geom::intersects(r, c));
-		r = Rectangle(1, 0, 0, 0);
+		r = Rect(1, 0, 0, 0);
 		c = Coord2(1, 0.5f);
 		CHECK_FALSE(geom::intersects(r, c));
-		r = Rectangle(10, 0, 0, 0);
+		r = Rect(10, 0, 0, 0);
 		c = Coord2(0, 0);
 		CHECK_FALSE(geom::intersects(r, c));
 	}
 	SECTION("Coordinates inside a rectangle.") {
-		Rectangle r(-5, -2, 8, 7.5f);
+		Rect r(-5, -2, 8, 7.5f);
 		Coord2 c(0, 0);
 		CHECK(geom::intersects(r, c));
 		c = Coord2(r.left(), r.top());
@@ -74,7 +74,7 @@ TEST_CASE("Rectangle and coordinate intersections.", "[isect][rect][coord]") {
 		CHECK(geom::intersects(r, c));
 	}
 	SECTION("Coordinates outside a rectangle.") {
-		Rectangle r(-5, -2, 8, 7.5f);
+		Rect r(-5, -2, 8, 7.5f);
 		Coord2 c(r.left(), r.top() - 0.5f);
 		CHECK_FALSE(geom::intersects(r, c));
 		c = Coord2(r.left() - 100, 0);
@@ -933,7 +933,7 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 }
 
 TEST_CASE("Rectangle line segment intersections.", "[isect][rect][lineseg]") {
-	Rectangle r(5, 5, 2, 2);
+	Rect r(5, 5, 2, 2);
 	LineSegment s(5, 5, 5, 5);
 	CHECK(geom::intersects(r, s));
 	s = LineSegment(6, 6, 6, 6);
@@ -977,26 +977,26 @@ TEST_CASE("Rectangle line segment intersections.", "[isect][rect][lineseg]") {
 }
 
 TEST_CASE("Rectangle intersections.", "[isect][rect]") {
-	Rectangle r(0, 0, 1, 1);
-	Rectangle o(0, 0, 1, 1);
+	Rect r(0, 0, 1, 1);
+	Rect o(0, 0, 1, 1);
 	CHECK(geom::intersects(r, o));
-	o = Rectangle(-1, 0, 1, 1);
+	o = Rect(-1, 0, 1, 1);
 	CHECK_FALSE(geom::intersects(r, o));
-	o = Rectangle(-10, 0, 10, 1);
+	o = Rect(-10, 0, 10, 1);
 	CHECK_FALSE(geom::intersects(r, o));
-	o = Rectangle(-10, 0, 10.1f, 1);
+	o = Rect(-10, 0, 10.1f, 1);
 	CHECK(geom::intersects(r, o));
-	o = Rectangle(0.9f, -0.9f, 1, 1);
+	o = Rect(0.9f, -0.9f, 1, 1);
 	CHECK(geom::intersects(r, o));
-	o = Rectangle(0.5f, -1, 1, 1);
+	o = Rect(0.5f, -1, 1, 1);
 	CHECK_FALSE(geom::intersects(r, o));
-	o = Rectangle(0.5f, 0.5f, 0.25f, 0.25f);
+	o = Rect(0.5f, 0.5f, 0.25f, 0.25f);
 	CHECK(geom::intersects(r, o));
-	r = Rectangle(-10, -10, 5, 5);
+	r = Rect(-10, -10, 5, 5);
 	CHECK_FALSE(geom::intersects(r, o));
-	o = Rectangle(-10, -5, 1, 1);
+	o = Rect(-10, -5, 1, 1);
 	CHECK_FALSE(geom::intersects(r, o));
-	o = Rectangle(-10, -5.1f, 1, 1);
+	o = Rect(-10, -5.1f, 1, 1);
 	CHECK(geom::intersects(r, o));
 }
 
@@ -1048,7 +1048,7 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 	}
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
-		Rectangle o(0, 0, 1, 1);
+		Rect o(0, 0, 1, 1);
 		CHECK(geom::intersects(p, o));
 		o += Coord2(1, 0);
 		CHECK_FALSE(geom::intersects(p, o));
@@ -1056,7 +1056,7 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 		CHECK_FALSE(geom::intersects(p, o));
 		o += Coord2(0, -0.1f);
 		CHECK(geom::intersects(p, o));
-		o = Rectangle(0, 0, 2, 2);
+		o = Rect(0, 0, 2, 2);
 		CHECK(geom::intersects(p, o));
 		o += Coord2(-0.5f, -0.5f);
 		CHECK(geom::intersects(p, o));
@@ -1185,7 +1185,7 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
 		Coord2 pos1(0, 0);
-		Rectangle o(0, 0, 1, 1);
+		Rect o(0, 0, 1, 1);
 		Coord2 pos2(0, 0);
 		CHECK(geom::intersects(p, pos1, o, pos2));
 		pos1 = Coord2(0.5f, 0);
@@ -1195,7 +1195,7 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 		CHECK_FALSE(geom::intersects(p, pos1, o, pos2));
 		pos2 = Coord2(1, 0.9f);
 		CHECK(geom::intersects(p, pos1, o, pos2));
-		o = Rectangle(0, 0, 2, 2);
+		o = Rect(0, 0, 2, 2);
 		pos1 = Coord2(0, 0);
 		pos2 = Coord2(0, 0);
 		CHECK(geom::intersects(p, pos1, o, pos2));

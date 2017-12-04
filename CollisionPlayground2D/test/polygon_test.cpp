@@ -10,7 +10,7 @@
 #include "../Geometry/Polygon.h"
 
 using geom::Polygon;
-using geom::Rectangle;
+using geom::Rect;
 
 SCENARIO("Translate a polygon.", "[poly]") {
 	GIVEN("An octogon.") {
@@ -250,7 +250,7 @@ SCENARIO("A polygon computes its normals." "[poly]") {
 
 SCENARIO("A polygon is expanded.", "[poly") {
 	GIVEN("A rectangle.") {
-		Polygon p(Rectangle(0, 0, 1, 1).toPoly());
+		Polygon p(Rect(0, 0, 1, 1).toPoly());
 		WHEN("It is scaled 2.5 units larger.") {
 			geom::gFloat amt = 2.5f;
 			geom::Coord2 topLeft(p[0]     + geom::Coord2(-1,-1).normalize() * amt);

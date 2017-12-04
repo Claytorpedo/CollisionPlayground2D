@@ -8,7 +8,7 @@
 // Parent class for geometry objects.
 namespace geom {
 	class Polygon;
-	class Rectangle;
+	class Rect;
 	struct Projection;
 
 	class Shape {
@@ -33,7 +33,7 @@ namespace geom {
 		// Extend a shape in a direction by a distance.
 		virtual Polygon extend(const Coord2& dir, const gFloat dist) const;
 		// Get the axis-aligned bounding box for a shape.
-		virtual Rectangle getAABB() const;
+		virtual Rect getAABB() const;
 		// Find the closest vertex/point to a given point.
 		virtual Coord2 getClosestTo(const Coord2& point) const;
 

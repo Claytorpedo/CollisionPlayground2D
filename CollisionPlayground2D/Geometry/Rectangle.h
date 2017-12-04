@@ -1,5 +1,5 @@
-#ifndef _GEOM_RECTANGLE_H
-#define _GEOM_RECTANGLE_H
+#ifndef _GEOM_RECT_H
+#define _GEOM_RECT_H
 
 #include "Units.h"
 #include "Shape.h"
@@ -7,19 +7,19 @@
 #include "Projection.h"
 
 namespace geom {
-	class Rectangle : public Shape {
+	class Rect : public Shape {
 	public:
 		gFloat x, y, w, h;
 
-		Rectangle() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {}
-		Rectangle(gFloat x, gFloat y, gFloat w, gFloat h) : x(x), y(y), w(w), h(h) {}
-		Rectangle(Coord2 topLeft, gFloat w, gFloat h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
-		Rectangle(const Rectangle& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
+		Rect() : x(0.0f), y(0.0f), w(0.0f), h(0.0f) {}
+		Rect(gFloat x, gFloat y, gFloat w, gFloat h) : x(x), y(y), w(w), h(h) {}
+		Rect(Coord2 topLeft, gFloat w, gFloat h) : x(topLeft.x), y(topLeft.y), w(w), h(h) {}
+		Rect(const Rect& rect) : x(rect.x), y(rect.y), w(rect.w), h(rect.h) {}
 
 		// Translate by a vector.
-		inline Rectangle& operator+=(const Coord2& c) { x += c.x; y += c.y; return *this; }
+		inline Rect& operator+=(const Coord2& c) { x += c.x; y += c.y; return *this; }
 		// Translate by a vector.
-		inline Rectangle operator+(const Coord2& c) { return Rectangle(x + c.x, y + c.y, w, h); }
+		inline Rect operator+(const Coord2& c) { return Rect(x + c.x, y + c.y, w, h); }
 
 		inline Coord2 position() const { return Coord2(x, y); }
 		inline Coord2 center()   const { return Coord2(x + w*0.5f, y + h*0.5f); }
@@ -37,11 +37,11 @@ namespace geom {
 		inline Coord2 bottomLeft()  const { return Coord2(left(), bottom()); }
 		inline Coord2 bottomRight() const { return Coord2(right(), bottom()); }
 
-		inline bool isInside(const Rectangle& o) const; // See if this rectangle is contained by another one.
+		inline bool isInside(const Rect& o) const; // See if this rectangle is contained by another one.
 
 		virtual Projection getProjection(const Coord2& axis) const;
 		virtual Coord2 getClosestTo(const Coord2 point) const; // Gets closest corner of the rectangle.
 		virtual Polygon toPoly() const;
 	};
 }
-#endif // _GEOM_RECTANGLE_H_
+#endif // _GEOM_RECT_H_

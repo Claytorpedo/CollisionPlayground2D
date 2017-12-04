@@ -59,7 +59,7 @@ SCENARIO("Testing two shapes for overlap.", "[sat]") {
 	}
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
-		Rectangle o(0, 0, 1, 1);
+		Rect o(0, 0, 1, 1);
 		CHECK(sat::performSAT(p, o));
 		o += Coord2(1, 0);
 		CHECK_FALSE(sat::performSAT(p, o));
@@ -67,7 +67,7 @@ SCENARIO("Testing two shapes for overlap.", "[sat]") {
 		CHECK_FALSE(sat::performSAT(p, o));
 		o += Coord2(0, -0.1f);
 		CHECK(sat::performSAT(p, o));
-		o = Rectangle(0, 0, 2, 2);
+		o = Rect(0, 0, 2, 2);
 		CHECK(sat::performSAT(p, o));
 		o += Coord2(-0.5f, -0.5f);
 		CHECK(sat::performSAT(p, o));
@@ -159,7 +159,7 @@ SCENARIO("Testing two shapes for overlap.", "[sat]") {
 			}
 		}
 		GIVEN("A rectangle.") {
-			Rectangle r(0, 0, 2, 2);
+			Rect r(0, 0, 2, 2);
 			WHEN("The circle is overlapping an edge.") {
 				r += Coord2(-1, 4.9f);
 				THEN("They are overlapping.")
@@ -261,7 +261,7 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 	GIVEN("A triangle and a rectangle.") {
 		Polygon p(shapes::edgeTriR);
 		Coord2 pos1(0, 0);
-		Rectangle o(0, 0, 1, 1);
+		Rect o(0, 0, 1, 1);
 		Coord2 pos2(0, 0);
 		CHECK(sat::performSAT(p, pos1, o, pos2));
 		pos1 = Coord2(0.5f, 0);
@@ -271,7 +271,7 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 		CHECK_FALSE(sat::performSAT(p, pos1, o, pos2));
 		pos2 = Coord2(1, 0.9f);
 		CHECK(sat::performSAT(p, pos1, o, pos2));
-		o = Rectangle(0, 0, 2, 2);
+		o = Rect(0, 0, 2, 2);
 		pos1 = Coord2(0, 0);
 		pos2 = Coord2(0, 0);
 		CHECK(sat::performSAT(p, pos1, o, pos2));
@@ -373,7 +373,7 @@ SCENARIO("Testing two shapes for overlap with given positions.", "[sat]") {
 			}
 		}
 		GIVEN("A rectangle.") {
-			Rectangle r(0, 0, 2, 2);
+			Rect r(0, 0, 2, 2);
 			WHEN("The circle is overlapping an edge.") {
 				Coord2 pos1(1, 0);
 				Coord2 pos2(0, 4.9f);
@@ -436,7 +436,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 	Coord2 out_norm;
 	gFloat out_dist;
 	GIVEN("The shape to be moved is a rectangle, and the stationary one is a triangle.") {
-		Rectangle p(0, 0, 1, 1);
+		Rect p(0, 0, 1, 1);
 		Polygon o(shapes::rightTri);
 		Coord2 pos1(0, 0), pos2(0, 0);
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
@@ -481,7 +481,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 		}
 	}
 	GIVEN("A large rectangle, and a smaller triangle.") {
-		Rectangle p(0, 0, 100, 100);
+		Rect p(0, 0, 100, 100);
 		Polygon o(shapes::rightTri);
 		Coord2 pos1(0, 0), pos2(0, 0);
 		WHEN("The rectangle slightly overlaps the triangle from the right.") {
@@ -628,7 +628,7 @@ SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum t
 			}
 		}
 		GIVEN("A rectangle.") {
-			Rectangle r(0, 0, 2, 2);
+			Rect r(0, 0, 2, 2);
 			WHEN("The circle is overlapping an edge.") {
 				Coord2 pos1(1, 0);
 				Coord2 pos2(0, 4.9f);
@@ -737,7 +737,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 				}
 			}
 			GIVEN("The stationary shape is a rectangle.") {
-				Rectangle stationary(-1, 0, 1, 1);
+				Rect stationary(-1, 0, 1, 1);
 				THEN("It should collide immediately and not move at all.") {
 					REQUIRE(sat::performHybridSAT(collider, Coord2(0, 0), Coord2(-10, 0), stationary, Coord2(0, 0), out_norm, out_t) == sat::HybridResult::SWEEP);
 					CHECK(out_t == ApproxEps(0));
@@ -799,7 +799,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 				}
 			}
 			GIVEN("A vertex on the collider is moving into a edge of a rectangle immediately to the left of it.") {
-				Rectangle stationary(0, 0, 1, 2);
+				Rect stationary(0, 0, 1, 2);
 				Coord2 stationaryPos(-1, -1);
 				Coord2 expected_norm(1, 0);
 				WHEN("Moving left into the rectangle.") {
@@ -833,7 +833,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 		}
 		WHEN("The collider moves towards a distant shape.") {
 			GIVEN("The stationary shape is a rectangle to the left of the collider.") {
-				Rectangle stationary(-10, -1, 1, 2);
+				Rect stationary(-10, -1, 1, 2);
 				WHEN("Moving left into the rectangle.") {
 					Coord2 expected_norm(1, 0);
 					Coord2 delta(-10, 0);
@@ -950,7 +950,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 		WHEN("The collider moves towards a shape it is already touching.") {
 			GIVEN("An edge on the collider is moving into an edge of a rectangle immediately to the right of it.") {
 				Polygon collider(shapes::rightTri);
-				Rectangle stationary(1, 0, 1, 1);
+				Rect stationary(1, 0, 1, 1);
 				Coord2 expected_norm(-1, 0);
 				WHEN("Moving right into the edge.") {
 					Coord2 delta(10, 0);
@@ -1015,8 +1015,8 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 		}
 		WHEN("The collider moves towards a distant shape.") {
 			GIVEN("The stationary shape is a rectangle below and to the left of the collider.") {
-				Rectangle collider(0, 0, 1, 1);
-				Rectangle stationary(-2, 2, 1, 2);
+				Rect collider(0, 0, 1, 1);
+				Rect stationary(-2, 2, 1, 2);
 				WHEN("The collider moves down-left.") {
 					Coord2 delta(-10, 10);
 					Coord2 expected_norm(1, 0);
@@ -1030,7 +1030,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 			}
 			GIVEN("The stationary shape is a rectangle to the right of the collider.") {
 				Polygon collider(shapes::rightTri);
-				Rectangle stationary(5, 0, 1, 10);
+				Rect stationary(5, 0, 1, 10);
 				Coord2 expected_norm(-1, 0);
 				WHEN("Moving right into the edge.") {
 					Coord2 delta(10, 0);
@@ -1155,8 +1155,8 @@ SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[sa
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two rectangles.") {
-		Rectangle collider(0, 0, 1, 1);
-		Rectangle stationary(0, 0, 1, 1);
+		Rect collider(0, 0, 1, 1);
+		Rect stationary(0, 0, 1, 1);
 		WHEN("They perfectly overlap.") {
 			Coord2 colliderPos(0, 0), stationaryPos(0, 0);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
@@ -1401,7 +1401,7 @@ SCENARIO("Hybrid SAT with both shapes moving.", "[sat][hybrid_sat]") {
 	}
 	GIVEN("Two shapes a distance apart.") {
 		Polygon p1(shapes::octagon);
-		Rectangle p2(0, 0, 1, 1);
+		Rect p2(0, 0, 1, 1);
 		Coord2 pos1(0, 0), pos2(10, -0.5f);
 		WHEN("They move towards each other.") {
 			Coord2 expected_norm(-1, 0);
@@ -1431,7 +1431,7 @@ SCENARIO("Hybrid SAT with both shapes moving.", "[sat][hybrid_sat]") {
 		}
 	}
 	GIVEN("Two overlapping shapes.") {
-		Rectangle p1(0, 0, 10, 10), p2(0, 0, 1, 1);
+		Rect p1(0, 0, 10, 10), p2(0, 0, 1, 1);
 		Coord2 pos1(0, 0), pos2(-0.5f, 0);
 		Coord2 expected_norm(1, 0);
 		THEN("They get the same MTV, regardless of deltas.") {
@@ -1506,7 +1506,7 @@ SCENARIO("Finding the separating axes for two shapes.", "[sat]") {
 	}
 	GIVEN("A shape and a rectangle.") {
 		Polygon p(shapes::octagon);
-		Rectangle r(0, 10, 1, 5);
+		Rect r(0, 10, 1, 5);
 		WHEN("They get their separating axes.") {
 			std::vector<Coord2> axes = sat::getSeparatingAxes(p, r);
 			std::size_t expected = p.size() + separating_axes::RECT_NUM_AXES;
@@ -1521,8 +1521,8 @@ SCENARIO("Finding the separating axes for two shapes.", "[sat]") {
 		}
 	}
 	GIVEN("Two rectangles.") {
-		Rectangle p(50, -10, 600, 2);
-		Rectangle r(0, 10, 1, 5);
+		Rect p(50, -10, 600, 2);
+		Rect r(0, 10, 1, 5);
 		WHEN("They get their separating axes.") {
 			std::vector<Coord2> axes = sat::getSeparatingAxes(p, r);
 			std::size_t expected = separating_axes::RECT_NUM_AXES;

@@ -40,7 +40,7 @@ namespace geom {
 		}
 	}
 
-	Polygon Polygon::generate(std::mt19937& rando, const Rectangle& region,
+	Polygon Polygon::generate(std::mt19937& rando, const Rect& region,
 		const gFloat minRad, const gFloat maxRad, const std::size_t minVerts, const std::size_t maxVerts) {
 		// Randomly generate the polygon's center within the region.
 		std::uniform_real_distribution<gFloat> distX(region.left(), region.right());

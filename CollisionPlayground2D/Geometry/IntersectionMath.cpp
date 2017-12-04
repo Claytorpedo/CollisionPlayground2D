@@ -15,7 +15,7 @@ namespace geom {
 
 	// ------------------------------- Point intersections --------------------------------------------------
 
-	bool intersects(const Rectangle& r, const Coord2& p) {
+	bool intersects(const Rect& r, const Coord2& p) {
 		return (p.x >= (r.left()   - constants::EPSILON) && 
 			    p.x <= (r.right()  + constants::EPSILON) && 
 			    p.y >= (r.top()    - constants::EPSILON) && 
@@ -217,12 +217,12 @@ namespace geom {
 	}
 
 	// ------------------------------- Shape/primative intersections ----------------------------------------
-	bool intersects(const Rectangle& r, const LineSegment& l) {
+	bool intersects(const Rect& r, const LineSegment& l) {
 		// Check if either endpoints are inside/touching the rectangle.
 		if (intersects(r, l.start) || intersects(r, l.end))
 			return true;
-		// Bounds test for early out.
-		if (!intersects(r, Rectangle(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
+		// Bounds test for early out (rect intersect ignores touching case).
+		if (!intersects(r, Rect(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
 			return false;
 		// Test l against 4 line segments that make up the rectangle.
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.left(), r.top())))     // Left side.
@@ -238,7 +238,7 @@ namespace geom {
 
 	// ------------------------------- Shape intersections --------------------------------------------------
 
-	bool intersects(const Rectangle& first, const Rectangle& second) {
+	bool intersects(const Rect& first, const Rect& second) {
 		return first.left()   < second.right()  &&
 			   first.right()  > second.left()   &&
 			   first.top()    < second.bottom() &&

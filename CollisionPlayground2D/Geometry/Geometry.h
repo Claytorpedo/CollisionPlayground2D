@@ -19,8 +19,9 @@
 #include "Wall.h"
 
 #include "math.h"
-#include "IntersectionMath.h"
-#include "SAT.h"
+#include "intersections.h"
+#include "collisions.h"
+#include "overlaps.h"
 
 #include "ShapeContainer.h"
 #include "Shape.h"

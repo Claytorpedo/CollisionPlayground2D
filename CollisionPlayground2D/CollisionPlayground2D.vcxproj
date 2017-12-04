@@ -107,7 +107,8 @@
     <ClCompile Include="Geometry\Circle.cpp" />
     <ClCompile Include="Geometry\math.cpp" />
     <ClCompile Include="Geometry\Movable.cpp" />
-    <ClCompile Include="Geometry\IntersectionMath.cpp" />
+    <ClCompile Include="Geometry\intersections.cpp" />
+    <ClCompile Include="Geometry\overlaps.cpp" />
     <ClCompile Include="Geometry\Rectangle.cpp" />
     <ClCompile Include="Geometry\ShapeContainer.cpp" />
     <ClCompile Include="main.cpp">
@@ -132,26 +133,33 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="test\overlaps_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="test\polygon_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="test\SAT_test.cpp">
+    <ClCompile Include="test\collisions_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClInclude Include="Constants.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="Geometry\Circle.h" />
     <ClInclude Include="Geometry\Collidable.h" />
+    <ClInclude Include="Geometry\overlaps.h" />
     <ClInclude Include="Units.h" />
     <ClInclude Include="Geometry\Geometry.h" />
     <ClInclude Include="Geometry\math.h" />
     <ClInclude Include="Geometry\Movable.h" />
     <ClInclude Include="Geometry\CollisionMap.h" />
-    <ClInclude Include="Geometry\IntersectionMath.h" />
+    <ClInclude Include="Geometry\intersections.h" />
     <ClCompile Include="Geometry\Polygon.cpp" />
-    <ClCompile Include="Geometry\SAT.cpp" />
+    <ClCompile Include="Geometry\collisions.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
     <ClCompile Include="Geometry\Wall.cpp" />
     <ClCompile Include="Graphics.cpp" />
@@ -172,7 +180,7 @@
     <ClInclude Include="Geometry\Projection.h" />
     <ClInclude Include="Geometry\Ray.h" />
     <ClInclude Include="Geometry\Rectangle.h" />
-    <ClInclude Include="Geometry\SAT.h" />
+    <ClInclude Include="Geometry\collisions.h" />
     <ClInclude Include="Geometry\Shape.h" />
     <ClInclude Include="Geometry\ShapeContainer.h" />
     <ClInclude Include="Geometry\Wall.h" />

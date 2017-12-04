@@ -1,13 +1,10 @@
 #pragma once
-#ifndef _GEOM_INTERSECTION_MATH_H
-#define _GEOM_INTERSECTION_MATH_H
+#ifndef _GEOM_INTERSECTIONS_H
+#define _GEOM_INTERSECTIONS_H
 
 #include "Units.h"
 
-// Math for the intersection of geometry.
-// Geometric primitives (coordinates, rays, line segments) are considered intersecting if they touch.
-// Geometric shapes are only considered to be intersecting if they have overlap.
-
+// See if geometry primatives intersect each other.
 namespace geom {
 	class LineSegment;
 	class Ray;
@@ -33,15 +30,9 @@ namespace geom {
 	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection);
 
 	// Intersections of shapes with primatives -----------------------------------------------------------------------------
+
 	// Intersection between a rectangle and a line segment. Considered intersecting if they touch.
 	bool intersects(const Rect& r, const LineSegment& l);
-
-	// Intersections with shapes. No output points of collision. -----------------------------------------------------------
-	// Note that "touching" shapes are not considered intersecting if they have no overlap.
-
-	bool intersects(const Rect& first, const Rect& second);
-	bool intersects(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos);
-	bool intersects(const ShapeContainer& first, const ShapeContainer& second);
 }
 
-#endif // _GEOM_INTERSECTION_MATH_H
+#endif // _GEOM_INTERSECTIONS_H

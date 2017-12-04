@@ -8,7 +8,8 @@
 #include "Units.h"
 #include "Constants.h"
 #include "Shape.h"
-#include "SAT.h"
+#include "collisions.h"
+#include "overlaps.h"
 #include "CollisionMap.h"
 
 namespace geom {
@@ -20,16 +21,16 @@ namespace geom {
 
 	Movable::~Movable() {}
 
-	sat::HybridResult Movable::_find_closest_collision(const CollisionMap* const collisionMap, Movable::CollisionInfo& info) const {
+	CollisionResult Movable::_find_closest_collision(const CollisionMap* const collisionMap, Movable::CollisionInfo& info) const {
 		Coord2 testNorm;
 		gFloat interval(1.0f), testInterval;
 		info.isCollision = false;
 		const Coord2 delta(info.currentDir * info.remainingDist);
 		std::vector<Collidable*> objs = collisionMap->getColliding(*this, delta);
-		sat::HybridResult result;
+		CollisionResult result;
 		for (std::size_t i = 0; i < objs.size(); ++i) {
-			result = sat::performHybridSAT(info.collider, info.currentPosition, delta, objs[i]->getCollider(), objs[i]->getPosition(), testNorm, testInterval);
-			if (result == sat::HybridResult::SWEEP) {
+			result = collides(info.collider, info.currentPosition, delta, objs[i]->getCollider(), objs[i]->getPosition(), testNorm, testInterval);
+			if (result == CollisionResult::SWEEP) {
 				info.isCollision = true;
 				if (interval > testInterval) {
 					interval = testInterval;
@@ -37,24 +38,24 @@ namespace geom {
 				}
 				if (interval < constants::EPSILON) {
 					info.moveDist = 0;
-					return sat::HybridResult::SWEEP;
+					return CollisionResult::SWEEP;
 				}
 			}
-			if (result == sat::HybridResult::MTV) {
+			if (result == CollisionResult::MTV) {
 				info.isCollision = true;
 				info.moveDist = testInterval;
 				info.normal = testNorm;
-				return sat::HybridResult::MTV; // Currently overlapping something. Abort.
+				return CollisionResult::MTV; // Currently overlapping something. Abort.
 			}
 		}
 		if (!info.isCollision) {
 			info.moveDist = info.remainingDist;
-			return sat::HybridResult::NONE;
+			return CollisionResult::NONE;
 		}
 		info.moveDist = (info.remainingDist * interval) - getPushoutDistance(info.currentDir, info.normal);
 		if (info.moveDist < 0)
 			info.moveDist = 0;
-		return sat::HybridResult::SWEEP;
+		return CollisionResult::SWEEP;
 	}
 
 	Coord2 Movable::move(const ShapeContainer& collider, const Coord2& origin,
@@ -92,7 +93,7 @@ namespace geom {
 		// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 		gFloat prevAngle = 0;
 		while (depth < COLLISION_ALG_MAX_DEPTH) {
-			if (_find_closest_collision(collisionMap, info) == sat::HybridResult::MTV) {
+			if (_find_closest_collision(collisionMap, info) == CollisionResult::MTV) {
 				_debug_collision(info, collisionMap);
 				return;
 			}
@@ -145,7 +146,7 @@ namespace geom {
 			std::vector<Collidable*> objs = collisionMap->getColliding(*this);
 			info.isCollision = false;
 			for (std::size_t k = 0; k < objs.size(); ++k) {
-				if (sat::performSAT(info.collider, info.currentPosition, objs[k]->getCollider(), objs[k]->getPosition(), info.normal, info.moveDist)) {
+				if (overlaps(info.collider, info.currentPosition, objs[k]->getCollider(), objs[k]->getPosition(), info.normal, info.moveDist)) {
 					info.isCollision = true;
 					break;
 				}

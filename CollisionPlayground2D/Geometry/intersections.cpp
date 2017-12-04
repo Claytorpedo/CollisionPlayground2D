@@ -1,4 +1,4 @@
-#include "IntersectionMath.h"
+#include "intersections.h"
 
 #include "Units.h"
 #include "math.h"
@@ -9,10 +9,8 @@
 #include "Shape.h"
 #include "ShapeContainer.h"
 #include "Rectangle.h"
-#include "SAT.h"
 
 namespace geom {
-
 	// ------------------------------- Point intersections --------------------------------------------------
 
 	bool intersects(const Rect& r, const Coord2& p) {
@@ -218,12 +216,12 @@ namespace geom {
 
 	// ------------------------------- Shape/primative intersections ----------------------------------------
 	bool intersects(const Rect& r, const LineSegment& l) {
+		// Bounds test for early out.
+		if (r.left() > l.max_x() || r.right() < l.min_x() || r.top() > l.max_y() || r.bottom() < l.min_y())
+			return false;
 		// Check if either endpoints are inside/touching the rectangle.
 		if (intersects(r, l.start) || intersects(r, l.end))
 			return true;
-		// Bounds test for early out (rect intersect ignores touching case).
-		if (!intersects(r, Rect(l.min_x(), l.min_y(), l.max_x() - l.min_x(), l.max_y() - l.min_y())))
-			return false;
 		// Test l against 4 line segments that make up the rectangle.
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.left(), r.top())))     // Left side.
 			return true;
@@ -234,24 +232,5 @@ namespace geom {
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.right(), r.bottom()))) // Bottom side.
 			return true;
 		return false;
-	}
-
-	// ------------------------------- Shape intersections --------------------------------------------------
-
-	bool intersects(const Rect& first, const Rect& second) {
-		return first.left()   < second.right()  &&
-			   first.right()  > second.left()   &&
-			   first.top()    < second.bottom() &&
-			   first.bottom() > second.top();
-	}
-	bool intersects(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos) {
-		if (!intersects(first.shape().getAABB() + firstPos, second.shape().getAABB() + secondPos)) // Bounds test for quick out.
-			return false;
-		return sat::performSAT(first, firstPos, second, secondPos);
-	}
-	bool intersects(const ShapeContainer& first, const ShapeContainer& second) {
-		if (!intersects(first.shape().getAABB(), second.shape().getAABB())) // Bounds test for quick out.
-			return false;
-		return sat::performSAT(first, second);
 	}
 }

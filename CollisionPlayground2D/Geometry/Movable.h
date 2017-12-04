@@ -5,7 +5,7 @@
 #include "Units.h"
 #include "Collidable.h"
 #include "Shape.h"
-#include "SAT.h"
+#include "collisions.h"
 
 namespace geom {
 	class CollisionMap;
@@ -67,7 +67,7 @@ namespace geom {
 
 	private:
 		// Find the nearest collision from a map of collidables.
-		sat::HybridResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
+		CollisionResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
 		// Algorithm for deflecting-type collisions.
 		void _move_deflection(CollisionInfo& info, const CollisionMap* const collisionMap);
 		// Attempt to fix currently-overlaping collisions.

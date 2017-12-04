@@ -109,7 +109,7 @@ namespace game {
 		while (true) {
 			bool isOccupied = false;
 			for (std::size_t i = 0; i < polys.size(); ++i) {
-				if (geom::intersects(collider, position, polys[i], geom::Coord2(0,0))) {
+				if (geom::overlaps(collider, position, polys[i], geom::Coord2(0,0))) {
 					isOccupied = true;
 					collider = Polygon::generate(twister, Rect());
 					position = geom::Coord2(distX(twister), distY(twister));
@@ -194,7 +194,7 @@ namespace game {
 			collider.translate(mover.getPosition());
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 	#ifdef DEBUG
-				geom::intersects(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+				geom::overlaps(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
 				drawPoly(polys[i], graphics);
 	#else
 				graphics.setRenderColour(0, 100, 255);

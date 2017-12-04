@@ -4,7 +4,6 @@
 
 #include "Units.h"
 #include "Constants.h"
-#include "Vector2D.h"
 
 // Additional geometry math.
 namespace geom {
@@ -17,21 +16,18 @@ namespace geom {
 		Coord2 closestPointOnLine(const Coord2& line1, const Coord2& line2, const Coord2& point);
 
 		// Check if a value is almost zero (if the given value is between positive and negative tolerance exclusive).
-		template<typename T>
-		inline bool almostZero(const T t, const T tolerance = constants::EPSILON) { // Use for floating point numbers.
+		inline bool almostZero(const gFloat t, const gFloat tolerance = constants::EPSILON) {
 			return -tolerance < t && t < tolerance;
 		}
 		// Check if two values are almost the same (if their difference is less than the given tolerance).
-		template<typename T>
-		inline bool almostEquals(const T a, const T b, const T tolerance = constants::EPSILON) {
+		inline bool almostEquals(const gFloat a, const gFloat b, const gFloat tolerance = constants::EPSILON) {
 			return std::abs(a - b) < tolerance;
 		}
 		// Check if two vectors' values are almost the same (if their difference is less than the given tolerance). Tolerance is applied separately to both values.
-		template<typename T>
-		inline bool almostEquals(const Vec2<T>& a, const Vec2<T>& b, const T tolerance = constants::EPSILON) {
+		inline bool almostEquals(const Coord2& a, const Coord2& b, const gFloat tolerance = constants::EPSILON) {
 			return almostEquals(a.x, b.x, tolerance) && almostEquals(a.y, b.y, tolerance);
 		}
-		// Check if a value is between two bounds.
+		// Check if a value is between two bounds (inclusive).
 		template<typename T>
 		inline T clamp(const T val, const T bound_one, const T bound_two) {
 			T min, max;

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_MATH_H
-#define _GEOM_MATH_H
+#ifndef INCLUDE_GEOM_MATH_HPP
+#define INCLUDE_GEOM_MATH_HPP
 
 #include "units.h"
 #include "constants.h"
@@ -43,4 +43,4 @@ namespace geom {
 	}
 }
 
-#endif // _GEOM_MATH_H
+#endif // INCLUDE_GEOM_MATH_HPP

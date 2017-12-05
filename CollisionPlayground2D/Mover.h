@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _MOVER_H
-#define _MOVER_H
+#ifndef INCLUDE_MOVER_HPP
+#define INCLUDE_MOVER_HPP
 
 #include "units.h"
 #include "Geometry/Movable.h"
@@ -46,4 +46,4 @@ private:
 	void _init() const;
 };
 
-#endif // _MOVER_H
+#endif // INCLUDE_MOVER_HPP

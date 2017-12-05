@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_SHAPE_CONTAINER_H
-#define _GEOM_SHAPE_CONTAINER_H
+#ifndef INCLUDE_GEOM_SHAPE_CONTAINER_HPP
+#define INCLUDE_GEOM_SHAPE_CONTAINER_HPP
 
 #include "Shape.h"
 #include "Polygon.h"
@@ -46,4 +46,4 @@ namespace geom {
 	};
 }
 
-#endif // _GEOM_SHAPE_CONTAINER_H
+#endif // INCLUDE_GEOM_SHAPE_CONTAINER_HPP

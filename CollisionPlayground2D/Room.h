@@ -1,5 +1,6 @@
-#ifndef _ROOM_H
-#define _ROOM_H
+#pragma once
+#ifndef INCLUDE_ROOM_HPP
+#define INCLUDE_ROOM_HPP
 
 #include <SDL.h>
 #include <vector>
@@ -31,4 +32,4 @@ private:
 	std::vector< std::vector<bool> > is_marked_;
 };
 
-#endif // _ROOM_H
+#endif // INCLUDE_ROOM_HPP

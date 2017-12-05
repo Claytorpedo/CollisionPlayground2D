@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _DEFINITIONS_H
-#define _DEFINITIONS_H
+#ifndef INCLUDE_TEST_DEFINITIONS_HPP
+#define INCLUDE_TEST_DEFINITIONS_HPP
 
 #include "catch.hpp"
 
@@ -29,4 +29,4 @@ namespace separating_axes {
 	const std::size_t RECT_NUM_AXES = 2; // Rectangles are axis-alligned.
 }
 
-#endif // _DEFINITIONS_H
+#endif // INCLUDE_TEST_DEFINITIONS_HPP

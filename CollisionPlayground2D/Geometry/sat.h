@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _SAT_H
-#define _SAT_H
+#ifndef INCLUDE_GEOM_SAT_HPP
+#define INCLUDE_GEOM_SAT_HPP
 
 #include <vector>
 
@@ -16,4 +16,4 @@ namespace geom {
 	}
 }
 
-#endif // _SAT_H
+#endif // INCLUDE_GEOM_SAT_HPP

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_POLYGON_H
-#define _GEOM_POLYGON_H
+#ifndef INCLUDE_GEOM_POLYGON_HPP
+#define INCLUDE_GEOM_POLYGON_HPP
 
 #include "Shape.h"
 
@@ -103,4 +103,4 @@ namespace geom {
 		void _find_bounds();
 	};
 }
-#endif //_GEOM_POLYGON_H
+#endif // INCLUDE_GEOM_POLYGON_HPP

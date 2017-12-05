@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_WALL_H
-#define _GEOM_WALL_H
+#ifndef INCLUDE_GEOM_WALL_HPP
+#define INCLUDE_GEOM_WALL_HPP
 
 #include "Collidable.h"
 #include "ShapeContainer.h"
@@ -18,4 +18,4 @@ namespace geom {
 		Coord2 position_;
 	};
 }
-#endif // _GEOM_WALL_H
+#endif // INCLUDE_GEOM_WALL_HPP

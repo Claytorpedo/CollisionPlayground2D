@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_MOVABLE_H
-#define _GEOM_MOVABLE_H
+#ifndef INCLUDE_GEOM_MOVABLE_HPP
+#define INCLUDE_GEOM_MOVABLE_HPP
 
 #include "units.h"
 #include "Collidable.h"
@@ -75,4 +75,4 @@ namespace geom {
 		bool _debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap);
 	};
 }
-#endif //_GEOM_MOVABLE_H
+#endif // INCLUDE_GEOM_MOVABLE_HPP

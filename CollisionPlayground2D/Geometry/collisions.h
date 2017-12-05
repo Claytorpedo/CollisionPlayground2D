@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_SAT_H
-#define _GEOM_SAT_H
+#ifndef INCLUDE_GEOM_COLLISIONS_HPP
+#define INCLUDE_GEOM_COLLISIONS_HPP
 
 #include "units.h"
 // Collision tests for moving shapes.
@@ -31,4 +31,4 @@ namespace geom {
 		const ShapeContainer& second, const Coord2& secondPos, const Coord2& secondDelta, Coord2& out_norm, gFloat& out_t);
 }
 
-#endif // _GEOM_SAT_H
+#endif // INCLUDE_GEOM_COLLISIONS_HPP

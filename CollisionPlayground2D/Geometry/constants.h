@@ -1,5 +1,5 @@
-#ifndef _GEOM_CONSTANTS_H
-#define _GEOM_CONSTANTS_H
+#ifndef INCLUDE_GEOM_CONSTANTS_HPP
+#define INCLUDE_GEOM_CONSTANTS_HPP
 
 #include "units.h"
 
@@ -12,4 +12,4 @@ namespace geom {
 	}
 }
 
-#endif // _GEOM_CONSTANTS_H
+#endif // INCLUDE_GEOM_CONSTANTS_HPP

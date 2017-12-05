@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _CONSTANTS_H
-#define _CONSTANTS_H
+#ifndef INCLUDE_CONSTANTS_HPP
+#define INCLUDE_CONSTANTS_HPP
 
 #include "units.h"
 
@@ -13,4 +13,4 @@ namespace game {
 	const Pixel TILE_SIZE = 16;
 }
 
-#endif // _CONSTANTS_H
+#endif // INCLUDE_CONSTANTS_HPP

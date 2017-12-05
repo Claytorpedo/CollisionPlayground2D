@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_INTERSECTIONS_H
-#define _GEOM_INTERSECTIONS_H
+#ifndef INCLUDE_GEOM_INTERSECTIONS_HPP
+#define INCLUDE_GEOM_INTERSECTIONS_HPP
 
 #include "units.h"
 
@@ -35,4 +35,4 @@ namespace geom {
 	bool intersects(const Rect& r, const LineSegment& l);
 }
 
-#endif // _GEOM_INTERSECTIONS_H
+#endif // INCLUDE_GEOM_INTERSECTIONS_HPP

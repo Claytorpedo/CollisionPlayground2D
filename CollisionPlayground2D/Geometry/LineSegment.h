@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_LINE_SEGMENT_H
-#define _GEOM_LINE_SEGMENT_H
+#ifndef INCLUDE_GEOM_LINE_SEGMENT_HPP
+#define INCLUDE_GEOM_LINE_SEGMENT_HPP
 
 #include "units.h"
 
@@ -28,4 +28,4 @@ namespace geom {
 		inline Coord2 getNormalizedNormalCCW() const { return getNormalCCW().normalize(); }
 	};
 }
-#endif // _GEOM_LINE_SEGMENT_H
+#endif // INCLUDE_GEOM_LINE_SEGMENT_HPP

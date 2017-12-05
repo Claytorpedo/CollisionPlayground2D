@@ -1,5 +1,6 @@
-#ifndef _GRAPHICS_H
-#define _GRAPHICS_H
+#pragma once
+#ifndef INCLUDE_GRAPHICS_HPP
+#define INCLUDE_GRAPHICS_HPP
 
 #include <SDL.h>
 #include <vector>
@@ -35,4 +36,4 @@ private:
 };
 
 
-#endif // _GRAPHICS_H
+#endif // INCLUDE_GRAPHICS_HPP

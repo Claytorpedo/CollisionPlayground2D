@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_PROJECTION_H
-#define _GEOM_PROJECTION_H
+#ifndef INCLUDE_GEOM_PROJECTION_HPP
+#define INCLUDE_GEOM_PROJECTION_HPP
 
 #include "units.h"
 
@@ -13,4 +13,4 @@ namespace geom {
 		inline Projection& operator+=(const gFloat& v) { min += v; max += v; return *this; }
 	};
 }
-#endif // _GEOM_PROJECTION_H
+#endif // INCLUDE_GEOM_PROJECTION_HPP

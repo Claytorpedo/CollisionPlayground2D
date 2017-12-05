@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GAME_UNITS_H
-#define _GAME_UNITS_H
+#ifndef INCLUDE_GAME_UNITS_HPP
+#define INCLUDE_GAME_UNITS_HPP
 
 #include "Geometry/units.h"
 #include "Geometry/Vector2D.h"
@@ -19,4 +19,4 @@ namespace game {
 	typedef geom::Vec2<Acceleration>  Acceleration2D;
 }
 
-#endif // _GAME_UNITS_H
+#endif // INCLUDE_GAME_UNITS_HPP

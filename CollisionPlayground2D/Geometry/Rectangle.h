@@ -1,5 +1,6 @@
-#ifndef _GEOM_RECT_H
-#define _GEOM_RECT_H
+#pragma once
+#ifndef INCLUDE_GEOM_RECT_HPP
+#define INCLUDE_GEOM_RECT_HPP
 
 #include "units.h"
 #include "Shape.h"
@@ -44,4 +45,4 @@ namespace geom {
 		virtual Polygon toPoly() const;
 	};
 }
-#endif // _GEOM_RECT_H_
+#endif // INCLUDE_GEOM_RECT_HPP

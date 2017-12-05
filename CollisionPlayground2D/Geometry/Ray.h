@@ -1,5 +1,6 @@
-#ifndef _GEOM_RAY_H
-#define _GEOM_RAY_H
+#pragma once
+#ifndef INCLUDE_GEOM_RAY_HPP
+#define INCLUDE_GEOM_RAY_HPP
 
 #include "units.h"
 
@@ -16,4 +17,4 @@ namespace geom {
 		Ray(const Ray& o) : origin(o.origin), dir(o.dir) {}
 	};
 }
-#endif // _GEOM_RAY_H
+#endif // INCLUDE_GEOM_RAY_HPP

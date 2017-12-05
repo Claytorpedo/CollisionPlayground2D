@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOMETRY_H
-#define _GEOMETRY_H
+#ifndef INCLUDE_GEOMETRY_HPP
+#define INCLUDE_GEOMETRY_HPP
 
 #include "debug_logger.h"
 
@@ -29,4 +29,4 @@
 #include "Polygon.h"
 #include "Circle.h"
 
-#endif // _GEOMETRY_H
+#endif // INCLUDE_GEOMETRY_HPP

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_VECTOR2D_H
-#define _GEOM_VECTOR2D_H
+#ifndef INCLUDE_GEOM_VECTOR2D_HPP
+#define INCLUDE_GEOM_VECTOR2D_HPP
 
 #include <cmath>
 
@@ -68,4 +68,4 @@ namespace geom {
 	template <typename T> inline Vec2<T> operator*(T t, const Vec2<T>& v) { return v * t; }
 }
 
-#endif // _VECTOR2D_H
+#endif // INCLUDE_GEOM_VECTOR2D_HPP

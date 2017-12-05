@@ -1,9 +1,9 @@
 #pragma once
-#ifndef _GAME_H
-#define _GAME_H
+#ifndef INCLUDE_GAME_HPP
+#define INCLUDE_GAME_HPP
 
 namespace game {
 	int run(int argc, char* args[]);
 }
 
-#endif // _GAME_H
+#endif // INCLUDE_GAME_HPP

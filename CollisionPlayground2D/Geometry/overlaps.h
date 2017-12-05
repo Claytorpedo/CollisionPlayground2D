@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _OVERLAPS_H
-#define _OVERLAPS_H
+#ifndef INCLUDE_GEOM_OVERLAPS_HPP
+#define INCLUDE_GEOM_OVERLAPS_HPP
 
 #include "units.h"
 
@@ -26,4 +26,4 @@ namespace geom {
 	bool overlaps(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos, Coord2& out_norm, gFloat& out_dist);
 }
 
-#endif // _OVERLAPS_H
+#endif // INCLUDE_GEOM_OVERLAPS_HPP

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_DIRECTION_H
-#define _GEOM_DIRECTION_H
+#ifndef INCLUDE_GEOM_DIRECTION_HPP
+#define INCLUDE_GEOM_DIRECTION_HPP
 
 namespace geom {
 	enum class Direction {
@@ -30,4 +30,4 @@ namespace geom {
 	inline bool isMax(Direction side) { return side == Direction::RIGHT || side == Direction::DOWN; }
 	inline bool isMin(Direction side) { return side == Direction::LEFT || side == Direction::UP; }
 }
-#endif // _GEOM_DIRECTION_H
+#endif // INCLUDE_GEOM_DIRECTION_HPP

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_UNITS_H_
-#define _GEOM_UNITS_H_
+#ifndef INCLUDE_GEOM_UNITS_HPP
+#define INCLUDE_GEOM_UNITS_HPP
 
 #include "Vector2D.h"
 
@@ -10,4 +10,4 @@ namespace geom {
 
 	typedef geom::Vec2<gFloat> Coord2;
 }
-#endif // _GEOM_UNITS_H_
+#endif // INCLUDE_GEOM_UNITS_HPP

@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _GEOM_SHAPE_H
-#define _GEOM_SHAPE_H
+#ifndef INCLUDE_GEOM_SHAPE_HPP
+#define INCLUDE_GEOM_SHAPE_HPP
 
 #include "units.h"
 #include "Direction.h"
@@ -41,4 +41,4 @@ namespace geom {
 		gFloat side(Direction side) const;
 	};
 }
-#endif //GEOM_SHAPE_H
+#endif // INCLUDE_GEOM_SHAPE_HPP

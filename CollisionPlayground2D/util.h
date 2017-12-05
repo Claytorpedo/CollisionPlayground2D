@@ -1,6 +1,6 @@
 #pragma once
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef INCLUDE_GAME_UTIL_HPP
+#define INCLUDE_GAME_UTIL_HPP
 
 #include <SDL.h>
 
@@ -43,4 +43,4 @@ namespace game {
 }
 
 
-#endif // _UTIL_H
+#endif // INCLUDE_GAME_UTIL_HPP

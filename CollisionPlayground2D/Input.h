@@ -1,5 +1,6 @@
-#ifndef _INPUT_H
-#define _INPUT_H
+#pragma once
+#ifndef INCLUDE_INPUT_HPP
+#define INCLUDE_INPUT_HPP
 
 #include <bitset>
 #include <SDL.h>
@@ -53,4 +54,4 @@ private:
 };
 
 
-#endif // _INPUT_H
+#endif // INCLUDE_INPUT_HPP

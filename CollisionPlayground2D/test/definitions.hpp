@@ -6,9 +6,9 @@
 
 #include <vector>
 
-#include "../Geometry/constants.h"
-#include "../Geometry/units.h"
-#include "../Geometry/Movable.h"
+#include "../Geometry/constants.hpp"
+#include "../Geometry/units.hpp"
+#include "../Geometry/Movable.hpp"
 
 #define ApproxEps(x) Approx(x).margin(geom::constants::EPSILON)
 #define ApproxCollides(x) Approx(x).margin(geom::Movable::COLLISION_BUFFER) // For collision resolution, where perfect accuracy isn't as important.

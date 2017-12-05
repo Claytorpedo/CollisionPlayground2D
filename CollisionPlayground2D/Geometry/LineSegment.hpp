@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_LINE_SEGMENT_HPP
 #define INCLUDE_GEOM_LINE_SEGMENT_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 namespace geom {
 	class LineSegment {

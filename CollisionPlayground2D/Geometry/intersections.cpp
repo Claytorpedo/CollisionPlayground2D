@@ -1,14 +1,14 @@
-#include "intersections.h"
+#include "intersections.hpp"
 
-#include "units.h"
-#include "math.h"
-#include "constants.h"
+#include "units.hpp"
+#include "math.hpp"
+#include "constants.hpp"
 
-#include "LineSegment.h"
-#include "Ray.h"
-#include "Shape.h"
-#include "ShapeContainer.h"
-#include "Rectangle.h"
+#include "LineSegment.hpp"
+#include "Ray.hpp"
+#include "Shape.hpp"
+#include "ShapeContainer.hpp"
+#include "Rectangle.hpp"
 
 namespace geom {
 	// ------------------------------- Point intersections --------------------------------------------------

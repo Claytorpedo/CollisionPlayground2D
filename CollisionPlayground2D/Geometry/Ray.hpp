@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_RAY_HPP
 #define INCLUDE_GEOM_RAY_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 namespace geom {
 	class Ray {

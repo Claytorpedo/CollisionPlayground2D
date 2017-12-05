@@ -1,13 +1,13 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
 #include <vector>
 
-#include "../Geometry/intersections.h"
-#include "../Geometry/units.h"
-#include "../Geometry/Rectangle.h"
-#include "../Geometry/LineSegment.h"
-#include "../Geometry/Ray.h"
+#include "../Geometry/intersections.hpp"
+#include "../Geometry/units.hpp"
+#include "../Geometry/Rectangle.hpp"
+#include "../Geometry/LineSegment.hpp"
+#include "../Geometry/Ray.hpp"
 
 using geom::Rect;
 using geom::LineSegment;

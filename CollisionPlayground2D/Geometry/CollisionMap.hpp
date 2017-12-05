@@ -4,8 +4,8 @@
 
 #include <vector>
 
-#include "Collidable.h"
-#include "units.h"
+#include "Collidable.hpp"
+#include "units.hpp"
 
 namespace geom {
 	class CollisionMap {

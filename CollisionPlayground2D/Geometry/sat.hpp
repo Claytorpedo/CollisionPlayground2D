@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "units.h"
+#include "units.hpp"
 
 namespace geom {
 	class ShapeContainer;

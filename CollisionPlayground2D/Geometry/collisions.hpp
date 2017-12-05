@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_COLLISIONS_HPP
 #define INCLUDE_GEOM_COLLISIONS_HPP
 
-#include "units.h"
+#include "units.hpp"
 // Collision tests for moving shapes.
 // For all tests, "touching" shapes are not considered intersecting: they must overlap.
 namespace geom {

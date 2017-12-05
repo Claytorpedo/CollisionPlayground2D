@@ -1,11 +1,11 @@
-#include "Shape.h"
+#include "Shape.hpp"
 
 #include <iostream>
 
-#include "units.h"
-#include "Polygon.h"
-#include "Rectangle.h"
-#include "Projection.h"
+#include "units.hpp"
+#include "Polygon.hpp"
+#include "Rectangle.hpp"
+#include "Projection.hpp"
 
 namespace geom {
 	gFloat Shape::side(Direction side) const {

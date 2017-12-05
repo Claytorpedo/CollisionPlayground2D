@@ -1,12 +1,12 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
-#include "../Geometry/overlaps.h"
-#include "../Geometry/units.h"
-#include "../Geometry/Rectangle.h"
-#include "../Geometry/Polygon.h"
-#include "../Geometry/Circle.h"
-#include "../Geometry/ShapeContainer.h"
+#include "../Geometry/overlaps.hpp"
+#include "../Geometry/units.hpp"
+#include "../Geometry/Rectangle.hpp"
+#include "../Geometry/Polygon.hpp"
+#include "../Geometry/Circle.hpp"
+#include "../Geometry/ShapeContainer.hpp"
 
 using geom::gFloat;
 using geom::Coord2;

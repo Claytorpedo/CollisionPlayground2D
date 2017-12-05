@@ -2,10 +2,10 @@
 #ifndef INCLUDE_GEOM_SHAPE_CONTAINER_HPP
 #define INCLUDE_GEOM_SHAPE_CONTAINER_HPP
 
-#include "Shape.h"
-#include "Polygon.h"
-#include "Rectangle.h"
-#include "Circle.h"
+#include "Shape.hpp"
+#include "Polygon.hpp"
+#include "Rectangle.hpp"
+#include "Circle.hpp"
 
 namespace geom {
 	enum class ShapeType {

@@ -2,8 +2,8 @@
 #ifndef INCLUDE_GEOM_SHAPE_HPP
 #define INCLUDE_GEOM_SHAPE_HPP
 
-#include "units.h"
-#include "Direction.h"
+#include "units.hpp"
+#include "Direction.hpp"
 
 // Parent class for geometry objects.
 namespace geom {

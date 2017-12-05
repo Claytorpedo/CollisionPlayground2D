@@ -1,7 +1,7 @@
-#include "math.h"
+#include "math.hpp"
 
-#include "Ray.h"
-#include "units.h"
+#include "Ray.hpp"
+#include "units.hpp"
 
 namespace geom {
 	namespace math {

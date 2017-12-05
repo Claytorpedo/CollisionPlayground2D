@@ -1,7 +1,7 @@
-#include "ShapeContainer.h"
-#include "Shape.h"
-#include "Polygon.h"
-#include "Rectangle.h"
+#include "ShapeContainer.hpp"
+#include "Shape.hpp"
+#include "Polygon.hpp"
+#include "Rectangle.hpp"
 
 #define GEOM_SHAPE_CONTAINER_CLONE_SHAPE(other) \
 	switch (type_) { \

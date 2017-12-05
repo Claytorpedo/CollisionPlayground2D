@@ -1,16 +1,16 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
 #include <vector>
 
-#include "../Geometry/Movable.h"
-#include "../Geometry/Collidable.h"
-#include "../Geometry/Wall.h"
-#include "../Geometry/CollisionMap.h"
-#include "../Geometry/units.h"
-#include "../Geometry/ShapeContainer.h"
-#include "../Geometry/Polygon.h"
-#include "../Geometry/Rectangle.h"
+#include "../Geometry/Movable.hpp"
+#include "../Geometry/Collidable.hpp"
+#include "../Geometry/Wall.hpp"
+#include "../Geometry/CollisionMap.hpp"
+#include "../Geometry/units.hpp"
+#include "../Geometry/ShapeContainer.hpp"
+#include "../Geometry/Polygon.hpp"
+#include "../Geometry/Rectangle.hpp"
 
 using geom::Movable;
 using geom::Collidable;

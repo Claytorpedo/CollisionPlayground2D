@@ -2,9 +2,9 @@
 #ifndef INCLUDE_GEOM_CIRCLE_HPP
 #define INCLUDE_GEOM_CIRCLE_HPP
 
-#include "Shape.h"
-#include "Projection.h"
-#include "units.h"
+#include "Shape.hpp"
+#include "Projection.hpp"
+#include "units.hpp"
 
 namespace geom {
 	class Circle : public Shape {

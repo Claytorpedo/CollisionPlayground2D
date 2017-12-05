@@ -1,16 +1,16 @@
-#include "Movable.h"
+#include "Movable.hpp"
 
 #include <vector>
 #include <iostream>
 #include <algorithm>
 
-#include "debug_logger.h"
-#include "units.h"
-#include "constants.h"
-#include "Shape.h"
-#include "collisions.h"
-#include "overlaps.h"
-#include "CollisionMap.h"
+#include "debug_logger.hpp"
+#include "units.hpp"
+#include "constants.hpp"
+#include "Shape.hpp"
+#include "collisions.hpp"
+#include "overlaps.hpp"
+#include "CollisionMap.hpp"
 
 namespace geom {
 

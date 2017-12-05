@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 
-#include "units.h"
-#include "Geometry/units.h"
+#include "units.hpp"
+#include "Geometry/units.hpp"
 
 class Graphics {
 public:

@@ -4,9 +4,9 @@
 
 #include <SDL.h>
 
-#include "units.h"
-#include "constants.h"
-#include "Geometry/units.h"
+#include "units.hpp"
+#include "constants.hpp"
+#include "Geometry/units.hpp"
 
 namespace game {
 	namespace util {

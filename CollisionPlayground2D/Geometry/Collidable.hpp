@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_COLLIDABLE_HPP
 #define INCLUDE_GEOM_COLLIDABLE_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 namespace geom {
 	class ShapeContainer;

@@ -1,10 +1,10 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
-#include "../Geometry/math.h"
+#include "../Geometry/math.hpp"
 
-#include "../Geometry/Ray.h"
-#include "../Geometry/units.h"
+#include "../Geometry/Ray.hpp"
+#include "../Geometry/units.hpp"
 
 using geom::Ray;
 using geom::Coord2;

@@ -1,13 +1,13 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
 #include <vector>
 
-#include "../Geometry/units.h"
-#include "../Geometry/math.h"
-#include "../Geometry/constants.h"
-#include "../Geometry/Rectangle.h"
-#include "../Geometry/Polygon.h"
+#include "../Geometry/units.hpp"
+#include "../Geometry/math.hpp"
+#include "../Geometry/constants.hpp"
+#include "../Geometry/Rectangle.hpp"
+#include "../Geometry/Polygon.hpp"
 
 using geom::Polygon;
 using geom::Rect;

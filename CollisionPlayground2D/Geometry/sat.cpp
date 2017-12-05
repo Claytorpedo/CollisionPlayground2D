@@ -1,14 +1,14 @@
-#include "sat.h"
+#include "sat.hpp"
 
 #include <vector>
 
-#include "units.h"
-#include "debug_logger.h"
-#include "ShapeContainer.h"
-#include "Shape.h"
-#include "Rectangle.h"
-#include "Polygon.h"
-#include "Circle.h"
+#include "units.hpp"
+#include "debug_logger.hpp"
+#include "ShapeContainer.hpp"
+#include "Shape.hpp"
+#include "Rectangle.hpp"
+#include "Polygon.hpp"
+#include "Circle.hpp"
 
 namespace geom {
 	namespace sat {

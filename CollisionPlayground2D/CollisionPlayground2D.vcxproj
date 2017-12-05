@@ -153,18 +153,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClInclude Include="constants.h" />
-    <ClInclude Include="game.h" />
-    <ClInclude Include="Geometry\Circle.h" />
-    <ClInclude Include="Geometry\Collidable.h" />
-    <ClInclude Include="Geometry\overlaps.h" />
-    <ClInclude Include="Geometry\sat.h" />
-    <ClInclude Include="units.h" />
-    <ClInclude Include="Geometry\Geometry.h" />
-    <ClInclude Include="Geometry\math.h" />
-    <ClInclude Include="Geometry\Movable.h" />
-    <ClInclude Include="Geometry\CollisionMap.h" />
-    <ClInclude Include="Geometry\intersections.h" />
+    <ClInclude Include="constants.hpp" />
+    <ClInclude Include="game.hpp" />
+    <ClInclude Include="Geometry\Circle.hpp" />
+    <ClInclude Include="Geometry\Collidable.hpp" />
+    <ClInclude Include="Geometry\overlaps.hpp" />
+    <ClInclude Include="Geometry\sat.hpp" />
+    <ClInclude Include="units.hpp" />
+    <ClInclude Include="Geometry\Geometry.hpp" />
+    <ClInclude Include="Geometry\math.hpp" />
+    <ClInclude Include="Geometry\Movable.hpp" />
+    <ClInclude Include="Geometry\CollisionMap.hpp" />
+    <ClInclude Include="Geometry\intersections.hpp" />
     <ClCompile Include="Geometry\Polygon.cpp" />
     <ClCompile Include="Geometry\collisions.cpp" />
     <ClCompile Include="Geometry\Shape.cpp" />
@@ -176,35 +176,35 @@
     <ClCompile Include="game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClInclude Include="util.h" />
+    <ClInclude Include="util.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Geometry\constants.h" />
-    <ClInclude Include="Geometry\Direction.h" />
-    <ClInclude Include="Geometry\LineSegment.h" />
+    <ClInclude Include="Geometry\constants.hpp" />
+    <ClInclude Include="Geometry\Direction.hpp" />
+    <ClInclude Include="Geometry\LineSegment.hpp" />
     <ClInclude Include="Geometry\DebugLogger.h" />
-    <ClInclude Include="Geometry\Polygon.h" />
-    <ClInclude Include="Geometry\Projection.h" />
-    <ClInclude Include="Geometry\Ray.h" />
-    <ClInclude Include="Geometry\Rectangle.h" />
-    <ClInclude Include="Geometry\collisions.h" />
-    <ClInclude Include="Geometry\Shape.h" />
-    <ClInclude Include="Geometry\ShapeContainer.h" />
-    <ClInclude Include="Geometry\Wall.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Input.h" />
-    <ClInclude Include="Mover.h" />
-    <ClInclude Include="Room.h" />
+    <ClInclude Include="Geometry\Polygon.hpp" />
+    <ClInclude Include="Geometry\Projection.hpp" />
+    <ClInclude Include="Geometry\Ray.hpp" />
+    <ClInclude Include="Geometry\Rectangle.hpp" />
+    <ClInclude Include="Geometry\collisions.hpp" />
+    <ClInclude Include="Geometry\Shape.hpp" />
+    <ClInclude Include="Geometry\ShapeContainer.hpp" />
+    <ClInclude Include="Geometry\Wall.hpp" />
+    <ClInclude Include="Graphics.hpp" />
+    <ClInclude Include="Input.hpp" />
+    <ClInclude Include="Mover.hpp" />
+    <ClInclude Include="Room.hpp" />
     <ClInclude Include="test\catch.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="test\definitions.h">
+    <ClInclude Include="test\definitions.hpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Geometry\units.h" />
-    <ClInclude Include="Geometry\Vector2D.h" />
+    <ClInclude Include="Geometry\units.hpp" />
+    <ClInclude Include="Geometry\Vector2D.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

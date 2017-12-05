@@ -2,7 +2,7 @@
 #ifndef INCLUDE_CONSTANTS_HPP
 #define INCLUDE_CONSTANTS_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 namespace game {
 	const Pixel SCREEN_WIDTH = 1280;

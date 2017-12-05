@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_POLYGON_HPP
 #define INCLUDE_GEOM_POLYGON_HPP
 
-#include "Shape.h"
+#include "Shape.hpp"
 
 #include <vector>
 #include <random>

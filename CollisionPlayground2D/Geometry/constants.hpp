@@ -1,7 +1,7 @@
 #ifndef INCLUDE_GEOM_CONSTANTS_HPP
 #define INCLUDE_GEOM_CONSTANTS_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 namespace geom {
 	namespace constants {

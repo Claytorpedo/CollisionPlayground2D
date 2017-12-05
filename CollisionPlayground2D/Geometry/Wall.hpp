@@ -2,8 +2,8 @@
 #ifndef INCLUDE_GEOM_WALL_HPP
 #define INCLUDE_GEOM_WALL_HPP
 
-#include "Collidable.h"
-#include "ShapeContainer.h"
+#include "Collidable.hpp"
+#include "ShapeContainer.hpp"
 
 namespace geom {
 	class Wall : public Collidable {

@@ -2,10 +2,10 @@
 #ifndef INCLUDE_GEOM_MOVABLE_HPP
 #define INCLUDE_GEOM_MOVABLE_HPP
 
-#include "units.h"
-#include "Collidable.h"
-#include "Shape.h"
-#include "collisions.h"
+#include "units.hpp"
+#include "Collidable.hpp"
+#include "Shape.hpp"
+#include "collisions.hpp"
 
 namespace geom {
 	class CollisionMap;

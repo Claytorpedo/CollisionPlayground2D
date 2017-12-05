@@ -2,8 +2,8 @@
 #ifndef INCLUDE_GAME_UNITS_HPP
 #define INCLUDE_GAME_UNITS_HPP
 
-#include "Geometry/units.h"
-#include "Geometry/Vector2D.h"
+#include "Geometry/units.hpp"
+#include "Geometry/Vector2D.hpp"
 
 namespace game {
 	typedef int          Pixel;

@@ -1,5 +1,5 @@
-#include "Rectangle.h"
-#include "constants.h"
+#include "Rectangle.hpp"
+#include "constants.hpp"
 
 namespace geom {
 	inline bool Rect::isInside(const Rect& o) const {

@@ -1,14 +1,14 @@
 #include "catch.hpp"
-#include "definitions.h"
+#include "definitions.hpp"
 
 #include <vector>
 
-#include "../Geometry/units.h"
-#include "../Geometry/collisions.h"
-#include "../Geometry/ShapeContainer.h"
-#include "../Geometry/Polygon.h"
-#include "../Geometry/Rectangle.h"
-#include "../Geometry/Circle.h"
+#include "../Geometry/units.hpp"
+#include "../Geometry/collisions.hpp"
+#include "../Geometry/ShapeContainer.hpp"
+#include "../Geometry/Polygon.hpp"
+#include "../Geometry/Rectangle.hpp"
+#include "../Geometry/Circle.hpp"
 
 using geom::gFloat;
 using geom::Coord2;

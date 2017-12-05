@@ -1,13 +1,13 @@
-#include "Polygon.h"
+#include "Polygon.hpp"
 
 #include <iostream>
 #include <cmath>
 #include <algorithm>
 
-#include "Rectangle.h"
-#include "Projection.h"
-#include "units.h"
-#include "constants.h"
+#include "Rectangle.hpp"
+#include "Projection.hpp"
+#include "units.hpp"
+#include "constants.hpp"
 
 namespace geom {
 	const gFloat Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;

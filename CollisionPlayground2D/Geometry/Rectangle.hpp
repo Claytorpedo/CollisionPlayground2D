@@ -2,10 +2,10 @@
 #ifndef INCLUDE_GEOM_RECT_HPP
 #define INCLUDE_GEOM_RECT_HPP
 
-#include "units.h"
-#include "Shape.h"
-#include "Polygon.h"
-#include "Projection.h"
+#include "units.hpp"
+#include "Shape.hpp"
+#include "Polygon.hpp"
+#include "Projection.hpp"
 
 namespace geom {
 	class Rect : public Shape {

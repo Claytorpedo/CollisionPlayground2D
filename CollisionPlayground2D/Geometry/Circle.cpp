@@ -1,10 +1,10 @@
-#include "Circle.h"
+#include "Circle.hpp"
 
 #include <vector>
 
-#include "Polygon.h"
-#include "units.h"
-#include "constants.h"
+#include "Polygon.hpp"
+#include "units.hpp"
+#include "constants.hpp"
 
 namespace geom {
 	const std::size_t Circle::SEGS_IN_POLY = 20;

@@ -1,19 +1,19 @@
-#include "collisions.h"
+#include "collisions.hpp"
 
 #include <vector>
 
-#include "units.h"
-#include "constants.h"
-#include "overlaps.h"
-#include "math.h"
-#include "debug_logger.h"
-#include "Shape.h"
-#include "Polygon.h"
-#include "Rectangle.h"
-#include "Circle.h"
-#include "Projection.h"
-#include "sat.h"
-#include "ShapeContainer.h"
+#include "units.hpp"
+#include "constants.hpp"
+#include "overlaps.hpp"
+#include "math.hpp"
+#include "debug_logger.hpp"
+#include "Shape.hpp"
+#include "Polygon.hpp"
+#include "Rectangle.hpp"
+#include "Circle.hpp"
+#include "Projection.hpp"
+#include "sat.hpp"
+#include "ShapeContainer.hpp"
 
 namespace geom {
 	inline CollisionResult _circle_circle_hybrid_SAT(const Circle& first, const Circle& second, const Coord2& offset,

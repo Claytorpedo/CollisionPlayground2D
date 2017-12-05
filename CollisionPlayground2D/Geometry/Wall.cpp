@@ -1,4 +1,4 @@
-#include "Wall.h"
+#include "Wall.hpp"
 
 namespace geom {
 	Wall::Wall(const ShapeContainer& shape) : shape_(shape) {}

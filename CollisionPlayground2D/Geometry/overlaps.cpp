@@ -1,10 +1,10 @@
-#include "overlaps.h"
+#include "overlaps.hpp"
 
-#include "units.h"
-#include "constants.h"
-#include "Rectangle.h"
-#include "ShapeContainer.h"
-#include "sat.h"
+#include "units.hpp"
+#include "constants.hpp"
+#include "Rectangle.hpp"
+#include "ShapeContainer.hpp"
+#include "sat.hpp"
 
 namespace geom {
 

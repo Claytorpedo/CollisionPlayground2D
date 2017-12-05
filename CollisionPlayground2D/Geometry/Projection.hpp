@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_PROJECTION_HPP
 #define INCLUDE_GEOM_PROJECTION_HPP
 
-#include "units.h"
+#include "units.hpp"
 
 // Simple struct for containing a min and max value.
 namespace geom {

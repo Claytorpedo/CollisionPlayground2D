@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GEOM_UNITS_HPP
 #define INCLUDE_GEOM_UNITS_HPP
 
-#include "Vector2D.h"
+#include "Vector2D.hpp"
 
 namespace geom {
 	typedef float        gFloat;

@@ -4,14 +4,14 @@
 #include <random>
 #include <vector>
 
-#include "units.h"
-#include "constants.h"
-#include "util.h"
-#include "Input.h"
-#include "Graphics.h"
-#include "Mover.h"
+#include "units.hpp"
+#include "constants.hpp"
+#include "util.hpp"
+#include "Input.hpp"
+#include "Graphics.hpp"
+#include "Mover.hpp"
 
-#include "Geometry/Geometry.h"
+#include "Geometry/Geometry.hpp"
 
 using namespace geom;
 

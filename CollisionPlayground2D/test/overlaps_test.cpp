@@ -14,7 +14,7 @@ using geom::Rect;
 using geom::Polygon;
 using geom::Circle;
 
-TEST_CASE("Rectangle intersections.", "[isect][rect]") {
+TEST_CASE("Rectangle overlap.", "[overlaps]") {
 	Rect r(0, 0, 1, 1);
 	Rect o(0, 0, 1, 1);
 	CHECK(geom::overlaps(r, o));
@@ -38,13 +38,13 @@ TEST_CASE("Rectangle intersections.", "[isect][rect]") {
 	CHECK(geom::overlaps(r, o));
 }
 
-SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
+SCENARIO("Testing two shapes for overlap.", "[overlaps]") {
 	GIVEN("A triangle.") {
 		std::vector<Coord2> points = { Coord2(0,0), Coord2(1,1), Coord2(1,0) };
 		Polygon p(shapes::rightTri);
 		GIVEN("A second triangle.") {
 			Polygon o(shapes::tri);
-			THEN("They don't intersect until we move them together.") {
+			THEN("They don't overlap until we move them together.") {
 				CHECK_FALSE(geom::overlaps(p, o));
 				o.translate(0, 1);
 				CHECK(geom::overlaps(p, o));
@@ -56,14 +56,14 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 		}
 		GIVEN("An identical triangle.") {
 			Polygon o(shapes::rightTri);
-			THEN("They intersect.")
+			THEN("They overlap.")
 				CHECK(geom::overlaps(p, o));
 		}
 		GIVEN("A triangle inside the first one.") {
 			std::vector<Coord2> inside;
 			for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) inside.push_back(shapes::rightTri[i] * 0.5f);
 			Polygon o(inside);
-			THEN("They intersect.") {
+			THEN("They overlap.") {
 				CHECK(geom::overlaps(p, o));
 				o.translate(0.5f, 0.5f);
 				CHECK(geom::overlaps(p, o));
@@ -106,47 +106,47 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 			Polygon p(shapes::arb);
 			Polygon o(shapes::octagon);
 			WHEN("They have a lot of overlap.") {
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is nearly out the left side.") {
 				o.translate(-1.9f, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is nearly out of the right side.") {
 				o.translate(4.9f, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is only touching the left side.") {
 				o.translate(-2, 0);
-				THEN("Touching polygons are not intersecting.")
+				THEN("Touching polygons are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is only touching the right side.") {
 				o.translate(5, 0);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, o));
 			}
 			WHEN("They are significantly apart.") {
 				o.translate(20, 50);
-				THEN("They do not intersect.")
+				THEN("They do not overlap.")
 					CHECK_FALSE(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is nearly out of the top.") {
 				o.translate(1, -3.9f);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is only touching the top.") {
 				o.translate(1, -4);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, o));
 			}
 			WHEN("The octagon is edged out of the top left.") {
 				o.translate(-0.66f, -3.9f);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, o));
 			}
 		}
@@ -156,12 +156,12 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 			for (std::size_t i = 0; i < shapes::octagon.size(); ++i) inside.push_back(shapes::octagon[i] * 0.5f); // Half-size octagon.
 			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 			WHEN("One is inside the other, sharing edges.") {
 				o.translate(-1, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, o));
 			}
 		}
@@ -233,14 +233,14 @@ SCENARIO("Testing two shapes for intersection.", "[isect][shape]") {
 	}
 }
 
-SCENARIO("Testing two shapes for intersection with given positions.", "[isect][shape]") {
+SCENARIO("Testing two shapes for overlap with given positions.", "[overlaps]") {
 	GIVEN("A triangle.") {
 		Polygon p(shapes::rightTri);
 		Coord2 pos1(0, 0);
 		GIVEN("A second triangle.") {
 			Polygon o(shapes::tri);
 			Coord2 pos2(0, 0);
-			THEN("They don't intersect until we move them together.") {
+			THEN("They don't overlap until we move them together.") {
 				CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 				pos2 = Coord2(0, 1);
 				CHECK(geom::overlaps(p, pos1, o, pos2));
@@ -253,7 +253,7 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 		GIVEN("An identical triangle.") {
 			Polygon o(shapes::rightTri);
 			Coord2 pos2(0, 0);
-			THEN("They intersect.")
+			THEN("They overlap.")
 				CHECK(geom::overlaps(p, pos1, o, pos2));
 		}
 		GIVEN("A triangle inside the first one.") {
@@ -261,7 +261,7 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 			for (std::size_t i = 0; i < shapes::rightTri.size(); ++i) inside.push_back(shapes::rightTri[i] * 0.5f);
 			Polygon o(inside);
 			Coord2 pos2(0, 0);
-			THEN("They intersect.") {
+			THEN("They overlap.") {
 				CHECK(geom::overlaps(p, pos1, o, pos2));
 				pos2 = Coord2(0.5f, 0.5f);
 				CHECK(geom::overlaps(p, pos1, o, pos2));
@@ -314,47 +314,47 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 			Polygon o(shapes::octagon);
 			WHEN("They have a lot of overlap.") {
 				Coord2 pos2(0, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is nearly out the left side.") {
 				Coord2 pos2(-1.9f, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is nearly out of the right side.") {
 				Coord2 pos2(4.9f, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is only touching the left side.") {
 				Coord2 pos2(-2, 0);
-				THEN("Touching polygons are not intersecting.")
+				THEN("Touching polygons are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is only touching the right side.") {
 				Coord2 pos2(5, 0);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("They are significantly apart.") {
 				Coord2 pos2(20, 50);
-				THEN("They do not intersect.")
+				THEN("They do not overlap.")
 					CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is nearly out of the top.") {
 				Coord2 pos2(1, -3.9f);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is only touching the top.") {
 				Coord2 pos2(1, -4);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("The octagon is edged out of the top left.") {
 				Coord2 pos2(-0.66f, -3.9f);
-				THEN("They are not intersecting.")
+				THEN("They are not overlapping.")
 					CHECK_FALSE(geom::overlaps(p, pos1, o, pos2));
 			}
 		}
@@ -366,12 +366,12 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 			Polygon o(inside);
 			WHEN("One is completely inside the other.") {
 				Coord2 pos2(0, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 			WHEN("One is inside the other, sharing edges.") {
 				Coord2 pos2(-1, 0);
-				THEN("They intersect.")
+				THEN("They overlap.")
 					CHECK(geom::overlaps(p, pos1, o, pos2));
 			}
 		}
@@ -459,7 +459,7 @@ SCENARIO("Testing two shapes for intersection with given positions.", "[isect][s
 	}
 }
 
-SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum translation vector).", "[sat]") {
+SCENARIO("Two shapes are overlapping, and need to be separated (by the minimum translation vector).", "[overlaps]") {
 	Coord2 out_norm;
 	gFloat out_dist;
 	GIVEN("The shape to be moved is a rectangle, and the stationary one is a triangle.") {

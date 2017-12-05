@@ -96,4 +96,42 @@ SCENARIO("Finding the separating axes for two shapes.", "[sat]") {
 				CHECK(axes.size() == 1);
 		}
 	}
+	GIVEN("A circle and a rectangle.") {
+		Circle c(10);
+		Rect r(10, 10, 2, 2);
+		WHEN("They get their separating axes.") {
+			std::vector<Coord2> axes = geom::sat::getSeparatingAxes(c, r);
+			std::size_t expected = 1 + separating_axes::RECT_NUM_AXES;
+			THEN("There are three total axes to check.")
+				CHECK(axes.size() == expected);
+		}
+		WHEN("They get their separating axes in the opposite order.") {
+			std::vector<Coord2> axes = geom::sat::getSeparatingAxes(r, c);
+			std::size_t expected = 1 + separating_axes::RECT_NUM_AXES;
+			THEN("There are three total axes to check.")
+				CHECK(axes.size() == expected);
+		}
+	}
+	GIVEN("A circle and a polygon.") {
+		Circle c(10);
+		Polygon p(shapes::octagon);
+		WHEN("They get their separating axes.") {
+			std::vector<Coord2> axes = geom::sat::getSeparatingAxes(c, p);
+			std::size_t expected = 1 + p.size();
+			THEN("There are the axes from the polygon, and one from the circle.")
+				CHECK(axes.size() == expected);
+		}
+		WHEN("They get their separating axes in the opposite order.") {
+			std::vector<Coord2> axes = geom::sat::getSeparatingAxes(p, c);
+			std::size_t expected = 1 + p.size();
+			THEN("There are the axes from the polygon, and one from the circle.")
+				CHECK(axes.size() == expected);
+		}
+		WHEN("The cricle's center is on a vertex of the polygon.") {
+			std::vector<Coord2> axes = geom::sat::getSeparatingAxes(c, p, Coord2(2, 0));
+			std::size_t expected = p.size();
+			THEN("There are only the axes from the polygon.")
+				CHECK(axes.size() == expected);
+		}
+	}
 }

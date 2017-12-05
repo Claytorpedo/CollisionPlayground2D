@@ -4,7 +4,7 @@
 #include "Constants.h"
 #include "Rectangle.h"
 #include "ShapeContainer.h"
-#include "collisions.h"
+#include "sat.h"
 
 namespace geom {
 
@@ -16,7 +16,7 @@ namespace geom {
 	}
 
 	bool overlaps(const ShapeContainer& first, const ShapeContainer& second) {
-		const std::vector<Coord2> axes(getSeparatingAxes(first, second));
+		const std::vector<Coord2> axes(sat::getSeparatingAxes(first, second));
 		const Shape &firstShape(first.shape()), &secondShape(second.shape());
 		Projection projFirst, projSecond;
 		for (std::size_t i = 0; i < axes.size(); ++i) {
@@ -30,7 +30,7 @@ namespace geom {
 
 	bool overlaps(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos) {
 		const Coord2 offset(firstPos - secondPos);
-		const std::vector<Coord2> axes(getSeparatingAxes(first, second, offset));
+		const std::vector<Coord2> axes(sat::getSeparatingAxes(first, second, offset));
 		const Shape &firstShape(first.shape()), &secondShape(second.shape());
 		Projection projFirst, projSecond;
 		for (std::size_t i = 0; i < axes.size(); ++i) {
@@ -45,7 +45,7 @@ namespace geom {
 
 	bool overlaps(const ShapeContainer& first, const Coord2& firstPos, const ShapeContainer& second, const Coord2& secondPos, Coord2& out_norm, gFloat& out_dist) {
 		const Coord2 offset(firstPos - secondPos);
-		const std::vector<Coord2> axes(getSeparatingAxes(first, second, offset));
+		const std::vector<Coord2> axes(sat::getSeparatingAxes(first, second, offset));
 		const Shape &firstShape(first.shape()), &secondShape(second.shape());
 		Coord2 norm, testNorm;
 		gFloat overlap1, overlap2, minDist(-1), testDist;

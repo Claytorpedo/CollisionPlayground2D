@@ -17,7 +17,7 @@ using geom::Polygon;
 using geom::Circle;
 using geom::CollisionResult;
 
-SCENARIO("One shape is moving to collide with a stationary one, detected with hybrid SAT.", "[sat][hybrid_sat][sweep]") {
+SCENARIO("One shape is moving to collide with a stationary one, detected with hybrid SAT.", "[collides][sweep]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("The shapes will collide vertex to vertex.") {
@@ -446,7 +446,7 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 		}
 	}
 }
-SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[sat][hybrid_sat][mtv]") {
+SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[collides][mtv]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two rectangles.") {
@@ -558,7 +558,7 @@ SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[sa
 
 	}
 }
-SCENARIO("Two shapes are separated and will not collide, detected with hybrid SAT.", "[sat][hybrid_sat][miss]") {
+SCENARIO("Two shapes are separated and will not collide, detected with hybrid SAT.", "[collides][miss]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two touching polygons.") {
@@ -637,7 +637,7 @@ SCENARIO("Two shapes are separated and will not collide, detected with hybrid SA
 
 // I am abusing the fact that the function for them both moving uses almost entirely the same code
 // as the function for one moving, and not testing nearly as many cases.
-SCENARIO("Hybrid SAT with both shapes moving.", "[sat][hybrid_sat]") {
+SCENARIO("Hybrid SAT with both shapes moving.", "[collides]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two touching shapes.") {
@@ -760,75 +760,6 @@ SCENARIO("Hybrid SAT with both shapes moving.", "[sat][hybrid_sat]") {
 				CHECK(out_norm.y == ApproxEps(expected_norm.y));
 				CHECK(out_t == ApproxEps((std::sqrt(200) - 10) / (std::sqrt(200.0f)*2.0f))); // Distance between / speed.
 			}
-		}
-	}
-}
-
-SCENARIO("Finding the separating axes for two shapes.", "[sat]") {
-	GIVEN("Two shapes.") {
-		GIVEN("An octagon and a triangle.") {
-			Polygon p(shapes::octagon);
-			Polygon o(shapes::tri);
-			WHEN("They get their separating axes.") {
-				std::vector<Coord2> axes = getSeparatingAxes(p, o);
-				std::size_t expected = p.size() + o.size();
-				THEN("It's the sum of the number of axes between them.")
-					CHECK(axes.size() == expected);
-			}
-			WHEN("They get their separating axes in the opposite order.") {
-				std::vector<Coord2> axes = getSeparatingAxes(o, p);
-				std::size_t expected = p.size() + o.size();
-				THEN("It's the sum of the number of axes between them.")
-					CHECK(axes.size() == expected);
-			}
-		}
-		GIVEN("Two different triangles.") {
-			Polygon p(shapes::rightTri);
-			Polygon o(shapes::tri);
-			WHEN("They get their separating axes.") {
-				std::vector<Coord2> axes = getSeparatingAxes(p, o);
-				std::size_t expected = p.size() + o.size();
-				THEN("It's the sum of the number of axes between them.")
-					CHECK(axes.size() == expected);
-			}
-			WHEN("They get their separating axes in the opposite order.") {
-				std::vector<Coord2> axes = getSeparatingAxes(o, p);
-				std::size_t expected = p.size() + o.size();
-				THEN("It's the sum of the number of axes between them.")
-					CHECK(axes.size() == expected);
-			}
-		}
-	}
-	GIVEN("A shape and a rectangle.") {
-		Polygon p(shapes::octagon);
-		Rect r(0, 10, 1, 5);
-		WHEN("They get their separating axes.") {
-			std::vector<Coord2> axes = getSeparatingAxes(p, r);
-			std::size_t expected = p.size() + separating_axes::RECT_NUM_AXES;
-			THEN("It's the sum of the number of axes between them.")
-				CHECK(axes.size() == expected);
-		}
-		WHEN("They get their separating axes in the opposite order.") {
-			std::vector<Coord2> axes = getSeparatingAxes(r, p);
-			std::size_t expected = p.size() + separating_axes::RECT_NUM_AXES;
-			THEN("It's the sum of the number of axes between them.")
-				CHECK(axes.size() == expected);
-		}
-	}
-	GIVEN("Two rectangles.") {
-		Rect p(50, -10, 600, 2);
-		Rect r(0, 10, 1, 5);
-		WHEN("They get their separating axes.") {
-			std::vector<Coord2> axes = getSeparatingAxes(p, r);
-			std::size_t expected = separating_axes::RECT_NUM_AXES;
-			THEN("There is a special case with only two axes.")
-				CHECK(axes.size() == expected);
-		}
-		WHEN("They get their separating axes in the opposite order.") {
-			std::vector<Coord2> axes = getSeparatingAxes(r, p);
-			std::size_t expected = separating_axes::RECT_NUM_AXES;
-			THEN("There is a special case with only two axes.")
-				CHECK(axes.size() == expected);
 		}
 	}
 }

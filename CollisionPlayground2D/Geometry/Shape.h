@@ -2,7 +2,7 @@
 #ifndef _GEOM_SHAPE_H
 #define _GEOM_SHAPE_H
 
-#include "Units.h"
+#include "units.h"
 #include "Direction.h"
 
 // Parent class for geometry objects.

@@ -2,7 +2,7 @@
 #ifndef _GAME_UNITS_H
 #define _GAME_UNITS_H
 
-#include "Geometry/Units.h"
+#include "Geometry/units.h"
 #include "Geometry/Vector2D.h"
 
 namespace game {

@@ -4,7 +4,7 @@
 #include "../Geometry/math.h"
 
 #include "../Geometry/Ray.h"
-#include "../Geometry/Units.h"
+#include "../Geometry/units.h"
 
 using geom::Ray;
 using geom::Coord2;

@@ -2,11 +2,11 @@
 
 #include <vector>
 
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 #include "overlaps.h"
 #include "math.h"
-#include "DebugLogger.h"
+#include "debug_logger.h"
 #include "Shape.h"
 #include "Polygon.h"
 #include "Rectangle.h"

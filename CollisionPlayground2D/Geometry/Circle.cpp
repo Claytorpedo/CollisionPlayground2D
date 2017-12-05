@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "Polygon.h"
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 
 namespace geom {
 	const std::size_t Circle::SEGS_IN_POLY = 20;

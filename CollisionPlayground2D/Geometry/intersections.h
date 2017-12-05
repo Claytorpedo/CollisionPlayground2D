@@ -2,7 +2,7 @@
 #ifndef _GEOM_INTERSECTIONS_H
 #define _GEOM_INTERSECTIONS_H
 
-#include "Units.h"
+#include "units.h"
 
 // See if geometry primatives intersect each other.
 namespace geom {

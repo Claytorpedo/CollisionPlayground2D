@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 
-#include "Units.h"
-#include "Geometry/Units.h"
+#include "units.h"
+#include "Geometry/units.h"
 
 class Graphics {
 public:

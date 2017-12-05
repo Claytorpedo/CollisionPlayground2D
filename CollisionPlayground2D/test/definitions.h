@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "../Geometry/Constants.h"
-#include "../Geometry/Units.h"
+#include "../Geometry/constants.h"
+#include "../Geometry/units.h"
 #include "../Geometry/Movable.h"
 
 #define ApproxEps(x) Approx(x).margin(geom::constants::EPSILON)

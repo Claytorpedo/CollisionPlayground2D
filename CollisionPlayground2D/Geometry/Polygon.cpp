@@ -6,8 +6,8 @@
 
 #include "Rectangle.h"
 #include "Projection.h"
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 
 namespace geom {
 	const gFloat Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;

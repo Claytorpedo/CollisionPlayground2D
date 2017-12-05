@@ -1,7 +1,7 @@
 #include "overlaps.h"
 
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 #include "Rectangle.h"
 #include "ShapeContainer.h"
 #include "sat.h"

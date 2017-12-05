@@ -2,11 +2,11 @@
 #ifndef _GEOMETRY_H
 #define _GEOMETRY_H
 
-#include "DebugLogger.h"
+#include "debug_logger.h"
 
 #include "Vector2D.h"
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 
 #include "Ray.h"
 #include "LineSegment.h"

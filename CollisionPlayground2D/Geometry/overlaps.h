@@ -2,7 +2,7 @@
 #ifndef _OVERLAPS_H
 #define _OVERLAPS_H
 
-#include "Units.h"
+#include "units.h"
 
 namespace geom {
 	class ShapeContainer;

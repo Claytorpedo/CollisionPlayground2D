@@ -153,13 +153,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClInclude Include="Constants.h" />
+    <ClInclude Include="constants.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="Geometry\Circle.h" />
     <ClInclude Include="Geometry\Collidable.h" />
     <ClInclude Include="Geometry\overlaps.h" />
     <ClInclude Include="Geometry\sat.h" />
-    <ClInclude Include="Units.h" />
+    <ClInclude Include="units.h" />
     <ClInclude Include="Geometry\Geometry.h" />
     <ClInclude Include="Geometry\math.h" />
     <ClInclude Include="Geometry\Movable.h" />
@@ -176,10 +176,10 @@
     <ClCompile Include="game.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClInclude Include="Util.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Geometry\Constants.h" />
+    <ClInclude Include="Geometry\constants.h" />
     <ClInclude Include="Geometry\Direction.h" />
     <ClInclude Include="Geometry\LineSegment.h" />
     <ClInclude Include="Geometry\DebugLogger.h" />
@@ -203,7 +203,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="Geometry\Units.h" />
+    <ClInclude Include="Geometry\units.h" />
     <ClInclude Include="Geometry\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

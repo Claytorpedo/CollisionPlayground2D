@@ -4,9 +4,9 @@
 #include <random>
 #include <vector>
 
-#include "Units.h"
-#include "Constants.h"
-#include "Util.h"
+#include "units.h"
+#include "constants.h"
+#include "util.h"
 #include "Input.h"
 #include "Graphics.h"
 #include "Mover.h"

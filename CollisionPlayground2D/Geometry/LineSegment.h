@@ -2,7 +2,7 @@
 #ifndef _GEOM_LINE_SEGMENT_H
 #define _GEOM_LINE_SEGMENT_H
 
-#include "Units.h"
+#include "units.h"
 
 namespace geom {
 	class LineSegment {

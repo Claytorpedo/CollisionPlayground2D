@@ -4,9 +4,9 @@
 #include <iostream>
 #include <algorithm>
 
-#include "DebugLogger.h"
-#include "Units.h"
-#include "Constants.h"
+#include "debug_logger.h"
+#include "units.h"
+#include "constants.h"
 #include "Shape.h"
 #include "collisions.h"
 #include "overlaps.h"

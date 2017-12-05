@@ -2,8 +2,8 @@
 #ifndef _GEOM_MATH_H
 #define _GEOM_MATH_H
 
-#include "Units.h"
-#include "Constants.h"
+#include "units.h"
+#include "constants.h"
 
 // Additional geometry math.
 namespace geom {

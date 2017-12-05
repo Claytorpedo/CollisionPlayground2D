@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <vector>
 
-#include "Geometry/Units.h"
+#include "Geometry/units.h"
 #include "Geometry/Rectangle.h"
 
 namespace geom { class Shape; }

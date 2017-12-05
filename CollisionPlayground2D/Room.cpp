@@ -7,12 +7,12 @@
 #include <sstream>
 #include <iostream>
 
-#include "Units.h"
-#include "Util.h"
+#include "units.h"
+#include "util.h"
 
 #include "Graphics.h"
-#include "Geometry/Units.h"
-#include "Geometry/Constants.h"
+#include "Geometry/units.h"
+#include "Geometry/constants.h"
 #include "Geometry/Direction.h"
 #include "Geometry/Shape.h"
 

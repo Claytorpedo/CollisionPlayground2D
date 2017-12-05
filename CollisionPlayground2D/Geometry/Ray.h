@@ -1,7 +1,7 @@
 #ifndef _GEOM_RAY_H
 #define _GEOM_RAY_H
 
-#include "Units.h"
+#include "units.h"
 
 namespace geom {
 	class Ray {

@@ -155,28 +155,28 @@
     <ClInclude Include="Geometry\Geometry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry\Units.h">
+    <ClInclude Include="Geometry\units.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\Vector2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Geometry\Constants.h">
+    <ClInclude Include="Geometry\constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\Direction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Units.h">
+    <ClInclude Include="units.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
+    <ClInclude Include="constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Util.h">
+    <ClInclude Include="util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\math.h">

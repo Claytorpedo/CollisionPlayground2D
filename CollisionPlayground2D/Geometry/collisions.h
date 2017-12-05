@@ -2,7 +2,7 @@
 #ifndef _GEOM_SAT_H
 #define _GEOM_SAT_H
 
-#include "Units.h"
+#include "units.h"
 // Collision tests for moving shapes.
 // For all tests, "touching" shapes are not considered intersecting: they must overlap.
 namespace geom {

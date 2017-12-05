@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "Units.h"
-#include "DebugLogger.h"
+#include "units.h"
+#include "debug_logger.h"
 #include "ShapeContainer.h"
 #include "Shape.h"
 #include "Rectangle.h"

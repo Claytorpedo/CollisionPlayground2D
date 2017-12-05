@@ -1,7 +1,7 @@
 #ifndef _GEOM_RECT_H
 #define _GEOM_RECT_H
 
-#include "Units.h"
+#include "units.h"
 #include "Shape.h"
 #include "Polygon.h"
 #include "Projection.h"

@@ -16,8 +16,7 @@
 #include "ShapeContainer.hpp"
 
 namespace geom {
-	inline CollisionResult _circle_circle_hybrid_SAT(const Circle& first, const Circle& second, const Coord2& offset,
-		const Coord2& relativeVel, Coord2& out_norm, gFloat& out_t) {
+	inline CollisionResult _collides(const Circle& first, const Circle& second, const Coord2& offset, const Coord2& relativeVel, Coord2& out_norm, gFloat& out_t) {
 		const Coord2 firstPos(first.center + offset);
 		const Coord2 separation(firstPos - second.center);
 		const gFloat dist2(separation.magnitude2());
@@ -47,6 +46,12 @@ namespace geom {
 		out_norm = (collisionPoint - second.center).normalize();
 		return CollisionResult::SWEEP;
 	}
+	CollisionResult collides(const Circle& first, const Coord2& firstPos, const Coord2& firstDelta, const Circle& second, const Coord2& secondPos, Coord2& out_norm, gFloat& out_t) {
+		return _collides(first, second, firstPos - secondPos, firstDelta, out_norm, out_t);
+	}
+	CollisionResult collides(const Circle& first, const Coord2& firstPos, const Coord2& firstDelta, const Circle& second, const Coord2& secondPos, const Coord2& secondDelta, Coord2& out_norm, gFloat& out_t) {
+		return _collides(first, second, firstPos - secondPos, firstDelta - secondDelta, out_norm, out_t);
+	}
 	inline CollisionResult _circle_poly_hybrid_SAT(const Circle& first, const Polygon& second, const Coord2& offset,
 		const Coord2& relativeVel, Coord2& out_norm, gFloat& out_t) {
 		// Get axes on other shape and do hybrid sat, logging best t and norm.
@@ -66,7 +71,7 @@ namespace geom {
 		const Coord2& relativeVel, Coord2& out_norm, gFloat& out_t, CollisionResult& r) {
 		if (first.type() == ShapeType::CIRCLE) {
 			if (second.type() == ShapeType::CIRCLE)
-				r = _circle_circle_hybrid_SAT(first.circle(), second.circle(), offset, relativeVel, out_norm, out_t);
+				r = _collides(first.circle(), second.circle(), offset, relativeVel, out_norm, out_t);
 			else
 				r = _circle_poly_hybrid_SAT(first.circle(), second.shape().toPoly(), offset, relativeVel, out_norm, out_t);
 			return true;
@@ -164,7 +169,6 @@ namespace geom {
 
 	CollisionResult collides(const ShapeContainer& first, const Coord2& firstPos, const Coord2& firstDelta,
 		const ShapeContainer& second, const Coord2& secondPos, const Coord2& secondDelta, Coord2& out_norm, gFloat& out_t) {
-		const Coord2 delta = firstDelta - secondDelta; // Treat second as if it is stationary.
-		return collides(first, firstPos, delta, second, secondPos, out_norm, out_t);
+		return collides(first, firstPos, firstDelta - secondDelta, second, secondPos, out_norm, out_t);
 	}
 }

@@ -8,11 +8,15 @@
 
 namespace geom {
 	class ShapeContainer;
+	class Rect;
+	class Polygon;
 	namespace sat {
 		// Given two shapes, find the axes of separation for them. Offset is first's position - second's position.
 		// If given an unknown shape type, converts the shape to a polygon and uses that.
 		// Returns a vector of normalized separating axes.
 		std::vector<Coord2> getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second, const Coord2& offset = Coord2(0, 0));
+		std::vector<Coord2> getSeparatingAxes(const Rect& rect);
+		std::vector<Coord2> getSeparatingAxes(const Polygon& poly);
 	}
 }
 

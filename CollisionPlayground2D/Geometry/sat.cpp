@@ -58,5 +58,18 @@ namespace geom {
 			_get_separating_axes(second, first, -offset, axes);
 			return axes;
 		}
+		std::vector<Coord2> getSeparatingAxes(const Rect& rect) {
+			std::vector<Coord2> axes;
+			axes.push_back(Coord2(1, 0)); // Rectangles are axis-alligned.
+			axes.push_back(Coord2(0, 1));
+			return axes;
+		}
+		std::vector<Coord2> getSeparatingAxes(const Polygon& poly) {
+			std::vector<Coord2> axes;
+			axes.reserve(poly.size());
+			for (std::size_t i = 0; i < poly.size(); ++i)
+				axes.push_back(poly.getEdgeNorm(i));
+			return axes;
+		}
 	}
 }

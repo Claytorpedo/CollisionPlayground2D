@@ -20,7 +20,7 @@ namespace geom {
 		const Coord2 firstPos(first.center + offset);
 		const Coord2 separation(firstPos - second.center);
 		const gFloat dist2(separation.magnitude2());
-		const gFloat fullRad(first.radius + second.radius - constants::EPSILON); // Radius of both minus eps, for comparison.
+		const gFloat fullRad(first.radius + second.radius - constants::EPSILON); // Radius of both minus eps.
 		const gFloat fullRad2(fullRad * fullRad);
 		if (dist2 <= fullRad2) { // They are currently overlapping.
 			const gFloat dist(std::sqrt(dist2));
@@ -29,6 +29,10 @@ namespace geom {
 			return CollisionResult::MTV;
 		}
 		const Coord2 closestTo(math::closestPointOnLine(firstPos, firstPos + relativeVel, second.center));
+		// Check if the closest point to the movement vector is "behind" the first circle's center.
+		if ((relativeVel.x >= 0 ? closestTo.x <= firstPos.x : closestTo.x > firstPos.x) &&
+		    (relativeVel.y >= 0 ? closestTo.y <= firstPos.y : closestTo.y > firstPos.y) )
+			return CollisionResult::NONE; // Moving away from each other.
 		const gFloat closestDist2((second.center - closestTo).magnitude2());
 		if (closestDist2 >= fullRad2)
 			return CollisionResult::NONE; // They are not on a collision course.

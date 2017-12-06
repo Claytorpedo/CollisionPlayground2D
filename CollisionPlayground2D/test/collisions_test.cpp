@@ -622,13 +622,13 @@ SCENARIO("Two shapes are separated and will not collide, detected with hybrid SA
 		Circle collider(5), stationary(2);
 		WHEN("The collider is on the left side of the circle, and moves leftwards, away from it.") {
 			Coord2 colliderPos(-2, 20), stationaryPos(5, 20);
-			Coord2 delta(-10, 0);
+			Coord2 delta(-20, 0);
 			THEN("They don't collide.")
 				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
 		}
 		WHEN("The collider is on the right side of the circle, and moves rightwards, away from it.") {
 			Coord2 colliderPos(5, 0), stationaryPos(-2, 0);
-			Coord2 delta(10, 0);
+			Coord2 delta(50, 0);
 			THEN("They don't collide.")
 				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
 		}

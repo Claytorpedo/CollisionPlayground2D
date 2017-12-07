@@ -15,8 +15,6 @@ namespace geom {
 		// If given an unknown shape type, converts the shape to a polygon and uses that.
 		// Returns a vector of normalized separating axes.
 		std::vector<Coord2> getSeparatingAxes(const ShapeContainer& first, const ShapeContainer& second, const Coord2& offset = Coord2(0, 0));
-		std::vector<Coord2> getSeparatingAxes(const Rect& rect);
-		std::vector<Coord2> getSeparatingAxes(const Polygon& poly);
 	}
 }
 

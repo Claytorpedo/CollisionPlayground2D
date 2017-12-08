@@ -48,22 +48,22 @@ namespace geom {
 		// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
 		static Polygon expand(const Polygon& p, const gFloat expandAmount);
 
-		// Find the first and last vertices in the range to extend from in the direction of the given direction vector.
-		// Also finds whether the first and last vertices need to be duplicated when extending.
-		// Note that first and last follow the winding of the polygon, and thus can overlap between the end and
-		// start of the Polygon's vertex list (resulting in first > last).
+		// Find the region of vertices in a given direction (for instance, to extend the polygon in that direction).
+		// out_first         - the first vertex in the region.
+		// out_last          - the last vertex in the region.
+		// out_is_first_perp - whether the first vertex in the region has an edge perpendicular to the given direction.
+		// out_is_last_perp  - whether the last vertex in the region has an edge perpendicular to the given direction.
+		// out_first and out_last follow the winding of the polygon, and thus can overlap the "start" and "end" of the polygon's vertices.
 		// Returns false if the range could not be found, indicating an invalid polygon.
-		bool findExtendRange(const Coord2& dir, std::size_t& out_first, std::size_t& out_last,
-			bool& out_should_dupe_first, bool& out_should_dupe_last) const;
+		bool getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last, bool& out_is_first_perp, bool& out_is_last_perp) const;
 		// Extend a polygon by projecting it along a direction by delta (dir*dist), clipping the result to only include
 		// the portion of the polygon that was extended.
 		Polygon clipExtend(const Coord2& dir, const gFloat dist) const;
-		// If we've already found the range, we can clip extend with the found values.
-		Polygon clipExtend(const Coord2& dir, const gFloat dist,
-			const std::size_t rangeFirst, const std::size_t rangeLast) const;
-		// If we've already found the range, we can extend with the found values.
+		// If we've already found the range of vertices to use, we can clip extend with the found values.
+		Polygon clipExtend(const Coord2& dir, const gFloat dist, const std::size_t rangeFirst, const std::size_t rangeLast) const;
+		// If we've already found the range of vertices to use, we can extend with the found values.
 		Polygon extend(const Coord2& dir, const gFloat dist,
-			const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const;
+			const std::size_t rangeFirst, const std::size_t rangeLast, const bool isFirstPerp, const bool isLastPerp) const;
 
 		// Move the polygon by given x and y.
 		void translate(const gFloat x, const gFloat y);

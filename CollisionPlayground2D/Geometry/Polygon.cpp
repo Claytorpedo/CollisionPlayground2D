@@ -86,78 +86,56 @@ namespace geom {
 		return s;
 	}
 
-	// Assumes that dir is not a zero vector.
-	bool Polygon::findExtendRange(const Coord2& dir, std::size_t& out_first, std::size_t& out_last,
-		bool& out_should_dupe_first, bool& out_should_dupe_last) const {
-		const std::size_t numVerts = vertices_.size();
-		if (numVerts < 3) {
-			std::cerr << "Error: Cannot extend polygon (polygon invalid; must have at least three vertices).\n";
-			return false;
-		}
-		// We are interested in extending from vertices that have at least one edge normal with a minimum angle acute to the direction vector.
-		// With a convex polygon, there will form a single contiguous range of such vertices.
-		// The first and last vertex in that range may need to be duplicated, and then the vertices within the range
-		// are projected along the direction vector by delta to form the new polygon.
-		// The first and last vertices are defined by the vertices that have only one acute edge normal.
-
-		// Whether the minimum angle of the normal of the edge made from the last and first vertices is acute with the direction vector.
-		const math::AngleResult firstEdge = math::minAngle(getEdgeNorm(numVerts -1), dir);
-		const bool isFirstEdgeAcute = firstEdge == math::AngleResult::ACUTE;
-
+	bool Polygon::getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last, bool& out_is_first_perp, bool& out_is_last_perp) const {
+		const int numVerts(vertices_.size());
+		// Look for where edge normals change from being acute with the given direction, to perpendicular or obtuse.
+		// The first and last vertices in the range will have only one acute edge normal.
+		const math::AngleResult firstEdge(math::minAngle(getEdgeNorm(numVerts - 1), dir));
+		const bool isFirstEdgeAcute(firstEdge == math::AngleResult::ACUTE); // Whether this edge is inside or outside the region.
 		math::AngleResult prevEdge = firstEdge;
 		math::AngleResult currEdge;
-		bool found = false;
-		std::size_t vertexInRegion;
-		for (std::size_t i = 0; i < numVerts - 1; ++i) {
+		bool found(false);
+		for (int i = 0; i < numVerts - 1; ++i) {
 			currEdge = math::minAngle(getEdgeNorm(i), dir);
-			if (isFirstEdgeAcute != (currEdge == math::AngleResult::ACUTE)) {
-				// Either crossed from inside to outside the region, or vice versa.
-				// (One side of the vertex has an edge normal that is acute, the other side obtuse.)
+			if (isFirstEdgeAcute != (currEdge == math::AngleResult::ACUTE)) { // We either flipped from inside to outside the region, or vice versa.
 				found = true;
-				vertexInRegion = i;
+				if (isFirstEdgeAcute) {
+					out_last = i;
+					out_is_last_perp = currEdge == math::AngleResult::PERPENDICULAR;
+				} else {
+					out_first = i;
+					out_is_first_perp = prevEdge == math::AngleResult::PERPENDICULAR;
+				}
 				break;
 			}
 			prevEdge = currEdge;
 		}
-		if (!found) {
-			// A valid polygon has two points that define where the region starts and ends.
-			// If we didn't find one in the loop, the polygon is invalid.
-			std::cerr << "Error: Polygon can not be extended (invalid polygon).\n";
-			return false;
-		}
-		// We found either the first or last vertex for the region.
-		if (isFirstEdgeAcute) {
-			// It is the last vertex in the region.
-			out_last = vertexInRegion;
-			out_should_dupe_last = currEdge != math::AngleResult::PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
-			// Loop backwards from the end to find the first vertex.
-			for (std::size_t i = numVerts - 1; i > 0; --i) {
-				currEdge = math::minAngle(getEdgeNorm(i - 1), dir);
+		if (!found)
+			return false; // Invalid polygon.
+		if (!isFirstEdgeAcute) {
+			for (int i = out_first + 1; i < numVerts - 1; ++i) { // Continue forwards to find where the region ends.
+				currEdge = math::minAngle(getEdgeNorm(i), dir);
 				if (currEdge != math::AngleResult::ACUTE) {
-					out_first = i;
-					out_should_dupe_first = currEdge != math::AngleResult::PERPENDICULAR;
+					out_last = i;
+					out_is_last_perp = currEdge == math::AngleResult::PERPENDICULAR;
 					return true;
 				}
 			}
-			std::cerr << "Error: Polygon can not be extended (invalid polygon).\n";
-			return false;
+			// The edge normal between the last and first vertex is the only non-acute edge normal.
+			out_last = numVerts - 1;
+			out_is_last_perp = firstEdge == math::AngleResult::PERPENDICULAR;
+			return true;
 		}
-		// Otherwise it is the first vertex in the region.
-		out_first = vertexInRegion;
-		out_should_dupe_first = prevEdge != math::AngleResult::PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
-		// Loop forwards from the first vertex to find where it ends.
-		for (std::size_t i = vertexInRegion + 1; i < numVerts - 1; ++i) {
+		// Loop backwards from the end of the polygon to find the start of the region.
+		for (int i = numVerts - 2; i >= 0; --i) {
 			currEdge = math::minAngle(getEdgeNorm(i), dir);
 			if (currEdge != math::AngleResult::ACUTE) {
-				out_last = i;
-				out_should_dupe_last = currEdge != math::AngleResult::PERPENDICULAR;
+				out_first = i + 1;
+				out_is_first_perp = currEdge == math::AngleResult::PERPENDICULAR;
 				return true;
 			}
 		}
-		// The edge normal between the last and first vertex is the only non-acute edge normal.
-		out_last = numVerts - 1;
-		out_should_dupe_last = firstEdge != math::AngleResult::PERPENDICULAR;
-		return true;
+		return false; // Invalid polygon? (In theory, this case should be impossible to reach.)
 	}
 
 	Polygon Polygon::extend(const Coord2& dir, const gFloat dist) const {
@@ -165,11 +143,11 @@ namespace geom {
 			return Polygon(*this);
 		}
 		std::size_t first, last;
-		bool shouldDuplicateFirst, shouldDuplicateLast;
-		if (!findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast)) {
+		bool isFirstPerp, isLastPerp;
+		if (!getVerticesInDirection(dir, first, last, isFirstPerp, isLastPerp)) {
 			return Polygon(); // The polygon is invalid and cannot be extended.
 		}
-		return extend(dir, dist, first, last, shouldDuplicateFirst, shouldDuplicateLast);
+		return extend(dir, dist, first, last, isFirstPerp, isLastPerp);
 	}
 
 	Polygon Polygon::clipExtend(const Coord2& dir, const gFloat dist) const {
@@ -177,28 +155,28 @@ namespace geom {
 			return Polygon(*this);
 		}
 		std::size_t first, last;
-		bool shouldDuplicateFirst, shouldDuplicateLast; // Note that we always duplicate here.
-		if (!findExtendRange(dir, first, last, shouldDuplicateFirst, shouldDuplicateLast)) {
+		bool isFirstPerp, isLastPerp; // Note that we always duplicate here.
+		if (!getVerticesInDirection(dir, first, last, isFirstPerp, isLastPerp)) {
 			return Polygon(); // The polygon is invalid and cannot be extended.
 		}
 		return clipExtend(dir, dist, first, last);
 	}
 
 	Polygon Polygon::extend(const Coord2& dir, const gFloat dist,
-		const std::size_t rangeFirst, const std::size_t rangeLast, const bool shouldDupeFirst, const bool shouldDupeLast) const {
+		const std::size_t rangeFirst, const std::size_t rangeLast, const bool isFirstPerp, const bool isLastPerp) const {
 		std::vector<Coord2> newVertices, newEdgeNorms;
-		const std::size_t numVerts = vertices_.size() + (shouldDupeFirst ? 1 : 0) + (shouldDupeLast ? 1 : 0);
+		const std::size_t numVerts = vertices_.size() + (isFirstPerp ? 0 : 1) + (isLastPerp ? 0 : 1);
 		newVertices.reserve(numVerts);
 		newEdgeNorms.reserve(numVerts);
 		const Coord2 translation(dir*dist);
 		for (std::size_t i = 0; i < vertices_.size(); ++i) {
 			// Extend vertices in the region first-to-last inclusive. Duplicate first/last vertices if required.
-			if (i == rangeFirst && shouldDupeFirst) {
+			if (i == rangeFirst && !isFirstPerp) {
 				newVertices.push_back(vertices_[i]);
 				newVertices.push_back(vertices_[i] + translation);
 				newEdgeNorms.push_back(dir.perpCCW());
 				newEdgeNorms.push_back(edge_normals_[i]);
-			} else if (i == rangeLast && shouldDupeLast) {
+			} else if (i == rangeLast && !isLastPerp) {
 				newVertices.push_back(vertices_[i] + translation);
 				newVertices.push_back(vertices_[i]);
 				newEdgeNorms.push_back(dir.perpCW());

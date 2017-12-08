@@ -67,92 +67,92 @@ SCENARIO("Translate a polygon.", "[poly]") {
 	}
 }
 
-SCENARIO("Finding the points to extend a polygon from in a given direction.", "[poly]") {
+SCENARIO("Finding the vertices of a polygon in a given direction.", "[poly]") {
 	std::size_t first, last;
-	bool should_dupe_first, should_dupe_last;
+	bool is_first_perp, is_last_perp;
 	GIVEN("A triangle.") {
 		std::vector<geom::Coord2> points = { geom::Coord2(0,0), geom::Coord2(1, 1), geom::Coord2(2, 0) };
 		Polygon tri(points);
 		WHEN("Extending down.") {
-			tri.findExtendRange(geom::Coord2(0, 1), first, last, should_dupe_first, should_dupe_last);
+			tri.getVerticesInDirection(geom::Coord2(0, 1), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 0);
 			CHECK(last == 2);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending up.") {
-			tri.findExtendRange(geom::Coord2(0, -1), first, last, should_dupe_first, should_dupe_last);
+			tri.getVerticesInDirection(geom::Coord2(0, -1), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 2);
 			CHECK(last == 0);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending right.") {
-			tri.findExtendRange(geom::Coord2(1, 0), first, last, should_dupe_first, should_dupe_last);
+			tri.getVerticesInDirection(geom::Coord2(1, 0), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 1);
 			CHECK(last == 2);
-			CHECK(should_dupe_first);
-			REQUIRE_FALSE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK(is_last_perp);
 		}
 		WHEN("Extending left.") {
-			tri.findExtendRange(geom::Coord2(-1, 0), first, last, should_dupe_first, should_dupe_last);
+			tri.getVerticesInDirection(geom::Coord2(-1, 0), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 0);
 			CHECK(last == 1);
-			CHECK_FALSE(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending diagonally.") {
-			tri.findExtendRange(geom::Coord2(1, -1).normalize(), first, last, should_dupe_first, should_dupe_last);
+			tri.getVerticesInDirection(geom::Coord2(1, -1).normalize(), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 2);
 			CHECK(last == 0);
-			CHECK_FALSE(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 	}
 	GIVEN("An octagon.") {
 		Polygon oct(shapes::octagon);
 		WHEN("Extending down.") {
-			oct.findExtendRange(geom::Coord2(0, 1), first, last, should_dupe_first, should_dupe_last);
+			oct.getVerticesInDirection(geom::Coord2(0, 1), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 6);
 			CHECK(last == 2);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending up.") {
-			oct.findExtendRange(geom::Coord2(0, -1), first, last, should_dupe_first, should_dupe_last);
+			oct.getVerticesInDirection(geom::Coord2(0, -1), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 2);
 			CHECK(last == 6);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending right.") {
-			oct.findExtendRange(geom::Coord2(1, 0), first, last, should_dupe_first, should_dupe_last);
+			oct.getVerticesInDirection(geom::Coord2(1, 0), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 0);
 			CHECK(last == 4);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending left.") {
-			oct.findExtendRange(geom::Coord2(-1, 0), first, last, should_dupe_first, should_dupe_last);
+			oct.getVerticesInDirection(geom::Coord2(-1, 0), first, last, is_first_perp, is_last_perp);
 			CHECK(first == 4);
 			CHECK(last == 0);
-			CHECK(should_dupe_first);
-			REQUIRE(should_dupe_last);
+			CHECK_FALSE(is_first_perp);
+			CHECK_FALSE(is_last_perp);
 		}
 		WHEN("Extending diagonally.") {
 			THEN("Extending non-parallel to edges requires vertex duplication.") {
-				oct.findExtendRange(geom::Coord2(1, 1).normalize(), first, last, should_dupe_first, should_dupe_last);
+				oct.getVerticesInDirection(geom::Coord2(1, 1).normalize(), first, last, is_first_perp, is_last_perp);
 				CHECK(first == 7);
 				CHECK(last == 3);
-				CHECK(should_dupe_first);
-				REQUIRE(should_dupe_last);
+				CHECK_FALSE(is_first_perp);
+				CHECK_FALSE(is_last_perp);
 			}
 			THEN("Extending parallel to edges avoids vertex duplication.") {
-				oct.findExtendRange(geom::Coord2(-1.5f, 0.5f).normalize(), first, last, should_dupe_first, should_dupe_last);
+				oct.getVerticesInDirection(geom::Coord2(-1.5f, 0.5f).normalize(), first, last, is_first_perp, is_last_perp);
 				CHECK(first == 5);
 				CHECK(last == 0);
-				CHECK_FALSE(should_dupe_first);
-				REQUIRE_FALSE(should_dupe_last);
+				CHECK(is_first_perp);
+				CHECK(is_last_perp);
 			}
 		}
 	}

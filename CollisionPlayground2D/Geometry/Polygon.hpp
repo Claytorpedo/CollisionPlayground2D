@@ -13,10 +13,6 @@ namespace geom {
 
 	class Polygon : public Shape {
 	public:
-		// Used when determining if two vectors are perpendicular.
-		// We don't normalize the vectors, so scale is a factor.
-		static const gFloat EPSILON_DEGREE_TOLERANCE;
-
 		Polygon();
 		// Vertices should be in counterclockwise order.
 		// The final vertex connects with the first vertex.

@@ -12,5 +12,13 @@ namespace geom {
 			const Coord2 dir(line2 - line1); // Unnormalized direction.
 			return line1 + ((point - line1).dot(dir) / dir.magnitude2()) * dir;
 		}
+		AngleResult minAngle(const Coord2& vec1, const Coord2& vec2) {
+			const gFloat dot = vec1.dot(vec2);
+			if (almostZero(dot))
+				return AngleResult::PERPENDICULAR;
+			if (dot > 0)
+				return AngleResult::ACUTE;
+			return AngleResult::OBTUSE;
+		}
 	}
 }

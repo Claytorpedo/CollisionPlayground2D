@@ -15,6 +15,14 @@ namespace geom {
 		// Find the closest point on a line (made from two points) to a given point.
 		Coord2 closestPointOnLine(const Coord2& line1, const Coord2& line2, const Coord2& point);
 
+		enum class AngleResult {
+			ACUTE,
+			PERPENDICULAR,
+			OBTUSE
+		};
+		// Find what kind of angle the minimum angle between two vectors is.
+		AngleResult minAngle(const Coord2& vec1, const Coord2& vec2);
+
 		// Check if a value is almost zero (if the given value is between positive and negative tolerance exclusive).
 		inline bool almostZero(const gFloat t, const gFloat tolerance = constants::EPSILON) {
 			return -tolerance < t && t < tolerance;

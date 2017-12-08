@@ -6,10 +6,9 @@
 #include "Projection.hpp"
 #include "units.hpp"
 #include "constants.hpp"
+#include "math.hpp"
 
 namespace geom {
-	const gFloat Polygon::EPSILON_DEGREE_TOLERANCE = 0.00001f;
-
 	Polygon::Polygon() : vertices_(), x_min_(), x_max_(), y_min_(), y_max_() {}
 	Polygon::Polygon(std::vector<Coord2> vertices) : vertices_(vertices), edge_normals_(vertices.size(), Coord2(0, 0)), x_min_(), x_max_(), y_min_(), y_max_() {
 		_find_bounds();
@@ -87,27 +86,6 @@ namespace geom {
 		return s;
 	}
 
-	namespace {
-		// Compute the normal of an edge of a polygon with counterclockwise winding, without normalizing it to a unit vector.
-		inline Coord2 _get_non_normalized_normal(const Coord2& first, const Coord2& second) {
-			return Coord2(first.y - second.y, second.x - first.x);
-		}
-		enum AngleResult {
-			ACUTE,
-			PERPENDICULAR,
-			OBTUSE
-		};
-		// Check what kind of angle the minimum angle between two vectors is.
-		inline AngleResult _check_min_angle(const Coord2& vec1, const Coord2& vec2) {
-			const gFloat dot = vec1.dot(vec2);
-			if (std::abs(dot) <= Polygon::EPSILON_DEGREE_TOLERANCE)
-				return PERPENDICULAR;
-			if (dot > 0)
-				return ACUTE;
-			return OBTUSE;
-		}
-	}
-
 	// Assumes that dir is not a zero vector.
 	bool Polygon::findExtendRange(const Coord2& dir, std::size_t& out_first, std::size_t& out_last,
 		bool& out_should_dupe_first, bool& out_should_dupe_last) const {
@@ -123,16 +101,16 @@ namespace geom {
 		// The first and last vertices are defined by the vertices that have only one acute edge normal.
 
 		// Whether the minimum angle of the normal of the edge made from the last and first vertices is acute with the direction vector.
-		const AngleResult firstEdge = _check_min_angle(_get_non_normalized_normal(vertices_[numVerts - 1], vertices_[0]), dir);
-		const bool isFirstEdgeAcute = firstEdge == ACUTE;
+		const math::AngleResult firstEdge = math::minAngle(getEdgeNorm(numVerts -1), dir);
+		const bool isFirstEdgeAcute = firstEdge == math::AngleResult::ACUTE;
 
-		AngleResult prevEdge = firstEdge;
-		AngleResult currEdge;
+		math::AngleResult prevEdge = firstEdge;
+		math::AngleResult currEdge;
 		bool found = false;
 		std::size_t vertexInRegion;
 		for (std::size_t i = 0; i < numVerts - 1; ++i) {
-			currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i + 1]), dir);
-			if (isFirstEdgeAcute != (currEdge == ACUTE)) {
+			currEdge = math::minAngle(getEdgeNorm(i), dir);
+			if (isFirstEdgeAcute != (currEdge == math::AngleResult::ACUTE)) {
 				// Either crossed from inside to outside the region, or vice versa.
 				// (One side of the vertex has an edge normal that is acute, the other side obtuse.)
 				found = true;
@@ -151,13 +129,13 @@ namespace geom {
 		if (isFirstEdgeAcute) {
 			// It is the last vertex in the region.
 			out_last = vertexInRegion;
-			out_should_dupe_last = currEdge != PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
+			out_should_dupe_last = currEdge != math::AngleResult::PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
 			// Loop backwards from the end to find the first vertex.
 			for (std::size_t i = numVerts - 1; i > 0; --i) {
-				currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i - 1], vertices_[i]), dir);
-				if (currEdge != ACUTE) {
+				currEdge = math::minAngle(getEdgeNorm(i - 1), dir);
+				if (currEdge != math::AngleResult::ACUTE) {
 					out_first = i;
-					out_should_dupe_first = currEdge != PERPENDICULAR;
+					out_should_dupe_first = currEdge != math::AngleResult::PERPENDICULAR;
 					return true;
 				}
 			}
@@ -166,19 +144,19 @@ namespace geom {
 		}
 		// Otherwise it is the first vertex in the region.
 		out_first = vertexInRegion;
-		out_should_dupe_first = prevEdge != PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
+		out_should_dupe_first = prevEdge != math::AngleResult::PERPENDICULAR; // If perpendicular, don't need to duplicate the vertex when extending.
 		// Loop forwards from the first vertex to find where it ends.
 		for (std::size_t i = vertexInRegion + 1; i < numVerts - 1; ++i) {
-			currEdge = _check_min_angle(_get_non_normalized_normal(vertices_[i], vertices_[i + 1]), dir);
-			if (currEdge != ACUTE) {
+			currEdge = math::minAngle(getEdgeNorm(i), dir);
+			if (currEdge != math::AngleResult::ACUTE) {
 				out_last = i;
-				out_should_dupe_last = currEdge != PERPENDICULAR;
+				out_should_dupe_last = currEdge != math::AngleResult::PERPENDICULAR;
 				return true;
 			}
 		}
 		// The edge normal between the last and first vertex is the only non-acute edge normal.
 		out_last = numVerts - 1;
-		out_should_dupe_last = firstEdge != PERPENDICULAR;
+		out_should_dupe_last = firstEdge != math::AngleResult::PERPENDICULAR;
 		return true;
 	}
 

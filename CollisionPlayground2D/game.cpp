@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <algorithm>
 #include <vector>
 
 #include "units.hpp"
@@ -16,6 +17,11 @@
 using namespace geom;
 
 namespace game {
+	const Rect        POLY_REGION = Rect(util::tileToCoord(10), util::tileToCoord(5), game::SCREEN_WIDTH - util::tileToCoord(20), game::SCREEN_HEIGHT - util::tileToCoord(10));
+	const gFloat      POLY_MIN = 0.1f;
+	const gFloat      POLY_MAX = 100.0f;
+	const std::size_t POLY_MIN_VERTS = 3;
+	const std::size_t POLY_MAX_VERTS = 20;
 
 	// Extremely simple CollisionMap implementation: no data structure speedup at all.
 	class SimpleCollisionMap : public CollisionMap {
@@ -99,9 +105,47 @@ namespace game {
 	}
 
 	// -------------------------------------------------------------------------------------
+	// Random generation.
+
+	// Randomly generate a polygon.
+	// region is a bounding box defining the region to place the polygon's center in (part of the polygon can be outside this region).
+	// minRad and maxRad control how large the generated polygon will be.
+	// minVerts and maxVerts control how many vertices the generated polygon can have.
+	Polygon genPoly(std::mt19937& rando, const Rect& region, const gFloat minRad, const gFloat maxRad, const std::size_t minVerts, const std::size_t maxVerts) {
+		// Randomly generate the polygon's center within the region.
+		std::uniform_real_distribution<gFloat> distX(region.left(), region.right());
+		std::uniform_real_distribution<gFloat> distY(region.top(), region.bottom());
+		const Coord2 cen(distX(rando), distY(rando));
+
+		if (minVerts < 3 || maxVerts < 3) std::cerr << "Error: Cannot generate a polygon with fewer than 3 vertices. Defaulting to 3 minimum.\n";
+		const std::size_t min = minVerts < 3 ? 3 : minVerts;
+		std::uniform_int_distribution<std::size_t> distVerts(min, maxVerts < min ? min : maxVerts);
+		const std::size_t numVerts(distVerts(rando));
+
+		// Generate random numbers between 0 and tau (2pi) to make points around a circle.
+		std::uniform_real_distribution<gFloat> distPI(0.0f, constants::TAU);
+		std::vector<gFloat> piVec;
+		piVec.reserve(numVerts);
+		for (std::size_t i = 0; i < numVerts; ++i)
+			piVec.push_back(distPI(rando));
+		// Sort descending (so we have counterclockwise winding).
+		std::sort(piVec.begin(), piVec.end(), [](const gFloat& lhs, const gFloat& rhs) {
+			return lhs > rhs;
+		});
+
+		// Get radius for polygon.
+		std::uniform_real_distribution<gFloat> distRad(minRad, maxRad);
+		gFloat radius(distRad(rando));
+
+		std::vector<Coord2> vertices;
+		vertices.reserve(numVerts);
+		for (std::size_t i = 0; i < numVerts; ++i)
+			vertices.push_back(cen + Coord2(radius * std::cos(piVec[i]), radius * std::sin(piVec[i])));
+		return Polygon(vertices);
+	}
 
 	Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rect& region) {
-		Polygon collider = Polygon::generate(twister, Rect());
+		Polygon collider(genPoly(twister, Rect(), POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
 		std::uniform_real_distribution<geom::gFloat> distX(region.left(), region.right());
 		std::uniform_real_distribution<geom::gFloat> distY(region.top(), region.bottom());
 		geom::Coord2 position(distX(twister), distY(twister));
@@ -111,7 +155,7 @@ namespace game {
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 				if (geom::overlaps(collider, position, polys[i], geom::Coord2(0,0))) {
 					isOccupied = true;
-					collider = Polygon::generate(twister, Rect());
+					collider = genPoly(twister, Rect(), POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS);
 					position = geom::Coord2(distX(twister), distY(twister));
 					std::cout << "Spot occupied. Trying somewhere else...\n";
 					break;
@@ -123,6 +167,8 @@ namespace game {
 		std::cout << "Mover has entered the level.\n";
 		return Mover(ShapeContainer(collider), position);
 	}
+
+	// --------------------------------------------------------------------------------------
 
 	int run(int argc, char* args[]) {
 		Input input;
@@ -136,16 +182,15 @@ namespace game {
 		}
 		std::random_device rd;
 		std::mt19937 twister(rd());
-		Rect region(util::tileToCoord(10), util::tileToCoord(5), game::SCREEN_WIDTH - util::tileToCoord(20), game::SCREEN_HEIGHT - util::tileToCoord(10));
 
 		std::size_t numPolys(20);
 		std::vector<Polygon> polys;
 		polys.reserve(numPolys);
 		for (std::size_t i = 0; i < numPolys; ++i) {
-			polys.push_back(Polygon::generate(twister, region));
+			polys.push_back(genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
 		}
 
-		Mover mover(genMover(polys, twister, region));
+		Mover mover(genMover(polys, twister, POLY_REGION));
 		SimpleCollisionMap objs(polys);
 
 		previousTime = SDL_GetTicks();
@@ -179,8 +224,8 @@ namespace game {
 			if (input.wasKeyPressed(Input::R)) {
 				objs.clear();
 				for (std::size_t i = 0; i < numPolys; ++i)
-					polys[i] = Polygon::generate(twister, region);
-				mover = genMover(polys, twister, region);
+					polys[i] = genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS);
+				mover = genMover(polys, twister, POLY_REGION);
 				objs.add(polys);
 			}
 			currentTime = SDL_GetTicks();

@@ -5,7 +5,6 @@
 #include "Shape.hpp"
 
 #include <vector>
-#include <random>
 
 // Convex polygon with counterclockwise winding.
 namespace geom {
@@ -25,16 +24,6 @@ namespace geom {
 		Polygon(std::vector<Coord2> vertices, std::vector<Coord2> edgeNormals);
 		virtual ~Polygon() = default;
 
-		// Randomly generate a polygon.
-		// region is a bounding box defining the region to place the polygon's center in (part of the polygon can be outside this region).
-		// minRad and maxRad control how large the generated polygon will be.
-		// minVerts and maxVerts control how many vertices the generated polygon can have.
-		static Polygon generate(std::mt19937& rando, const Rect& region, const gFloat minRad = 0.1f, const gFloat maxRad = 100.0f,
-			const std::size_t minVerts = 3, const std::size_t maxVerts = 20);
-
-		// Rather than recompute the bounds every call, the bounds
-		// are computed when the polygon is constructed or changed,
-		// and then cached to be returned here.
 		virtual gFloat left()   const { return x_min_; }
 		virtual gFloat right()  const { return x_max_; }
 		virtual gFloat top()    const { return y_min_; }

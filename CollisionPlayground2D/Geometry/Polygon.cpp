@@ -199,20 +199,11 @@ namespace geom {
 		newVertices.push_back(vertices_[rangeFirst]); // First vertex gets duplicated.
 		newEdgeNorms.push_back(dir.perpCCW());
 		const Coord2 translation(dir*dist);
-		if (rangeFirst < rangeLast) {
-			for (std::size_t i = rangeFirst; i < rangeLast; ++i) {
-				newVertices.push_back(vertices_[i] + translation);
-				newEdgeNorms.push_back(edge_normals_[i]);
-			}
-		} else { // Range between first and last overlaps start/end of the array.
-			for (std::size_t i = rangeFirst; i < vertices_.size(); ++i) {
-				newVertices.push_back(vertices_[i] + translation);
-				newEdgeNorms.push_back(edge_normals_[i]);
-			}
-			for (std::size_t i = 0; i < rangeLast; ++i) {
-				newVertices.push_back(vertices_[i] + translation);
-				newEdgeNorms.push_back(edge_normals_[i]);
-			}
+		for (int i = rangeFirst; i != static_cast<int>(rangeLast); ++i) {
+			newVertices.push_back(vertices_[i] + translation);
+			newEdgeNorms.push_back(edge_normals_[i]);
+			if (i == static_cast<int>(vertices_.size() - 1)) // Range between first and last may overlap the start/end of the vertex list.
+				i = -1; // Loop back around.
 		}
 		newVertices.push_back(vertices_[rangeLast] + translation);
 		newVertices.push_back(vertices_[rangeLast]); // Last vertex gets duplicated.

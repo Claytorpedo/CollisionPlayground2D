@@ -2,9 +2,9 @@
 #include "constants.hpp"
 
 namespace geom {
-	inline bool Rect::isInside(const Rect& o) const {
+	bool Rect::isInside(const Rect& o) const {
 		return right() <= o.right() + constants::EPSILON && bottom() <= o.bottom() + constants::EPSILON &&
-			left() >= o.left() - constants::EPSILON   && top() >= o.top() - constants::EPSILON;
+		       left()  >= o.left()  - constants::EPSILON && top()    >= o.top()    - constants::EPSILON;
 	}
 
 	Projection Rect::getProjection(const Coord2& axis) const {

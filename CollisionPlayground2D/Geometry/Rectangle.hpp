@@ -38,7 +38,7 @@ namespace geom {
 		inline Coord2 bottomLeft()  const { return Coord2(left(), bottom()); }
 		inline Coord2 bottomRight() const { return Coord2(right(), bottom()); }
 
-		inline bool isInside(const Rect& o) const; // See if this rectangle is contained by another one.
+		bool isInside(const Rect& o) const; // See if this rectangle is contained by another one.
 
 		virtual Projection getProjection(const Coord2& axis) const;
 		virtual Coord2 getClosestTo(const Coord2 point) const; // Gets closest corner of the rectangle.

@@ -137,6 +137,10 @@ namespace geom {
 		}
 		return false; // Invalid polygon? (In theory, this case should be impossible to reach.)
 	}
+	bool Polygon::getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last) const {
+		bool unused1, unused2;
+		return getVerticesInDirection(dir, out_first, out_last, unused1, unused2);
+	}
 
 	Polygon Polygon::extend(const Coord2& dir, const gFloat dist) const {
 		if (dir.isZero() || dist == 0.0f) { // No delta. Just return the current polygon.
@@ -151,14 +155,11 @@ namespace geom {
 	}
 
 	Polygon Polygon::clipExtend(const Coord2& dir, const gFloat dist) const {
-		if (dir.isZero() || dist == 0.0f) { // No delta. Just return the current polygon.
+		if (dir.isZero() || dist == 0.0f) // No delta. Just return the current polygon.
 			return Polygon(*this);
-		}
 		std::size_t first, last;
-		bool isFirstPerp, isLastPerp; // Note that we always duplicate here.
-		if (!getVerticesInDirection(dir, first, last, isFirstPerp, isLastPerp)) {
+		if (!getVerticesInDirection(dir, first, last))
 			return Polygon(); // The polygon is invalid and cannot be extended.
-		}
 		return clipExtend(dir, dist, first, last);
 	}
 

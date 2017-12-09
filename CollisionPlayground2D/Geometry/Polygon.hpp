@@ -56,6 +56,12 @@ namespace geom {
 		// out_first and out_last follow the winding of the polygon, and thus can overlap the "start" and "end" of the polygon's vertices.
 		// Returns false if the range could not be found, indicating an invalid polygon.
 		bool getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last, bool& out_is_first_perp, bool& out_is_last_perp) const;
+		// Find the region of vertices in a given direction (for instance, to extend the polygon in that direction).
+		// out_first         - the first vertex in the region.
+		// out_last          - the last vertex in the region.
+		// out_first and out_last follow the winding of the polygon, and thus can overlap the "start" and "end" of the polygon's vertices.
+		// Returns false if the range could not be found, indicating an invalid polygon.
+		bool getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last) const;
 		// Extend a polygon by projecting it along a direction by delta (dir*dist), clipping the result to only include
 		// the portion of the polygon that was extended.
 		Polygon clipExtend(const Coord2& dir, const gFloat dist) const;

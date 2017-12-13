@@ -79,17 +79,14 @@ namespace game {
 
 	void drawPoly(const Polygon& p, Graphics& graphics) {
 		const size_t size = p.size();
-		// Draw the lines of the polygon.
-		for (std::size_t i = 0; i < size - 1; ++i) {
-			graphics.renderLine(util::coord2DToSDLPoint(p[i]), util::coord2DToSDLPoint(p[i + 1]), 1);
-		}
-		// Draw last line.
-		graphics.renderLine(util::coord2DToSDLPoint(p[size - 1]), util::coord2DToSDLPoint(p[0]), 1);
-		// Render the vertices over the lines.
+		for (std::size_t k = size -1, i = 0; i < size; k = i++)
+			graphics.renderLine(util::coord2DToSDLPoint(p[k]), util::coord2DToSDLPoint(p[i]), 1);
+	}
+	void drawPolyVerts(const Polygon& p, Graphics& graphics) {
+		const size_t size = p.size();
 		graphics.setRenderColour(255, 255, 0);
-		for (std::size_t i = 0; i < size; ++i) {
+		for (std::size_t i = 0; i < p.size(); ++i)
 			graphics.renderCircle(util::coord2DToSDLPoint(p[i]), 1);
-		}
 	}
 	void drawPolyEdgeNormals(const Polygon& p, Graphics& graphics) {
 		graphics.setRenderColour(0, 0, 255);
@@ -235,7 +232,7 @@ namespace game {
 			mover.update(elapsedTime, &objs);
 
 			graphics.clear();
-			Polygon collider(mover.getCollider().poly()); // We know it's a polygon, because we made it above.
+			Polygon collider(mover.getCollider().shape().toPoly());
 			collider.translate(mover.getPosition());
 			for (std::size_t i = 0; i < polys.size(); ++i) {
 	#ifdef DEBUG

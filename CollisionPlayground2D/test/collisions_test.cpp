@@ -17,7 +17,7 @@ using geom::Polygon;
 using geom::Circle;
 using geom::CollisionResult;
 
-SCENARIO("One shape is moving to collide with a stationary one, detected with hybrid SAT.", "[collides][sweep]") {
+SCENARIO("One shape is moving to collide with a stationary one.", "[collides][sweep]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("The shapes will collide vertex to vertex.") {
@@ -407,46 +407,181 @@ SCENARIO("One shape is moving to collide with a stationary one, detected with hy
 		}
 	}
 	GIVEN("A circle.") {
-		Circle collider(5);
+		Circle circle(5);
 		GIVEN("Another circle") {
 			Circle stationary(2);
-			WHEN("The circles are touching, and the collider moves into the other circle.") {
-				Coord2 colliderPos(-2, 20), stationaryPos(5, 20);
+			WHEN("The circles are touching, and the circle moves into the other circle.") {
+				Coord2 circlePos(-2, 20), stationaryPos(5, 20);
 				Coord2 delta(10, 0);
 				Coord2 expected_norm(-1, 0);
 				THEN("They collide immediately and not move at all.") {
-					REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
+					REQUIRE(geom::collides(circle, circlePos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					CHECK(out_t == ApproxEps(0));
 				}
 			}
-			WHEN("The circles are separated, and the collider moves into the other circle.") {
-				Coord2 colliderPos(-10, 20), stationaryPos(5, 20);
+			WHEN("The circles are separated, and the circle moves into the other circle.") {
+				Coord2 circlePos(-10, 20), stationaryPos(5, 20);
 				Coord2 delta(10, 0);
 				Coord2 expected_norm(-1, 0);
 				THEN("It should move the distance between them.") {
-					REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
+					REQUIRE(geom::collides(circle, circlePos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					CHECK(out_t == ApproxEps(0.8f));
 				}
 			}
-			WHEN("The circles are separated, and the collider moves into the other circle at an angle.") {
-				Coord2 colliderPos(-10, 18), stationaryPos(5, 20);
+			WHEN("The circles are separated, and the circle moves into the other circle at an angle.") {
+				Coord2 circlePos(-10, 18), stationaryPos(5, 20);
 				Coord2 delta(10, 0);
 				Coord2 expected_norm((Coord2(5 - std::sqrt(45.0f), 18) - stationaryPos).normalize());
 				THEN("It should move the distance between them, and the normal should be the vector between the circles' centers.") {
-					REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
+					REQUIRE(geom::collides(circle, circlePos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::SWEEP);
 					CHECK(out_norm.x == ApproxEps(expected_norm.x));
 					CHECK(out_norm.y == ApproxEps(expected_norm.y));
 					CHECK(out_t == ApproxEps((15.0f - std::sqrt(45.0f))/10.0f));
 				}
 			}
 		}
+		GIVEN("An octagon.") {
+			Polygon octagon(shapes::octagon);
+			WHEN("The circle and octagon are touching at a vertex.") {
+				Coord2 circlePos(5, 0), octagonPos(-2, 0);
+				Coord2 delta(-1, 0);
+				Coord2 expected_norm(1, 0);
+				THEN("Any movement towards the octagon causes a collision.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(0));
+				}
+			}
+			WHEN("The circle and octagon are touching at an edge.") {
+				Coord2 circlePos(7, -2), octagonPos(0, 0);
+				Coord2 delta(-10, 10);
+				Coord2 expected_norm(Coord2(1.5f, -0.5f).normalize());
+				gFloat dist((circlePos - Coord2(1.5f, -1.5f)).dot(expected_norm) - 5); // Distance between circle and edge.
+				gFloat expected_t(dist / delta.dot(-expected_norm)); // Compute triangle to edge.
+				THEN("Any movement towards the octagon causes a collision.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+			WHEN("The circle moves until it is slightly overlapping a vertex.") {
+				Coord2 circlePos(0, -10), octagonPos(0, 2);
+				Coord2 delta(0, 5.001f);
+				Coord2 expected_norm(0, -1);
+				THEN("It collides with the vertex.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(5.0f / 5.001f));
+				}
+			}
+			WHEN("The circle moves until it is slightly overlapping an edge.") {
+				Coord2 norm(Coord2(0.5f, -1.5f).normalize());
+				Coord2 circlePos(Coord2(0.9f, 0.3f) + norm * 15), octagonPos(0, 2);
+				Coord2 delta(norm * -10.001f);
+				Coord2 expected_norm(norm);
+				THEN("It collides with the edge.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(10.0f / 10.001f));
+				}
+			}
+			WHEN("The circle moves near a vertex, and collides with a following edge.") {
+				circle.radius = 0.5f; // A smaller circle.
+				Coord2 circlePos(1, -1), octagonPos(-2, 0);
+				Coord2 dir(Coord2(-1, 2.5f).normalize());
+				Coord2 delta(dir * 10.0f);
+				Coord2 expected_norm(Coord2(1.5f, 0.5f).normalize());
+				gFloat closestDist(circlePos.dot(expected_norm) - circle.radius); // Closest distance from circle to edge line.
+				gFloat expected_t(closestDist / delta.dot(-expected_norm)); // Solve triangle: hypotenuese = adjacent / [cosTheta (and total delta)].
+				THEN("It collides with the edge.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+			WHEN("The circle just brushes the octagon on its leftmost vertex relative to the circle's direction vector.") {
+				circle.radius = 0.5f; // A smaller circle.
+				Coord2 circlePos(-0.49f, -1), octagonPos(2, 0);
+				Coord2 delta(0, 10);
+				Coord2 collisionPoint(circlePos.x, -std::sqrt(circle.radius * circle.radius - circlePos.x * circlePos.x)); // Solve triangle.
+				Coord2 expected_norm(collisionPoint.normalize());
+				gFloat expected_t((collisionPoint.y - circlePos.y) / 10);
+				THEN("It collides with the leftmost vertex.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+			WHEN("The circle just brushes the octagon on its rightmost vertex relative to the circle's direction vector.") {
+				circle.radius = 0.5f; // A smaller circle.
+				Coord2 circlePos(4.49f, -1), octagonPos(2, 0);
+				Coord2 delta(0, 10);
+				Coord2 collisionPoint(0.49f, -std::sqrt(circle.radius * circle.radius - 0.49f * 0.49f)); // Solve triangle.
+				Coord2 expected_norm(collisionPoint.normalize());
+				gFloat expected_t((collisionPoint.y - circlePos.y) / 10);
+				THEN("It collides with the rightmost vertex.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+			WHEN("The circle is small, and moves upwards from close to the octagon on its lower right side.") {
+				circle.radius = 0.1f; // A smaller circle.
+				Coord2 circlePos(1.9f, -1), octagonPos(0, 0);
+				Coord2 delta(0, 10);
+				Coord2 expected_norm(Coord2(1.5f, -0.5f).normalize());
+				gFloat closestDist((circlePos - Coord2(2, 0)).dot(expected_norm) - circle.radius); // Closest distance from circle to edge line.
+				gFloat expected_t(closestDist / delta.dot(-expected_norm)); // Solve triangle.
+				THEN("It collides with the octagon's edge.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, octagon, octagonPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+			WHEN("The octagon is the collider instead, and the circle is the stationary shape.") {
+				circle.radius = 0.1f; // A smaller circle.
+				Coord2 circlePos(1.9f, -1), octagonPos(0, 0);
+				Coord2 delta(0, -10);
+				Coord2 expected_norm(-Coord2(1.5f, -0.5f).normalize());
+				gFloat closestDist((circlePos - Coord2(2, 0)).dot(-expected_norm) - circle.radius); // Closest distance from circle to edge line.
+				gFloat expected_t(closestDist / (-delta).dot(expected_norm)); // Solve triangle.
+				THEN("It gives the same result, with the normal reversed.") {
+					REQUIRE(geom::collides(octagon, octagonPos, delta, circle, circlePos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(expected_t));
+				}
+			}
+		}
+		GIVEN("A rectangle.") {
+			Rect rect(0, 0, 1, 1);
+			WHEN("The circle moves left into the rectangle.") {
+				Coord2 circlePos(7, 0), rectPos(0, 0);
+				Coord2 delta(-10, 0);
+				Coord2 expected_norm(1, 0);
+				THEN("They collide.") {
+					REQUIRE(geom::collides(circle, circlePos, delta, rect, rectPos, out_norm, out_t) == CollisionResult::SWEEP);
+					CHECK(out_norm.x == ApproxEps(expected_norm.x));
+					CHECK(out_norm.y == ApproxEps(expected_norm.y));
+					CHECK(out_t == ApproxEps(0.1f));
+				}
+			}
+		}
 	}
 }
-SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[collides][mtv]") {
+SCENARIO("One shape is moving, but it is currently overlapping another one.", "[collides][mtv]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two rectangles.") {
@@ -468,7 +603,7 @@ SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[co
 				CHECK(out_t == ApproxEps(1));
 			}
 		}
-		WHEN("The collider slightly overlaps the stationary rectangle.") {
+		WHEN("The collider is slightly overlapping the stationary rectangle.") {
 			Coord2 colliderPos(-0.99f, 0), stationaryPos(0, 0);
 			Coord2 expected_norm(-1, 0);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
@@ -527,7 +662,7 @@ SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[co
 	}
 	GIVEN("Two circles.") {
 		Circle collider(5), stationary(5);
-		WHEN("The collider slightly overlaps the stationary circle.") {
+		WHEN("The collider is slightly overlapping the stationary circle.") {
 			Coord2 colliderPos(0.01f, 0), stationaryPos(10, 0);
 			Coord2 expected_norm(-1, 0);
 			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
@@ -555,10 +690,64 @@ SCENARIO("Two shapes are currently overlapping, detected with hybrid SAT.", "[co
 		}
 	}
 	GIVEN("A cricle and an octagon.") {
-
+		Circle collider(5);
+		Polygon stationary(shapes::octagon);
+		WHEN("The moving circle is slightly overlapping a vertex of the octagon.") {
+			Coord2 colliderPos(6.99f, 0), stationaryPos(0, 0);
+			Coord2 expected_norm(1, 0);
+			THEN("They give the same MTV, regardless of the direction of movement (if any).") {
+				REQUIRE(geom::collides(collider, colliderPos, Coord2(10, 0), stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.01f));
+				REQUIRE(geom::collides(collider, colliderPos, Coord2(10, 10), stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.01f));
+				REQUIRE(geom::collides(collider, colliderPos, Coord2(10, -90), stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.01f));
+				REQUIRE(geom::collides(collider, colliderPos, Coord2(0, 10), stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.01f));
+				REQUIRE(geom::collides(collider, colliderPos, Coord2(0, 0), stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.01f));
+			}
+		}
+		WHEN("The moving cirlce is slightly overlapping an edge of the octagon.") {
+			Coord2 norm(Coord2(1.5f, 0.5f).normalize());
+			Coord2 colliderPos(Coord2(1.8f, 0.6f) + norm * 4.9f), stationaryPos(0, 0);
+			Coord2 delta(4, 3);
+			Coord2 expected_norm(norm);
+			THEN("It is an MTV collision.") {
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.1f));
+			}
+		}
+	}
+	GIVEN("A circle and a rectangle.") {
+		Circle collider(1);
+		Rect stationary(0, 0, 1, 1);
+		WHEN("The circle intersects the rectangle's edge.") {
+			Coord2 colliderPos(1.9f, 0), stationaryPos(0, 0);
+			Coord2 delta(10, 10);
+			Coord2 expected_norm(1, 0);
+			THEN("The MTV is out of that edge.") {
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::MTV);
+				CHECK(out_norm.x == ApproxEps(expected_norm.x));
+				CHECK(out_norm.y == ApproxEps(expected_norm.y));
+				CHECK(out_t == ApproxEps(0.1f));
+			}
+		}
 	}
 }
-SCENARIO("Two shapes are separated and will not collide, detected with hybrid SAT.", "[collides][miss]") {
+SCENARIO("One shape is moving, and will not collide with another one.", "[collides][miss]") {
 	gFloat out_t;
 	Coord2 out_norm;
 	GIVEN("Two touching polygons.") {
@@ -635,6 +824,53 @@ SCENARIO("Two shapes are separated and will not collide, detected with hybrid SA
 		WHEN("The collider brushes past the other circle, but does not overlap it.") {
 			Coord2 colliderPos(-2, 13), stationaryPos(5, 20);
 			Coord2 delta(-10, 0);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+	}
+	GIVEN("A cricle and an octagon.") {
+		Circle collider(5);
+		Polygon stationary(shapes::octagon);
+		WHEN("The moving circle touches, but does not overlap, a vertex on the octagon, and moves away from it.") {
+			Coord2 colliderPos(7, 0), stationaryPos(0, 0);
+			Coord2 delta(20, 0);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The moving circle is very close to a vertex on the octagon on it's right side, and moves away from it.") {
+			Coord2 colliderPos(7.01f, 0), stationaryPos(0, 0);
+			Coord2 delta(0, 10);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The moving circle is very close to a vertex on the octagon on it's left side, and moves away from it.") {
+			Coord2 colliderPos(-7.01f, 0), stationaryPos(0, 0);
+			Coord2 delta(0, 10);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The circle moves past a vertex of the octagon, but doesn't overlap with it.") {
+			Coord2 colliderPos(7, -5), stationaryPos(0, 0);
+			Coord2 delta(0, 10);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The circle moves along an ege of the octagon, but doesn't overlap with it.") {
+			Coord2 colliderPos(-1.5f, -5.7705f), stationaryPos(0, 2);
+			Coord2 delta(15, 5);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The circle moves until it is touching, but not overlapping, a vertex.") {
+			Coord2 colliderPos(0, -10), stationaryPos(0, 2);
+			Coord2 delta(0, 5);
+			THEN("They don't collide.")
+				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
+		}
+		WHEN("The circle moves until it is touching, but not overlapping, an edge.") {
+			Coord2 norm(Coord2(0.5f, -1.5f).normalize());
+			Coord2 colliderPos(Coord2(0.9f, 0.3f) + norm * 15), stationaryPos(0, 2);
+			Coord2 delta(norm * -10);
 			THEN("They don't collide.")
 				REQUIRE(geom::collides(collider, colliderPos, delta, stationary, stationaryPos, out_norm, out_t) == CollisionResult::NONE);
 		}

@@ -85,7 +85,7 @@ namespace game {
 	void drawPolyVerts(const Polygon& p, Graphics& graphics) {
 		const size_t size = p.size();
 		graphics.setRenderColour(255, 255, 0);
-		for (std::size_t i = 0; i < p.size(); ++i)
+		for (std::size_t i = 0; i < size; ++i)
 			graphics.renderCircle(util::coord2DToSDLPoint(p[i]), 1);
 	}
 	void drawPolyEdgeNormals(const Polygon& p, Graphics& graphics) {

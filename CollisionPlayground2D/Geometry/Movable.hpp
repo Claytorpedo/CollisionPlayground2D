@@ -55,8 +55,7 @@ namespace geom {
 		// Takes the collidable's bounding shape, its origin, the delta it is moving in, and the objects it can collide with.
 		// Calls onCollision when collisions occur, if any special action is to be taken.
 		// Returns the final position of the collider.
-		Coord2 move(const ShapeContainer& collider, const Coord2& origin,
-			const Coord2& delta, const CollisionMap* const collisionMap);
+		Coord2 move(const ShapeContainer& collider, const Coord2& origin, const Coord2& delta, const CollisionMap& collisionMap);
 	protected:
 		CollisionType type;
 
@@ -67,12 +66,14 @@ namespace geom {
 
 	private:
 		// Find the nearest collision from a map of collidables.
-		CollisionResult _find_closest_collision(const CollisionMap* const collisionMap, CollisionInfo& info) const;
+		CollisionResult _find_closest_collision(const CollisionMap& collisionMap, CollisionInfo& info) const;
 		// Algorithm for deflecting-type collisions.
-		void _move_deflection(CollisionInfo& info, const CollisionMap* const collisionMap);
+		void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
+		// Algorithm for reversing-type collisions.
+		void _move_reverse(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Attempt to fix currently-overlaping collisions.
 		// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
-		bool _debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap);
+		bool _debug_collision(CollisionInfo& info, const CollisionMap& collisionMap);
 	};
 }
 #endif // INCLUDE_GEOM_MOVABLE_HPP

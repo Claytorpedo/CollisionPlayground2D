@@ -21,7 +21,7 @@ public:
 	Mover(const geom::ShapeContainer& collider, const geom::Coord2& position);
 	~Mover() {}
 
-	void update(const game::MS elapsedTime, const geom::CollisionMap* const map);
+	void update(const game::MS elapsedTime, const geom::CollisionMap& map);
 
 	void setPosition(const geom::Coord2& position);
 
@@ -42,7 +42,7 @@ private:
 	game::Acceleration2D acceleration_;
 	game::Velocity2D velocity_;
 
-	void update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap* const polys);
+	void update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map);
 	void _init() const;
 };
 

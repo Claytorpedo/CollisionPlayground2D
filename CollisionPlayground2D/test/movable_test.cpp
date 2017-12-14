@@ -32,7 +32,7 @@ struct MovableTest : public Movable {
 	const Coord2& getPosition() const { return position;  }
 	const ShapeContainer& getCollider() const { return collider; }
 	void move(const Coord2& delta, const CollisionMap& map) {
-		position = Movable::move(collider, position, delta, &map);
+		position = Movable::move(collider, position, delta, map);
 	}
 };
 

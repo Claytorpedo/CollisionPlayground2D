@@ -22,12 +22,12 @@ Mover::Mover(const geom::ShapeContainer& collider, const geom::Coord2& position)
 	_init();
 }
 
-void Mover::update(const game::MS elapsedTime, const geom::CollisionMap* const map) {
+void Mover::update(const game::MS elapsedTime, const geom::CollisionMap& map) {
 	const game::Velocity maxSpeed = (!geom::math::almostZero(acceleration_.x) && !geom::math::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
 	update_position(elapsedTime, maxSpeed, map);
 }
 
-void Mover::update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap* const map) {
+void Mover::update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map) {
 	velocity_ += acceleration_ * (geom::gFloat)(elapsedTime);
 	velocity_.x = geom::math::clamp(velocity_.x, -maxSpeed, maxSpeed);
 	velocity_.y = geom::math::clamp(velocity_.y, -maxSpeed, maxSpeed);

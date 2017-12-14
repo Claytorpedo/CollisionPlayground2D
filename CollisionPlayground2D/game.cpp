@@ -229,7 +229,7 @@ namespace game {
 			elapsedTime = currentTime - previousTime;
 			previousTime = currentTime;
 
-			mover.update(elapsedTime, &objs);
+			mover.update(elapsedTime, objs);
 
 			graphics.clear();
 			Polygon collider(mover.getCollider().shape().toPoly());

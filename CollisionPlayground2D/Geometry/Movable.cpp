@@ -21,12 +21,12 @@ namespace geom {
 
 	Movable::~Movable() {}
 
-	CollisionResult Movable::_find_closest_collision(const CollisionMap* const collisionMap, Movable::CollisionInfo& info) const {
+	CollisionResult Movable::_find_closest_collision(const CollisionMap& collisionMap, Movable::CollisionInfo& info) const {
 		Coord2 testNorm;
 		gFloat interval(1.0f), testInterval;
 		info.isCollision = false;
 		const Coord2 delta(info.currentDir * info.remainingDist);
-		std::vector<Collidable*> objs = collisionMap->getColliding(*this, delta);
+		std::vector<Collidable*> objs = collisionMap.getColliding(*this, delta);
 		CollisionResult result;
 		for (std::size_t i = 0; i < objs.size(); ++i) {
 			result = collides(info.collider, info.currentPosition, delta, objs[i]->getCollider(), objs[i]->getPosition(), testNorm, testInterval);
@@ -59,7 +59,7 @@ namespace geom {
 	}
 
 	Coord2 Movable::move(const ShapeContainer& collider, const Coord2& origin,
-		const Coord2& delta, const CollisionMap* const collisionMap) {
+		const Coord2& delta, const CollisionMap& collisionMap) {
 		const gFloat originalDist = delta.magnitude();
 		CollisionInfo info(collider, origin, delta / originalDist, originalDist);
 		if (delta.isZero())
@@ -86,7 +86,7 @@ namespace geom {
 		return info.currentPosition;
 	}
 
-	void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap* const collisionMap) {
+	void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
 		unsigned int depth = 0;
 		// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
 		// deflection angle relative to the original direction.
@@ -129,13 +129,38 @@ namespace geom {
 			++depth;
 #ifdef DEBUG
 			if (depth >= 5)
-				DBG_LOG("Recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
+				DBG_LOG("Deflect recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 #endif
 		}
-		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping algorithm.");
+		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping deflect algorithm.");
 	}
 
-	bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap* const collisionMap) {
+	void Movable::_move_reverse(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
+		unsigned int depth = 0;
+		while (depth < COLLISION_ALG_MAX_DEPTH) {
+			if (_find_closest_collision(collisionMap, info) == CollisionResult::MTV) {
+				_debug_collision(info, collisionMap);
+				return;
+			}
+			info.currentPosition += info.moveDist * info.currentDir;
+			if (!info.isCollision)
+				return;
+			info.remainingDist -= info.moveDist;
+			if (!onCollision(info))
+				return; // Signaled to stop.
+			if (info.remainingDist < constants::EPSILON || info.normal.isZero())
+				return;
+			info.currentDir = -info.currentDir;
+			++depth;
+#ifdef DEBUG
+			if (depth >= 5)
+				DBG_LOG("Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
+#endif
+		}
+		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping reverse algorithm.");
+	}
+
+	bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {
 		DBG_LOG("Debugging MTV collision...");
 		std::vector<Coord2> positions;
 		positions.reserve(COLLISION_DEBUG_MAX_ATTEMPTS + 1); // Keep track of current position, in case we oscillate between objects.
@@ -143,7 +168,7 @@ namespace geom {
 		info.currentPosition += (info.moveDist + COLLISION_BUFFER) * info.normal;
 		positions.push_back(info.currentPosition);
 		for (std::size_t i = 1; i < COLLISION_DEBUG_MAX_ATTEMPTS; ++i) {
-			std::vector<Collidable*> objs = collisionMap->getColliding(*this);
+			std::vector<Collidable*> objs = collisionMap.getColliding(*this);
 			info.isCollision = false;
 			for (std::size_t k = 0; k < objs.size(); ++k) {
 				if (overlaps(info.collider, info.currentPosition, objs[k]->getCollider(), objs[k]->getPosition(), info.normal, info.moveDist)) {

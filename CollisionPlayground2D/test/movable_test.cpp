@@ -541,3 +541,33 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 		}
 	}
 }
+
+SCENARIO("A movable reverses off a stationary collidable.", "[movable][deflection]") {
+	CollisionMapTest map;
+	GIVEN("The mover is a rectangle.") {
+		MovableTest mover(Movable::CollisionType::REVERSE, ShapeContainer(Rect(0, 0, 1, 1)));
+		GIVEN("The stationary collidable is a rectangle.") {
+			map.add(Rect(0, 0, 1, 1));
+			WHEN("The mover moves left into the rectangle.") {
+				mover.position = Coord2(-2, 0);
+				mover.move(Coord2(10, 0), map);
+				THEN("It reverses direction, and ends up left of its starting position.") {
+					CHECK(mover.position.x == ApproxCollides(-10 - Movable::COLLISION_BUFFER*2));
+					CHECK(mover.position.y == ApproxCollides(0));
+				}
+			}
+		}
+		GIVEN("The stationary collidable is a triangle.") {
+			map.add(Polygon(std::vector<Coord2> { Coord2(0, -0.5f), Coord2(1, 0.5f), Coord2(1, -0.5f) }));
+			map.add(Rect(1, -0.5f, 1, 1));
+			WHEN("The mover moves left into the triangle.") {
+				mover.position = Coord2(-2, 0);
+				mover.move(Coord2(10, 0), map);
+				THEN("It reverses direction, and ends up left of its starting position.") {
+					CHECK(mover.position.x == ApproxCollides(-9 - Movable::getPushoutDistance(Coord2(1, 0), Coord2(-1, 1).normalize()) * 2));
+					CHECK(mover.position.y == ApproxCollides(0));
+				}
+			}
+		}
+	}
+}

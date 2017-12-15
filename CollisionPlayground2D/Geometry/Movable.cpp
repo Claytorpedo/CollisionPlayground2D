@@ -72,7 +72,7 @@ namespace geom {
 			_move_deflection(info, collisionMap);
 			break;
 		case CollisionType::REVERSE:
-			std::cerr << "Error: Unimplemented collision algorithm type.\n";
+			_move_reverse(info, collisionMap);
 			break;
 		case CollisionType::REFLECT:
 			std::cerr << "Error: Unimplemented collision algorithm type.\n";
@@ -148,7 +148,7 @@ namespace geom {
 			info.remainingDist -= info.moveDist;
 			if (!onCollision(info))
 				return; // Signaled to stop.
-			if (info.remainingDist < constants::EPSILON || info.normal.isZero())
+			if (info.remainingDist < constants::EPSILON)
 				return;
 			info.currentDir = -info.currentDir;
 			++depth;

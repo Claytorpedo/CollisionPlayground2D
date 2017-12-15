@@ -11,6 +11,7 @@
 #include "../Geometry/ShapeContainer.hpp"
 #include "../Geometry/Polygon.hpp"
 #include "../Geometry/Rectangle.hpp"
+#include "../Geometry/Circle.hpp"
 
 using geom::Movable;
 using geom::Collidable;
@@ -20,6 +21,7 @@ using geom::Coord2;
 using geom::ShapeContainer;
 using geom::Polygon;
 using geom::Rect;
+using geom::Circle;
 
 
 struct MovableTest : public Movable {
@@ -146,6 +148,39 @@ SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflectio
 			}
 		}
 	}
+	GIVEN("The movable is a circle.") {
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Circle(0.5f)));
+		GIVEN("The stationary collidable is a rectangle.") {
+			map.add(Rect(0, 0, 1, 1));
+			WHEN("The cricle hits the rectangle on the rectangle's edge at an angle.") {
+				Coord2 origin(-1, -0.5f);
+				Coord2 delta(10, 10);
+				mover.position = origin;
+				mover.move(delta, map);
+				THEN("The circle deflects off the rectangle's edge.") {
+					Coord2 dir(delta.normalize());
+					geom::gFloat x_pushout((Movable::getPushoutDistance(dir, Coord2(-1, 0)) * dir).x);
+					CHECK(mover.position.x == ApproxEps(-0.5f - x_pushout));
+					CHECK(mover.position.y == ApproxEps(9.5f));
+				}
+			}
+		}
+		GIVEN("The stationary collidable is another circle.") {
+			map.add(Circle(Coord2(2, 0), 2));
+			WHEN("The cricle hits the other circle at an angle.") {
+				Coord2 origin(-1, -0.5f);
+				Coord2 delta(10, 10);
+				mover.position = origin;
+				mover.move(delta, map);
+				THEN("The circle deflects off the other circle at a 90 degree angle.") {
+					Coord2 dir(delta.normalize());
+					geom::gFloat x_pushout((Movable::getPushoutDistance(dir, Coord2(-1, 0)) * dir).x);
+					CHECK(mover.position.x == ApproxEps(-0.5f - x_pushout));
+					CHECK(mover.position.y == ApproxEps(9.5f));
+				}
+			}
+		}
+	}
 }
 
 SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][deflection]") {
@@ -263,7 +298,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			map.add(Polygon(std::vector<Coord2>{Coord2(0.5f, 0), Coord2(1, 1), Coord2(2, 0)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coord2 origin(0, 5);
-				Coord2 dir(Coord2(0, -1).normalize());
+				Coord2 dir(0, -1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -279,7 +314,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			map.add(Polygon(std::vector<Coord2>{Coord2(0.5f, 0), Coord2(1.5f, 1), Coord2(2, 0)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coord2 origin(0, 5);
-				Coord2 dir(Coord2(0, -1).normalize());
+				Coord2 dir(0, -1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -291,7 +326,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			}
 			WHEN("The mover moves up into the wedge from off-center.") {
 				Coord2 origin(0.4f, 5);
-				Coord2 dir(Coord2(0, -1).normalize());
+				Coord2 dir(0, -1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -322,7 +357,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			map.add(Polygon(std::vector<Coord2>{ Coord2(-2, 0), Coord2(-3, -1), Coord2(-4, 0) }));
 			WHEN("The mover moves down into the wedge.") {
 				Coord2 origin(-3, -5);
-				Coord2 dir(Coord2(0, 1).normalize());
+				Coord2 dir(0, 1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -338,7 +373,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			map.add(Polygon(std::vector<Coord2>{ Coord2(-2.5f, 0), Coord2(-3.5f, -1), Coord2(-4.5f, 0) }));
 			WHEN("The mover moves down into the wedge.") {
 				Coord2 origin(-3, -5);
-				Coord2 dir(Coord2(0, 1).normalize());
+				Coord2 dir(0, 1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -359,7 +394,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			map.add(Polygon(std::vector<Coord2>{Coord2(1.5f, -1.5f), Coord2(2, 0), Coord2(2, -2)}));
 			WHEN("The mover moves up into the wedge.") {
 				Coord2 origin(0, 5);
-				Coord2 dir(Coord2(0, -1).normalize());
+				Coord2 dir(0, -1);
 				geom::gFloat dist(10);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -371,7 +406,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 			}
 			WHEN("The mover moves up into the wedge from off-center.") {
 				Coord2 origin(1, 5);
-				Coord2 dir(Coord2(0, -1).normalize());
+				Coord2 dir(0, -1);
 				geom::gFloat dist(100);
 				mover.position = origin;
 				mover.move(dir*dist, map);
@@ -380,6 +415,22 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 					Coord2 expected(0, Movable::getPushoutDistance(Coord2(0, -1), Coord2(1.5f, 0.5f).normalize()));
 					CHECK(mover.position.x == ApproxCollides(expected.x));
 					CHECK(mover.position.y == ApproxCollides(expected.y));
+				}
+			}
+		}
+	}
+	GIVEN("The mover is a circle.") {
+		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(Circle(1)));
+		GIVEN("A wedge formed by two triangles.") {
+			map.add(Polygon(std::vector<Coord2>{ Coord2(2, 2), Coord2(10, 2), Coord2(10, 0) }));
+			map.add(Polygon(std::vector<Coord2>{ Coord2(2, -2), Coord2(10, 0), Coord2(10, -2) }));
+			WHEN("The circle moves right into the wedge.") {
+				mover.position = Coord2(0, 0);
+				mover.move(Coord2(20, 0), map);
+				THEN("It moves slightly less than halfway through the wedge, and stops.") {
+					geom::gFloat x(5.876894431f - Movable::getPushoutDistance(Coord2(1, 0), Coord2(-2, -8).normalize())); // Used graphing software.
+					CHECK(mover.position.x == ApproxCollides(x));
+					CHECK(mover.position.y == ApproxCollides(0));
 				}
 			}
 		}

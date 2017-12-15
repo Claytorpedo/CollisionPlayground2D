@@ -16,8 +16,8 @@ namespace geom {
 
 	const gFloat Movable::COLLISION_BUFFER = 0.001f;
 	const gFloat Movable::WEDGE_MOVE_THRESH = 0.0001f;
-	const unsigned int      Movable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
-	const unsigned int      Movable::COLLISION_ALG_MAX_DEPTH = 25;
+	const unsigned int Movable::COLLISION_DEBUG_MAX_ATTEMPTS = 3;
+	const unsigned int Movable::COLLISION_ALG_MAX_DEPTH = 25;
 
 	Movable::~Movable() {}
 
@@ -35,6 +35,7 @@ namespace geom {
 				if (interval > testInterval) {
 					interval = testInterval;
 					info.normal = testNorm;
+					info.collidable = objs[i];
 				}
 				if (interval < constants::EPSILON) {
 					info.moveDist = 0;
@@ -45,6 +46,7 @@ namespace geom {
 				info.isCollision = true;
 				info.moveDist = testInterval;
 				info.normal = testNorm;
+				info.collidable = objs[i];
 				return CollisionResult::MTV; // Currently overlapping something. Abort.
 			}
 		}

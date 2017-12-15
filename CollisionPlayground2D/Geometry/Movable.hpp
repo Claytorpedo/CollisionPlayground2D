@@ -36,17 +36,18 @@ namespace geom {
 		};
 
 		struct CollisionInfo {
-			bool isCollision;                      // Whether a collision occurred.
-			const ShapeContainer& collider;        // The collider for collision testing.
-			const Coord2 originalDir; // Original direction of the delta vector.
-			Coord2 currentDir;        // Direction the collider is currently travelling in.
-			gFloat remainingDist;       // Distance left for the collider to move.
-			gFloat moveDist;            // Distance collidable can move before a collision occurs.
-			Coord2 currentPosition;   // The collider's current position.
-			Coord2 normal;            // Collision normal. Not necessarily normalized.
+			bool isCollision;               // Whether a collision occurred.
+			const ShapeContainer& collider; // The collider for collision testing.
+			const Coord2 originalDir;       // Original direction of the delta vector.
+			Coord2 currentDir;              // Direction the collider is currently travelling in.
+			gFloat remainingDist;           // Distance left for the collider to move.
+			gFloat moveDist;                // Distance collidable can move before a collision occurs.
+			Coord2 currentPosition;         // The collider's current position.
+			Coord2 normal;                  // Collision normal. Not necessarily normalized.
+			Collidable* collidable;         // Collidable collided with.
 			CollisionInfo(const ShapeContainer& collider, Coord2 position, Coord2 dir, gFloat dist) :
 				isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
-				moveDist(0), currentPosition(position), normal(0, 0) {}
+				moveDist(0), currentPosition(position), normal(0, 0), collidable(nullptr) {}
 		};
 		Movable() : type(CollisionType::DEFLECTION) {}
 		Movable(CollisionType type) : type(type) {}

@@ -20,8 +20,23 @@
 #define DBG_WARN(x) do { std::cerr << WARN_COL "WARNING:" RST_COL " " << x << "\n"; } while (0)
 #define DBG_LOG(x)  do { std::cout << LOG_COL  "LOG:"     RST_COL " " << x << "\n"; } while (0)
 
+// Check a condition, and report to the requested stream if it is true.
+// Streams are "LOG", "WARN", and "ERR".
+#define DBG_CHECK(cond, type, str) do { \
+	if (cond) {                         \
+		if (type == "LOG") {            \
+			DBG_LOG(str);               \
+		} else if (type == "WARN") {    \
+			DBG_WARN(str);              \
+		} else {                        \
+			DBG_ERR(str);               \
+		}                               \
+	}                                   \
+} while(0)
+
 #else
 #define DBG_ERR(x)  do {} while(0)
 #define DBG_WARN(x) do {} while(0)
 #define DBG_LOG(x)  do {} while(0)
+#define DBG_CHECK(cond, type, str) do {} while(0)
 #endif // DEBUG

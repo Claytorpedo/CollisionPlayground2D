@@ -92,7 +92,7 @@ namespace geom {
 			_move_reverse(info, collisionMap);
 			break;
 		case CollisionType::REFLECT:
-			std::cerr << "Error: Unimplemented collision algorithm type.\n";
+			_move_reflect(info, collisionMap);
 			break;
 		case CollisionType::_DEBUG_:
 			std::cerr << "Error: _DEBUG_ collision algorithm is for internal use only.\n";
@@ -145,6 +145,18 @@ namespace geom {
 			if (_move(info, collisionMap))
 				return;
 			info.currentDir = -info.currentDir;
+			++depth;
+			DBG_CHECK(depth >= 5, "LOG", "Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
+		}
+		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping reverse algorithm.");
+	}
+
+	void Movable::_move_reflect(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
+		unsigned int depth = 0;
+		while (depth < COLLISION_ALG_MAX_DEPTH) {
+			if (_move(info, collisionMap))
+				return;
+			info.currentDir = info.currentDir - (2.0f * info.normal * info.currentDir.dot(info.normal));
 			++depth;
 			DBG_CHECK(depth >= 5, "LOG", "Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 		}

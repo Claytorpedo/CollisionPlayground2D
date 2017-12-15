@@ -74,6 +74,8 @@ namespace geom {
 		void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for reversing-type collisions.
 		void _move_reverse(CollisionInfo& info, const CollisionMap& collisionMap);
+		// Algorithm for reflecting-type (or "bouncing") collisions
+		void _move_reflect(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Attempt to fix currently-overlaping collisions.
 		// Returns true if the situation is known to be resolved (collider is no-longer colliding). False indicates an unknown state (may or may not be resolved).
 		bool _debug_collision(CollisionInfo& info, const CollisionMap& collisionMap);

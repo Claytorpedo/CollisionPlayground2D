@@ -25,28 +25,31 @@ namespace game {
 
 	// Extremely simple CollisionMap implementation: no data structure speedup at all.
 	class SimpleCollisionMap : public CollisionMap {
-	private:
-		std::vector<Wall*> obstacles_;
 	public:
-		SimpleCollisionMap(std::vector<Polygon> polys) {
-			add(polys);
-		}
+		std::vector<Collidable*> obstacles;
+		SimpleCollisionMap() {}
 		~SimpleCollisionMap() {
 			clear();
 		}
 		virtual const std::vector<Collidable*> getColliding(const Collidable& collider, const geom::Coord2& delta) const {
-			return std::vector<Collidable*>(obstacles_.begin(), obstacles_.end());
+			return std::vector<Collidable*>(obstacles.begin(), obstacles.end());
 		}
-		void add(std::vector<Polygon> polys) {
-			for (std::size_t i = 0; i < polys.size(); ++i) {
-				Wall* w = new Wall(ShapeContainer(new Polygon(polys[i])));
-				obstacles_.push_back(w);
-			}
+		void add(ShapeContainer shape) {
+			obstacles.push_back(new Wall(shape));
+		}
+		void add(Collidable* collidable) {
+			obstacles.push_back(collidable);
+		}
+		inline Collidable* operator[](std::size_t index) const {
+			return obstacles[index];
+		}
+		inline std::size_t size() const {
+			return obstacles.size();
 		}
 		void clear() {
-			for (std::size_t i = 0; i < obstacles_.size(); ++i)
-				delete obstacles_[i];
-			obstacles_.clear();
+			for (std::size_t i = 0; i < obstacles.size(); ++i)
+				delete obstacles[i];
+			obstacles.clear();
 		}
 	};
 
@@ -141,7 +144,7 @@ namespace game {
 		return Polygon(vertices);
 	}
 
-	Mover genMover(std::vector<Polygon> polys, std::mt19937& twister, const Rect& region) {
+	Mover genMover(const SimpleCollisionMap& map, std::mt19937& twister, const Rect& region) {
 		Polygon collider(genPoly(twister, Rect(), POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
 		std::uniform_real_distribution<geom::gFloat> distX(region.left(), region.right());
 		std::uniform_real_distribution<geom::gFloat> distY(region.top(), region.bottom());
@@ -149,8 +152,8 @@ namespace game {
 		// Ensure that the moving polygon doesn't start inside another polygon (do collision tests until it is put down cleanly).
 		while (true) {
 			bool isOccupied = false;
-			for (std::size_t i = 0; i < polys.size(); ++i) {
-				if (geom::overlaps(collider, position, polys[i], geom::Coord2(0,0))) {
+			for (std::size_t i = 0; i < map.size(); ++i) {
+				if (geom::overlaps(collider, position, map[i]->getCollider(), geom::Coord2(0,0))) {
 					isOccupied = true;
 					collider = genPoly(twister, Rect(), POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS);
 					position = geom::Coord2(distX(twister), distY(twister));
@@ -180,15 +183,12 @@ namespace game {
 		std::random_device rd;
 		std::mt19937 twister(rd());
 
-		std::size_t numPolys(20);
-		std::vector<Polygon> polys;
-		polys.reserve(numPolys);
-		for (std::size_t i = 0; i < numPolys; ++i) {
-			polys.push_back(genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
-		}
+		std::size_t numShapes(20);
+		SimpleCollisionMap map;
+		for (std::size_t i = 0; i < numShapes; ++i)
+			map.add(genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
 
-		Mover mover(genMover(polys, twister, POLY_REGION));
-		SimpleCollisionMap objs(polys);
+		Mover mover(genMover(map, twister, POLY_REGION));
 
 		previousTime = SDL_GetTicks();
 		// Start the game loop.
@@ -219,28 +219,27 @@ namespace game {
 				mover.stopMovingVertical();
 			}
 			if (input.wasKeyPressed(Input::R)) {
-				objs.clear();
-				for (std::size_t i = 0; i < numPolys; ++i)
-					polys[i] = genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS);
-				mover = genMover(polys, twister, POLY_REGION);
-				objs.add(polys);
+				map.clear();
+				for (std::size_t i = 0; i < numShapes; ++i)
+					map.add(genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
+				mover = genMover(map, twister, POLY_REGION);
 			}
 			currentTime = SDL_GetTicks();
 			elapsedTime = currentTime - previousTime;
 			previousTime = currentTime;
 
-			mover.update(elapsedTime, objs);
+			mover.update(elapsedTime, map);
 
 			graphics.clear();
 			Polygon collider(mover.getCollider().shape().toPoly());
 			collider.translate(mover.getPosition());
-			for (std::size_t i = 0; i < polys.size(); ++i) {
+			for (std::size_t i = 0; i < map.size(); ++i) {
 	#ifdef DEBUG
-				geom::overlaps(collider, polys[i]) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
-				drawPoly(polys[i], graphics);
+				geom::overlaps(collider, map[i]->getCollider()) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
+				drawPoly(map[i]->getCollider().shape().toPoly(), graphics);
 	#else
 				graphics.setRenderColour(0, 100, 255);
-				drawPoly(polys[i], graphics);
+				drawPoly(map[i]->getCollider().shape().toPoly(), graphics);
 	#endif
 			}
 

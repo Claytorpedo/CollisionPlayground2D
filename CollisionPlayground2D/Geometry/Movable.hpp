@@ -68,6 +68,8 @@ namespace geom {
 	private:
 		// Find the nearest collision from a map of collidables.
 		CollisionResult _find_closest_collision(const CollisionMap& collisionMap, CollisionInfo& info) const;
+		// Handle movement. Returns true if movement has finished, false if there may be more to do.
+		bool _move(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for deflecting-type collisions.
 		void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for reversing-type collisions.

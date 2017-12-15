@@ -59,6 +59,21 @@ namespace geom {
 			info.moveDist = 0;
 		return CollisionResult::SWEEP;
 	}
+	bool Movable::_move(CollisionInfo& info, const CollisionMap& collisionMap) {
+		if (_find_closest_collision(collisionMap, info) == CollisionResult::MTV) {
+			_debug_collision(info, collisionMap);
+			return true;
+		}
+		info.currentPosition += info.moveDist * info.currentDir;
+		if (!info.isCollision)
+			return true;
+		info.remainingDist -= info.moveDist;
+		if (!onCollision(info))
+			return true; // Signaled to stop.
+		if (info.remainingDist < constants::EPSILON || info.normal.isZero())
+			return true;
+		return false;
+	}
 
 	Coord2 Movable::move(const ShapeContainer& collider, const Coord2& origin,
 		const Coord2& delta, const CollisionMap& collisionMap) {
@@ -95,17 +110,7 @@ namespace geom {
 		// (This is the cosine of the angle: 0 == 90 degrees, an impossible deflection angle.)
 		gFloat prevAngle = 0;
 		while (depth < COLLISION_ALG_MAX_DEPTH) {
-			if (_find_closest_collision(collisionMap, info) == CollisionResult::MTV) {
-				_debug_collision(info, collisionMap);
-				return;
-			}
-			info.currentPosition += info.moveDist * info.currentDir;
-			if (!info.isCollision)
-				return;
-			info.remainingDist -= info.moveDist;
-			if (!onCollision(info))
-				return; // Signaled to stop.
-			if (info.remainingDist < constants::EPSILON || info.normal.isZero())
+			if (_move(info, collisionMap))
 				return;
 			// Find the projection of the remaining distance along the original direction on the deflection vector.
 			// Get the vector to project along by rotating 90 degrees (direction doesn't matter).
@@ -129,10 +134,7 @@ namespace geom {
 			}
 			prevAngle = currAngle;
 			++depth;
-#ifdef DEBUG
-			if (depth >= 5)
-				DBG_LOG("Deflect recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
-#endif
+			DBG_CHECK(depth >= 5, "LOG", "Deflect recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 		}
 		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping deflect algorithm.");
 	}
@@ -140,24 +142,11 @@ namespace geom {
 	void Movable::_move_reverse(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
 		unsigned int depth = 0;
 		while (depth < COLLISION_ALG_MAX_DEPTH) {
-			if (_find_closest_collision(collisionMap, info) == CollisionResult::MTV) {
-				_debug_collision(info, collisionMap);
-				return;
-			}
-			info.currentPosition += info.moveDist * info.currentDir;
-			if (!info.isCollision)
-				return;
-			info.remainingDist -= info.moveDist;
-			if (!onCollision(info))
-				return; // Signaled to stop.
-			if (info.remainingDist < constants::EPSILON)
+			if (_move(info, collisionMap))
 				return;
 			info.currentDir = -info.currentDir;
 			++depth;
-#ifdef DEBUG
-			if (depth >= 5)
-				DBG_LOG("Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
-#endif
+			DBG_CHECK(depth >= 5, "LOG", "Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 		}
 		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping reverse algorithm.");
 	}

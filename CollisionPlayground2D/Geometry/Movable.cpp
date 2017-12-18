@@ -156,11 +156,11 @@ namespace geom {
 		while (depth < COLLISION_ALG_MAX_DEPTH) {
 			if (_move(info, collisionMap))
 				return;
-			info.currentDir = info.currentDir - (2.0f * info.normal * info.currentDir.dot(info.normal));
+			info.currentDir -= 2.0f * info.normal * info.currentDir.dot(info.normal);
 			++depth;
-			DBG_CHECK(depth >= 5, "LOG", "Reverse recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
+			DBG_CHECK(depth >= 5, "LOG", "Reflect recursion depth: " << depth << " moveDist: " << info.moveDist << " remainingDist: " << info.remainingDist);
 		}
-		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping reverse algorithm.");
+		DBG_WARN("Maximum movement attempts (" << COLLISION_ALG_MAX_DEPTH << ") used. Stopping reflect algorithm.");
 	}
 
 	bool Movable::_debug_collision(CollisionInfo& info, const CollisionMap& collisionMap) {

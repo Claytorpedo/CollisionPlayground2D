@@ -63,7 +63,7 @@ private:
 	std::vector<Collidable*> obstacles_;
 };
 
-SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflection]") {
+SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflect]") {
 	CollisionMapTest map;
 	GIVEN("The movable is a right triangle.") {
 		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Polygon(shapes::rightTri)));
@@ -183,7 +183,7 @@ SCENARIO("A movable deflects off a stationary collidable.", "[movable][deflectio
 	}
 }
 
-SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][deflection]") {
+SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][deflect]") {
 	CollisionMapTest map;
 	GIVEN("The movable is a rectangle.") {
 		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rect(0, 0, 1, 1)));
@@ -289,7 +289,7 @@ SCENARIO("A movable deflects off multiple stationary collidables.", "[movable][d
 	}
 }
 
-SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
+SCENARIO("A mover deflects into a wedge.", "[movable][deflect]") {
 	CollisionMapTest map;
 	GIVEN("The mover is a rectangle.") {
 		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rect(0, 0, 1, 1)));
@@ -437,7 +437,7 @@ SCENARIO("A mover deflects into a wedge.", "[movable][deflection]") {
 	}
 }
 
-SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
+SCENARIO("A mover deflects down a corridor.", "[movable][deflect]") {
 	CollisionMapTest map;
 	GIVEN("The mover is a rectangle.") {
 		MovableTest mover(Movable::CollisionType::DEFLECTION, ShapeContainer(new Rect(0, 0, 1, 1)));
@@ -533,16 +533,16 @@ SCENARIO("A mover deflects down a corridor.", "[movable][deflection]") {
 				mover.position = origin;
 				mover.move(dir*dist, map);
 				THEN("It moves through, deflects off the bend, and reaches the end.") {
-					Coord2 expected(3, 18); // The deflection buffer and rectangle's dimensions cancell out.
-					CHECK(mover.position.x == ApproxCollides(expected.x));
-					CHECK(mover.position.y == ApproxCollides(expected.y));
+					Coord2 expected(3, 18); // The collision buffer and rectangle's dimensions cancel out.
+					CHECK(mover.position.x == ApproxEps(expected.x));
+					CHECK(mover.position.y == ApproxEps(expected.y));
 				}
 			}
 		}
 	}
 }
 
-SCENARIO("A movable reverses off a stationary collidable.", "[movable][deflection]") {
+SCENARIO("A movable reverses off a stationary collidable.", "[movable][reverse]") {
 	CollisionMapTest map;
 	GIVEN("The mover is a rectangle.") {
 		MovableTest mover(Movable::CollisionType::REVERSE, ShapeContainer(Rect(0, 0, 1, 1)));
@@ -552,20 +552,152 @@ SCENARIO("A movable reverses off a stationary collidable.", "[movable][deflectio
 				mover.position = Coord2(-2, 0);
 				mover.move(Coord2(10, 0), map);
 				THEN("It reverses direction, and ends up left of its starting position.") {
-					CHECK(mover.position.x == ApproxCollides(-10 - Movable::COLLISION_BUFFER*2));
-					CHECK(mover.position.y == ApproxCollides(0));
+					CHECK(mover.position.x == ApproxEps(-10 - Movable::COLLISION_BUFFER*2));
+					CHECK(mover.position.y == ApproxEps(0));
 				}
 			}
 		}
 		GIVEN("The stationary collidable is a triangle.") {
 			map.add(Polygon(std::vector<Coord2> { Coord2(0, -0.5f), Coord2(1, 0.5f), Coord2(1, -0.5f) }));
 			map.add(Rect(1, -0.5f, 1, 1));
-			WHEN("The mover moves left into the triangle.") {
+			WHEN("The mover moves right into the triangle.") {
 				mover.position = Coord2(-2, 0);
 				mover.move(Coord2(10, 0), map);
 				THEN("It reverses direction, and ends up left of its starting position.") {
-					CHECK(mover.position.x == ApproxCollides(-9 - Movable::getPushoutDistance(Coord2(1, 0), Coord2(-1, 1).normalize()) * 2));
-					CHECK(mover.position.y == ApproxCollides(0));
+					CHECK(mover.position.x == ApproxEps(-9 - Movable::getPushoutDistance(Coord2(1, 0), Coord2(-1, 1).normalize()) * 2));
+					CHECK(mover.position.y == ApproxEps(0));
+				}
+			}
+		}
+	}
+}
+
+SCENARIO("A movable reflects off a stationary collidable.", "[movable][reflect]") {
+	CollisionMapTest map;
+	GIVEN("The movable is a rectangle.") {
+		MovableTest mover(Movable::CollisionType::REFLECT, ShapeContainer(Rect(0, 0, 1, 1)));
+		GIVEN("The stationary collidable is also a rectangle.") {
+			map.add(Rect(0, 0, 1, 1));
+			WHEN("The mover moves directly right into the other rect.") {
+				mover.position = Coord2(-2, 0);
+				mover.move(Coord2(10, 0), map);
+				THEN("It reflects straight back.") {
+					CHECK(mover.position.x == ApproxEps(-10 - Movable::COLLISION_BUFFER * 2));
+					CHECK(mover.position.y == ApproxEps(0));
+				}
+			}
+			WHEN("The mover hits the other rect at an angle.") {
+				mover.position = Coord2(-2, -1);
+				Coord2 dir(Coord2(1, 1).normalize());
+				mover.move(Coord2(10, 10), map);
+				THEN("It reflects off at that angle.") {
+					geom::gFloat pushout_x(Movable::getPushoutDistance(dir, Coord2(-1, 0)) * dir.x);
+					CHECK(mover.position.x == ApproxEps(-10 - pushout_x *2));
+					CHECK(mover.position.y == ApproxEps(9));
+				}
+			}
+		}
+		GIVEN("The stationary collidable is a triangle.") {
+			map.add(Polygon(shapes::rightTri));
+			WHEN("The mover moves right into the triangle.") {
+				mover.position = Coord2(-2, 0.5f);
+				mover.move(Coord2(10, 0), map);
+				THEN("It reflects downwards.") {
+					geom::gFloat pushout_x(Movable::getPushoutDistance(Coord2(1, 0), Coord2(-1, 1).normalize()));
+					CHECK(mover.position.x == ApproxEps(-0.5f - pushout_x));
+					CHECK(mover.position.y == ApproxEps(9 + pushout_x)); // Pushout is added to downward motion.
+				}
+			}
+		}
+		GIVEN("The stationary collidable is an octagon.") {
+			map.add(Polygon(shapes::octagon));
+			WHEN("The mover's edge hits a face of the polygon.") {
+				Coord2 origin(4, 0.3f);
+				mover.position = origin;
+				Coord2 delta(-10, 0);
+				mover.move(delta, map);
+				THEN("It reflects off at an angle.") {
+					Coord2 collision(1.9f + Movable::getPushoutDistance(Coord2(-1, 0), Coord2(1.5f, 0.5f).normalize()), origin.y);
+					Coord2 reflectDir(Coord2(4, 3).normalize());
+					Coord2 expected_pos(collision + reflectDir * -(delta.x + origin.x - collision.x));
+					CHECK(mover.position.x == ApproxEps(expected_pos.x));
+					CHECK(mover.position.y == ApproxEps(expected_pos.y));
+				}
+			}
+		}
+	}
+}
+
+SCENARIO("A movable reflects out of a wedge.", "[movable][reflect]") {
+	CollisionMapTest map;
+	GIVEN("The mover is a rectangle.") {
+		MovableTest mover(Movable::CollisionType::REFLECT, ShapeContainer(Rect(0, 0, 1, 1)));
+		GIVEN("A wedge formed by two triangles, with no room for the mover.") {
+			map.add(Polygon(std::vector<Coord2>{Coord2(-1, 0), Coord2(0, 1), Coord2(0.5f, 0)}));
+			map.add(Polygon(std::vector<Coord2>{Coord2(0.5f, 0), Coord2(1, 1), Coord2(2, 0)}));
+			WHEN("The mover moves up into the wedge.") {
+				mover.position = Coord2(0, 5);
+				mover.move(Coord2(0, -10), map);
+				THEN("It hits the wedge and reflects back out, away from it.")
+					CHECK(mover.position.y > 1);
+			}
+		}
+		GIVEN("A wedge formed by two triangles with 45 degree angles, that the mover can move halfway down between.") {
+			map.add(Polygon(std::vector<Coord2>{Coord2(-2, 0), Coord2(-0.5f, 1), Coord2(0.5f, 0)}));
+			map.add(Polygon(std::vector<Coord2>{Coord2(0.5f, 0), Coord2(1.5f, 1), Coord2(2, 0)}));
+			WHEN("The mover moves up into the wedge.") {
+				mover.position = Coord2(0, 5);
+				mover.move(Coord2(0, -10), map);
+				THEN("It reflects off both sides, and reverses direction.") {
+					geom::gFloat pushout_y(Movable::getPushoutDistance(Coord2(0, -1), Coord2(1, 1).normalize()));
+					CHECK(mover.position.x == ApproxEps(0));
+					CHECK(mover.position.y == ApproxEps(6 + pushout_y *2));
+				}
+			}
+			WHEN("The mover moves up into the wedge from off-center.") {
+				mover.position = Coord2(0.4f, 5);
+				mover.move(Coord2(0, -10), map);
+				THEN("It reflects off both sides, and reverses direction.") {
+					geom::gFloat pushout_y(Movable::getPushoutDistance(Coord2(0, -1), Coord2(1, 1).normalize()));
+					CHECK(mover.position.x == ApproxEps(-0.4f));
+					CHECK(mover.position.y == ApproxEps(6 + pushout_y * 2));
+				}
+			}
+			WHEN("The mover moves up-left into the wedge from off-center.") {
+				mover.position = Coord2(0.8f, 5);
+				mover.move(Coord2(-1, -10), map);
+				THEN("It reflects off both sides, and leaves the wedge.")
+					CHECK(mover.position.y > 1);
+			}
+		}
+	}
+	GIVEN("The mover is a circle.") { // For these tests, verify that it left the wedge, and is within some area.
+		MovableTest mover(Movable::CollisionType::REFLECT, ShapeContainer(Circle(0.5f)));
+		GIVEN("A steep wedge formed by two triangles.") {
+			map.add(Polygon(std::vector<Coord2>{Coord2(-1, 0), Coord2(0, -5), Coord2(-1, -5)}));
+			map.add(Polygon(std::vector<Coord2>{Coord2(1, 0), Coord2(1, -5), Coord2(0, -5)}));
+			WHEN("The mover moves up into the wedge.") {
+				mover.position = Coord2(0, 0);
+				mover.move(Coord2(0, -10), map);
+				THEN("It reflects multiple times, and reverses direction.") {
+					CHECK(std::abs(mover.position.x) < 0.2f);
+					CHECK(mover.position.y > 5);
+				}
+			}
+			WHEN("The mover moves up into the wedge from slightly to the right.") {
+				mover.position = Coord2(0.3f, 0);
+				mover.move(Coord2(0, -10), map);
+				THEN("It reflects until it moves back out of the wedge.") {
+					CHECK(mover.position.x > -0.5f);
+					CHECK(mover.position.y > 5);
+				}
+			}
+			WHEN("The mover moves up into the wedge from slightly to the left.") {
+				mover.position = Coord2(-0.3f, 0);
+				mover.move(Coord2(0, -10), map);
+				THEN("It reflects until it moves back out of the wedge.") {
+					CHECK(mover.position.x < 0.5f);
+					CHECK(mover.position.y > 5);
 				}
 			}
 		}

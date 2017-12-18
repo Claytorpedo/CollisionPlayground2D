@@ -28,11 +28,11 @@ namespace geom {
 			return -(COLLISION_BUFFER / collisionNormal.dot(travelDir));
 		}
 		enum class CollisionType {
-			NONE,       // Collisions are ignored (noclip).
-			DEFLECTION, // Collisions result in deflection along edges.
-			REVERSE,    // Collisions result in reversing direction.
-			REFLECT,    // Collisions result in reflecting/bouncing off edges.
-			_DEBUG_     // There is an error that must be resolved (the shapes are overlapping).
+			NONE,    // Collisions are ignored (noclip).
+			DEFLECT, // Collisions result in deflecting along edges.
+			REVERSE, // Collisions result in reversing direction.
+			REFLECT, // Collisions result in reflecting/bouncing off edges.
+			_DEBUG_  // There is an error that must be resolved (the movable is overlapping another collidable).
 		};
 
 		struct CollisionInfo {
@@ -43,13 +43,13 @@ namespace geom {
 			gFloat remainingDist;           // Distance left for the collider to move.
 			gFloat moveDist;                // Distance collidable can move before a collision occurs.
 			Coord2 currentPosition;         // The collider's current position.
-			Coord2 normal;                  // Collision normal. Not necessarily normalized.
+			Coord2 normal;                  // Collision normal.
 			Collidable* collidable;         // Collidable collided with.
 			CollisionInfo(const ShapeContainer& collider, Coord2 position, Coord2 dir, gFloat dist) :
 				isCollision(false), collider(collider), originalDir(dir), currentDir(dir), remainingDist(dist),
 				moveDist(0), currentPosition(position), normal(0, 0), collidable(nullptr) {}
 		};
-		Movable() : type(CollisionType::DEFLECTION) {}
+		Movable() : type(CollisionType::DEFLECT) {}
 		Movable(CollisionType type) : type(type) {}
 		virtual ~Movable() = 0;
 
@@ -62,6 +62,7 @@ namespace geom {
 
 		// What to do on collision. This can be used to handle special collisions.
 		// Default implementation simply returns true, to continue the algorithm.
+		// Is called after moving to the collision position, prior to calculating a new direction to move in.
 		// Return true if the algorithm should continue as normal, false if it should stop.
 		virtual bool onCollision(CollisionInfo& info);
 
@@ -71,7 +72,7 @@ namespace geom {
 		// Handle movement. Returns true if movement has finished, false if there may be more to do.
 		bool _move(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for deflecting-type collisions.
-		void _move_deflection(CollisionInfo& info, const CollisionMap& collisionMap);
+		void _move_deflect(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for reversing-type collisions.
 		void _move_reverse(CollisionInfo& info, const CollisionMap& collisionMap);
 		// Algorithm for reflecting-type (or "bouncing") collisions

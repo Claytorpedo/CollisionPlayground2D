@@ -75,8 +75,7 @@ namespace geom {
 		return false;
 	}
 
-	Coord2 Movable::move(const ShapeContainer& collider, const Coord2& origin,
-		const Coord2& delta, const CollisionMap& collisionMap) {
+	Coord2 Movable::move(const ShapeContainer& collider, const Coord2& origin, const Coord2& delta, const CollisionMap& collisionMap) {
 		const gFloat originalDist = delta.magnitude();
 		CollisionInfo info(collider, origin, delta / originalDist, originalDist);
 		if (delta.isZero())
@@ -85,8 +84,8 @@ namespace geom {
 		case CollisionType::NONE:
 			info.currentPosition += delta;
 			break;
-		case CollisionType::DEFLECTION:
-			_move_deflection(info, collisionMap);
+		case CollisionType::DEFLECT:
+			_move_deflect(info, collisionMap);
 			break;
 		case CollisionType::REVERSE:
 			_move_reverse(info, collisionMap);
@@ -103,7 +102,7 @@ namespace geom {
 		return info.currentPosition;
 	}
 
-	void Movable::_move_deflection(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
+	void Movable::_move_deflect(Movable::CollisionInfo& info, const CollisionMap& collisionMap) {
 		unsigned int depth = 0;
 		// To detect oscillating deflections where the mover isn't moving (is in a wedge), keep track of the
 		// deflection angle relative to the original direction.

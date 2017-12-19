@@ -12,6 +12,12 @@ namespace geom {
 			const Coord2 dir(line2 - line1); // Unnormalized direction.
 			return line1 + ((point - line1).dot(dir) / dir.magnitude2()) * dir;
 		}
+		gFloat closestDistToLine(const Ray& ray, const Coord2& point) {
+			return std::abs((point - ray.origin).dot(ray.dir.perpCCW()));
+		}
+		gFloat closestDistToLine(const Coord2& line1, const Coord2& line2, const Coord2& point) {
+			return closestDistToLine(Ray(line1, (line2 - line1).normalize()), point);
+		}
 		AngleResult minAngle(const Coord2& vec1, const Coord2& vec2) {
 			const gFloat dot = vec1.dot(vec2);
 			if (almostZero(dot))

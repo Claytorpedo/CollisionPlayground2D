@@ -14,6 +14,10 @@ namespace geom {
 		Coord2 closestPointOnLine(const Ray& ray, const Coord2& point);
 		// Find the closest point on a line (made from two points) to a given point.
 		Coord2 closestPointOnLine(const Coord2& line1, const Coord2& line2, const Coord2& point);
+		// Find the closest distance to a line (made from a ray) to a given point.
+		gFloat closestDistToLine(const Ray& ray, const Coord2& point);
+		// Find the closest distance to a line (made from two points) to a given point.
+		gFloat closestDistToLine(const Coord2& line1, const Coord2& line2, const Coord2& point);
 
 		enum class AngleResult {
 			ACUTE,

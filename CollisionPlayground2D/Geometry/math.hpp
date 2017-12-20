@@ -39,18 +39,16 @@ namespace geom {
 		inline bool almostEquals(const Coord2& a, const Coord2& b, const gFloat tolerance = constants::EPSILON) {
 			return almostEquals(a.x, b.x, tolerance) && almostEquals(a.y, b.y, tolerance);
 		}
-		// Check if a value is between two bounds (inclusive).
+		// Clamp a value between two bounds (inclusive).
 		template<typename T>
 		inline T clamp(const T val, const T bound_one, const T bound_two) {
-			T min, max;
-			if (bound_one <= bound_two) {
-				min = bound_one;
-				max = bound_two;
-			} else {
-				max = bound_two;
-				min = bound_one;
-			}
-			return val < min ? min : val > max ? max : val;
+			return bound_one <= bound_two ? (val < bound_one ? bound_one : val > bound_two ? bound_two : val) :
+			                                (val < bound_two ? bound_two : val > bound_one ? bound_one : val);
+		}
+		// Check if a value is between two bounds (inclusive).
+		template<typename T>
+		inline bool isBetween(const T val, const T bound_one, const T bound_two) {
+			return bound_one <= bound_two ? bound_one <= val && val <= bound_two : bound_two <= val && val <= bound_one;
 		}
 	}
 }

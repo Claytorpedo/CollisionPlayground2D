@@ -3,21 +3,23 @@
 #include "units.hpp"
 #include "math.hpp"
 #include "constants.hpp"
+#include "debug_logger.hpp"
 
 #include "LineSegment.hpp"
 #include "Ray.hpp"
 #include "Shape.hpp"
 #include "ShapeContainer.hpp"
 #include "Rectangle.hpp"
+#include "Projection.hpp"
 
 namespace geom {
 	// ------------------------------- Point intersections --------------------------------------------------
 
 	bool intersects(const Rect& r, const Coord2& p) {
-		return (p.x >= (r.left()   - constants::EPSILON) && 
-			    p.x <= (r.right()  + constants::EPSILON) && 
-			    p.y >= (r.top()    - constants::EPSILON) && 
-			    p.y <= (r.bottom() + constants::EPSILON));
+		return (p.x >= (r.left()   - constants::EPSILON) &&
+		        p.x <= (r.right()  + constants::EPSILON) &&
+		        p.y >= (r.top()    - constants::EPSILON) &&
+		        p.y <= (r.bottom() + constants::EPSILON));
 	}
 	bool intersects(const LineSegment& l, const Coord2& p) {
 		// Check bounding box.
@@ -92,6 +94,22 @@ namespace geom {
 			(d2 == 0 && _is_on_segment(b.start, b.end, a.end))   ||
 			(d3 == 0 && _is_on_segment(a.start, a.end, b.start)) ||
 			(d4 == 0 && _is_on_segment(a.start, a.end, b.end));
+	}
+	// This is essentially just as fast as the output point version.
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l) {
+		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
+		if ((r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) ||
+			(r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)))
+			return false;
+
+		const Coord2 s = l.end - l.start;
+		const gFloat rxs = r.dir.cross(s);
+		if (math::almostZero(rxs))
+			return false; // Parallel lines.
+		const Coord2 qp = l.start - r.origin;
+		const Coord2 axis(r.dir.perpCCW());
+		//     [is in front of ray]             [is on the line segment]
+		return 0 <= qp.cross(s)*rxs && math::isBetween(axis.dot(r.origin), axis.dot(l.start), axis.dot(l.end));
 	}
 
 	// --------------------------- Intersections with output point ----------------------------------------------------
@@ -171,9 +189,9 @@ namespace geom {
 			return false;
 		}
 		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
-		if ( (r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) || 
-			 (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
-				return false;
+		if ((r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) ||
+		    (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
+			return false;
 
 		const Coord2 s = l.end - l.start;
 		const Coord2 qp = l.start - r.origin;
@@ -213,6 +231,25 @@ namespace geom {
 		}
 		return false;
 	}
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, Coord2& out_intersection) {
+		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
+		if ((r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) ||
+			(r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)))
+			return false;
+
+		const Coord2 s = l.end - l.start;
+		const gFloat rxs = r.dir.cross(s);
+		if (math::almostZero(rxs))
+			return false; // Parallel lines.
+		const Coord2 qp = l.start - r.origin;
+		const gFloat t = qp.cross(s) / rxs;
+		const gFloat u = qp.cross(r.dir) / rxs;
+		if (0 <= t && 0 <= u && u <= 1) { // In front of ray, and on line segment.
+			out_intersection = r.origin + t * r.dir;
+			return true;
+		}
+		return false;
+	}
 
 	// ------------------------------- Shape/primative intersections ----------------------------------------
 	bool intersects(const Rect& r, const LineSegment& l) {
@@ -232,5 +269,52 @@ namespace geom {
 		if (intersects(l, LineSegment(r.left(), r.bottom(), r.right(), r.bottom()))) // Bottom side.
 			return true;
 		return false;
+	}
+	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos) {
+		switch (s.type()) {
+		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos);
+		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos);
+		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos);
+		default:
+			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
+			return intersects(r, s.shape().toPoly(), pos);
+		}
+	}
+	bool intersects(const Ray& ray, const Rect& rect) {
+		if ((ray.dir.x == 0 || (ray.dir.x > 0 ? rect.right()  < ray.origin.x : rect.left() > ray.origin.x)) &&
+			(ray.dir.y == 0 || (ray.dir.y > 0 ? rect.bottom() < ray.origin.y : rect.top()  > ray.origin.y)))
+			return false; // The rectangle is behind the ray.
+		if (intersects(rect, ray.origin))
+			return true; // The ray's origin is in the rectangle.
+		if (ray.dir.x != 0.0f) {
+			if (intersects_ignore_parallel(ray, ray.dir.x > 0.0f ? LineSegment(rect.topLeft(), rect.bottomLeft()) : LineSegment(rect.topRight(), rect.bottomRight())))
+				return true;
+		}
+		if (ray.dir.y != 0.0f) {
+			if (intersects_ignore_parallel(ray, ray.dir.x > 0.0f ? LineSegment(rect.bottomLeft(), rect.bottomRight()) : LineSegment(rect.topLeft(), rect.topRight())))
+				return true;
+		}
+		return false;
+	}
+	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos) {
+		return intersects(ray, rect + pos);
+	}
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos) {
+		if ((r.dir.x == 0 || (r.dir.x > 0 ? pos.x + p.right()  < r.origin.x : pos.x + p.left() > r.origin.x)) &&
+			(r.dir.y == 0 || (r.dir.y > 0 ? pos.y + p.bottom() < r.origin.y : pos.y + p.top()  > r.origin.y)))
+			return false; // The bounding box for the polygon is behind the ray.
+		for (std::size_t k = p.size() - 1, i = 0; i < p.size(); k = i++) {
+			if (intersects_ignore_parallel(r, LineSegment(pos + p[k], pos + p[i])))
+				return true;
+		}
+		return false;
+	}
+	bool intersects(const Ray& r, const Circle& c, const Coord2& pos) {
+		if (math::closestDistToLine(r, pos + c.center) > c.radius)
+			return false; // Ray passes the circle.
+		const Coord2 originToCircle(pos + c.center - r.origin);
+		if (originToCircle.magnitude2() <= c.radius*c.radius)
+			return true; // The ray's origin is inside the circle.
+		return originToCircle.dot(r.dir) >= 0.0f; // Check if the circle is in front of the ray.
 	}
 }

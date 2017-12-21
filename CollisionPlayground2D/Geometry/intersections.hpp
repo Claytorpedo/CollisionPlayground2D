@@ -10,6 +10,8 @@ namespace geom {
 	class Ray;
 	class ShapeContainer;
 	class Rect;
+	class Polygon;
+	class Circle;
 
 	// Intersections with points. No need to output a point of collision. -------------------------------------------------
 
@@ -19,8 +21,8 @@ namespace geom {
 
 	// Intersection functions that return true/false, and do not find the specific point of collision. --------------------
 
-	// These are optimized for speed, saving math by not calculating exactly where the collision occurred.
 	bool intersects(const LineSegment& a, const LineSegment& b);
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l); // Parallel lines are not considered intersecting.
 
 	// Intersection functions that also output the point of collision, if a collision occurred. ----------------------------
 	
@@ -28,11 +30,18 @@ namespace geom {
 	bool intersects(const LineSegment& a, const LineSegment& b, Coord2& out_intersection);
 	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to the ray's origin.
 	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection);
+	// Parallel lines are not considered intersecting.
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, Coord2& out_intersection);
 
 	// Intersections of shapes with primatives -----------------------------------------------------------------------------
 
 	// Intersection between a rectangle and a line segment. Considered intersecting if they touch.
 	bool intersects(const Rect& r, const LineSegment& l);
+	bool intersects(const Ray& ray, const Rect& rect);
+	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos);
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos=Coord2(0, 0));
+	bool intersects(const Ray& r, const Circle& circle, const Coord2& pos=Coord2(0, 0));
+	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos=Coord2(0,0));
 }
 
 #endif // INCLUDE_GEOM_INTERSECTIONS_HPP

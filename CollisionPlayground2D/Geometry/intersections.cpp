@@ -262,16 +262,8 @@ namespace geom {
 			return true;
 		return false;
 	}
-	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos) {
-		switch (s.type()) {
-		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos);
-		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos);
-		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos);
-		default:
-			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
-			return intersects(r, s.shape().toPoly(), pos);
-		}
-	}
+
+	// ------------------------------- Ray and rectangle intersections ----------------------------------------
 	bool intersects(const Ray& ray, const Rect& rect) {
 		if ((ray.dir.x == 0 || (ray.dir.x > 0 ? rect.right()  < ray.origin.x : rect.left() > ray.origin.x)) &&
 			(ray.dir.y == 0 || (ray.dir.y > 0 ? rect.bottom() < ray.origin.y : rect.top()  > ray.origin.y)))
@@ -291,6 +283,25 @@ namespace geom {
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos) {
 		return intersects(ray, rect + pos);
 	}
+	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos, gFloat& out_t) {
+		if ((ray.dir.x == 0 || (ray.dir.x > 0 ? rect.right()  < ray.origin.x : rect.left() > ray.origin.x)) &&
+			(ray.dir.y == 0 || (ray.dir.y > 0 ? rect.bottom() < ray.origin.y : rect.top()  > ray.origin.y)))
+			return false; // The rectangle is behind the ray.
+		if (intersects(rect, ray.origin)) {
+			out_t = 0;
+			return true; // The ray's origin is in the rectangle.
+		}
+		if (ray.dir.x != 0.0f) {
+			if (intersects_ignore_parallel(ray, ray.dir.x > 0.0f ? LineSegment(rect.topLeft(), rect.bottomLeft()) : LineSegment(rect.topRight(), rect.bottomRight()), out_t))
+				return true;
+		}
+		if (ray.dir.y != 0.0f) {
+			if (intersects_ignore_parallel(ray, ray.dir.x > 0.0f ? LineSegment(rect.bottomLeft(), rect.bottomRight()) : LineSegment(rect.topLeft(), rect.topRight()), out_t))
+				return true;
+		}
+		return false;
+	}
+	// --------------------------------- Ray and polygon intersections -----------------------------------------
 	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos) {
 		if ((r.dir.x == 0 || (r.dir.x > 0 ? pos.x + p.right()  < r.origin.x : pos.x + p.left() > r.origin.x)) &&
 			(r.dir.y == 0 || (r.dir.y > 0 ? pos.y + p.bottom() < r.origin.y : pos.y + p.top()  > r.origin.y)))
@@ -301,6 +312,7 @@ namespace geom {
 		}
 		return false;
 	}
+	// --------------------------------- Ray and circle intersections ------------------------------------------
 	bool intersects(const Ray& r, const Circle& c, const Coord2& pos) {
 		if (math::closestDistToLine(r, pos + c.center) > c.radius)
 			return false; // Ray passes the circle.
@@ -309,4 +321,89 @@ namespace geom {
 			return true; // The ray's origin is inside the circle.
 		return originToCircle.dot(r.dir) >= 0.0f; // Check if the circle is in front of the ray.
 	}
+	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_t) {
+		const Coord2 originToCircle(c.center + pos - r.origin);
+		const gFloat r2(c.radius*c.radius);
+		const gFloat overlap(originToCircle.magnitude2() - r2);
+		if (overlap <= 0.0f) {
+			out_t = 0;
+			return true; // The ray's origin is inside the circle.
+		}
+		const gFloat proj(r.dir.dot(originToCircle));
+		if (proj < 0.0f)
+			return false; // Circle is behind the ray.
+		const gFloat d(proj*proj - overlap); // Solve quadratic.
+		if (d < 0)
+			return false; // Ray misses.
+		out_t = proj - std::sqrt(d);
+		return true;
+	}
+	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_t, Coord2& out_norm) {
+		if (!intersects(r, c, pos, out_t))
+			return false;
+		out_norm = out_t == 0.0f ? Coord2(0, 0) : ((r.origin + r.dir*out_t) - (c.center + pos)).normalize();
+		return true;
+	}
+	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_enter, gFloat& out_exit) {
+		const Coord2 originToCircle(c.center + pos - r.origin);
+		const gFloat proj(r.dir.dot(originToCircle));
+		if (proj < -c.radius)
+			return false; // Circle is behind the ray.
+		const gFloat overlap(originToCircle.magnitude2() - c.radius*c.radius);
+		const gFloat d(proj*proj - overlap); // Solve quadratic.
+		if (d < 0)
+			return false; // Ray misses.
+		const gFloat sqrt_d(std::sqrt(d));
+		const gFloat t(proj - sqrt_d);
+		if (t < 0) { // First intersect is behind the ray. Check if the ray's origin is inside the circle.
+			const gFloat t2(proj + sqrt_d);
+			if (t2 < 0)
+				return false; // Circle is behind the ray.
+			// Ray starts inside the circle.
+			out_enter = 0.0f;
+			out_exit = t2;
+			return true;
+		}
+		out_enter = t;
+		out_exit = proj + sqrt_d;
+		return true;
+	}
+	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit) {
+		if (!intersects(r, c, pos, out_enter, out_exit))
+			return false;
+		out_norm_enter = out_enter == 0.0f ? Coord2(0, 0) : ((r.origin + r.dir*out_enter) - (c.center + pos)).normalize();
+		out_norm_exit = ((r.origin + r.dir*out_exit) - (c.center + pos)).normalize();
+		return true;
+	}
+	// ----------------------------- Ray and shape container intersections --------------------------------------
+	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos) {
+		switch (s.type()) {
+		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos);
+		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos);
+		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos);
+		default:
+			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
+			return intersects(r, s.shape().toPoly(), pos);
+		}
+	}/*
+	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_t) {
+		switch (s.type()) {
+		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos, out_t);
+		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos, out_t);
+		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos, out_t);
+		default:
+			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
+			return intersects(r, s.shape().toPoly(), pos, out_t);
+		}
+	}
+	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_enter, gFloat& out_exit) {
+		switch (s.type()) {
+		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos, out_enter, out_exit);
+		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos, out_enter, out_exit);
+		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos, out_enter, out_exit);
+		default:
+			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
+			return intersects(r, s.shape().toPoly(), pos, out_enter, out_exit);
+		}
+	}*/
 }

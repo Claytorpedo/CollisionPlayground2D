@@ -20,7 +20,7 @@ namespace geom {
 		// Translate by a vector.
 		inline Rect& operator+=(const Coord2& c) { x += c.x; y += c.y; return *this; }
 		// Translate by a vector.
-		inline Rect operator+(const Coord2& c) { return Rect(x + c.x, y + c.y, w, h); }
+		inline Rect operator+(const Coord2& c) const { return Rect(x + c.x, y + c.y, w, h); }
 
 		inline Coord2 position() const { return Coord2(x, y); }
 		inline Coord2 center()   const { return Coord2(x + w*0.5f, y + h*0.5f); }

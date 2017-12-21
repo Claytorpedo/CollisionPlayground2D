@@ -16,6 +16,7 @@
 /* --------------------------------------------------- */
 
 #include <iostream>
+#include <string>
 #define DBG_ERR(x)  do { std::cerr << ERR_COL  "ERROR:"   RST_COL " " << x << "\n"; } while (0)
 #define DBG_WARN(x) do { std::cerr << WARN_COL "WARNING:" RST_COL " " << x << "\n"; } while (0)
 #define DBG_LOG(x)  do { std::cout << LOG_COL  "LOG:"     RST_COL " " << x << "\n"; } while (0)
@@ -24,9 +25,10 @@
 // Streams are "LOG", "WARN", and "ERR".
 #define DBG_CHECK(cond, type, str) do { \
 	if (cond) {                         \
-		if (type == "LOG") {            \
+		std::string t(type);            \
+		if (t == "LOG") {               \
 			DBG_LOG(str);               \
-		} else if (type == "WARN") {    \
+		} else if (t == "WARN") {       \
 			DBG_WARN(str);              \
 		} else {                        \
 			DBG_ERR(str);               \

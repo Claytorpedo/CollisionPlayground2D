@@ -28,15 +28,16 @@ namespace geom {
 	
 	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to a's start point.
 	bool intersects(const LineSegment& a, const LineSegment& b, Coord2& out_intersection);
-	// In the case of collinear line segments, out_intersection is set to the closest point of overlap to the ray's origin.
-	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection);
+	// In the case of collinear line segments, out_t is set to the closest distance of overlap to the ray's origin.
+	bool intersects(const Ray& r, const LineSegment& l, gFloat& out_t);
 	// Parallel lines are not considered intersecting.
-	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, Coord2& out_intersection);
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, gFloat& out_t);
 
 	// Intersections of shapes with primatives -----------------------------------------------------------------------------
 
 	// Intersection between a rectangle and a line segment. Considered intersecting if they touch.
 	bool intersects(const Rect& r, const LineSegment& l);
+
 	bool intersects(const Ray& ray, const Rect& rect);
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos);
 	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos=Coord2(0, 0));

@@ -179,15 +179,7 @@ namespace geom {
 		}
 		return false;
 	}
-	bool intersects(const Ray& r, const LineSegment& l, Coord2& out_intersection) {
-		// Check if the line segment is really a point.
-		if (l.isPoint()) {
-			if (intersects(r, l.start)) {
-				out_intersection = l.start;
-				return true;
-			}
-			return false;
-		}
+	bool intersects(const Ray& r, const LineSegment& l, gFloat& out_t) {
 		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
 		if ((r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) ||
 		    (r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)) )
@@ -209,14 +201,14 @@ namespace geom {
 					// Get closest intersept (to origin) for the ray.
 					// Either the interval of overlap happens somewhere after origin, or at origin.
 					const gFloat t1 = t0 + s_dot_r / r2;
-					out_intersection = t1 > 0.0f ? r.origin + t1*r.dir : r.origin;
+					out_t = t1 > 0.0f ? t1: 0.0f;
 					return true;
 				}
 			} else {
 				if (0 <= (t0 + s_dot_r / r2)) {
 					// Get closest intersect (to origin) for the ray.
 					// Either the interval of overlap happens somewhere after origin, or at origin.
-					out_intersection = t0 > 0.0f ? r.origin + t0*r.dir : r.origin;
+					out_t = t0 > 0.0f ? t0 : 0.0f;
 					return true;
 				}
 			}
@@ -226,12 +218,12 @@ namespace geom {
 		const gFloat t = qp.cross(s) / rxs;
 		const gFloat u = qpxr / rxs;
 		if (0 <= t && 0 <= u && u <= 1) {
-			out_intersection = r.origin + t*r.dir;
+			out_t = t;
 			return true;
 		}
 		return false;
 	}
-	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, Coord2& out_intersection) {
+	bool intersects_ignore_parallel(const Ray& r, const LineSegment& l, gFloat& out_t) {
 		// Bounds test. Either start or end of line must be either at the ray's origin, or past the ray's origin in the ray's direction.
 		if ((r.dir.y >= 0 ? (l.start.y < r.origin.y && l.end.y < r.origin.y) : (l.start.y > r.origin.y && l.end.y > r.origin.y)) ||
 			(r.dir.x >= 0 ? (l.start.x < r.origin.x && l.end.x < r.origin.x) : (l.start.x > r.origin.x && l.end.x > r.origin.x)))
@@ -245,7 +237,7 @@ namespace geom {
 		const gFloat t = qp.cross(s) / rxs;
 		const gFloat u = qp.cross(r.dir) / rxs;
 		if (0 <= t && 0 <= u && u <= 1) { // In front of ray, and on line segment.
-			out_intersection = r.origin + t * r.dir;
+			out_t = t;
 			return true;
 		}
 		return false;

@@ -562,94 +562,77 @@ TEST_CASE("Line segment intersections with coordinate of intersection output.", 
 }
 
 TEST_CASE("Ray and line segment intersections with coordinate of intersection output.", "[isect][ray][lineseg]") {
-	Coord2 out_p;
+	geom::gFloat out_t;
 	SECTION("Ray and a point.") {
 		Ray r(Coord2(0, 0), Coord2(1, 2).normalize());
-		REQUIRE(geom::intersects(r, LineSegment(1, 2, 1, 2), out_p));
-		CHECK(out_p.x == ApproxEps(1));
-		CHECK(out_p.y == ApproxEps(2));
-		REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, 0), out_p));
-		CHECK(out_p.x == ApproxEps(0));
-		CHECK(out_p.y == ApproxEps(0));
-		CHECK_FALSE(geom::intersects(r, LineSegment(1, 1.5f, 1, 1.5f), out_p));
+		REQUIRE(geom::intersects(r, LineSegment(1, 2, 1, 2), out_t));
+		CHECK(out_t == ApproxEps(std::sqrt(5)));
+		REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, 0), out_t));
+		CHECK(out_t == ApproxEps(0));
+		CHECK_FALSE(geom::intersects(r, LineSegment(1, 1.5f, 1, 1.5f), out_t));
 	}
 	SECTION("Parallel line segments and rays.") {
 		SECTION("Horizontal line segments and rays.") {
 			SECTION("Right ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, 0, -10, 0), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(5, 0, 1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(1));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(50, 0, 100, 0), out_p));
-				CHECK(out_p.x == ApproxEps(50));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(50, 0.1f, 100, 0.1f), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, 0, -10, 0), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(5, 0, 1, 0), out_t));
+				CHECK(out_t == ApproxEps(1));
+				REQUIRE(geom::intersects(r, LineSegment(50, 0, 100, 0), out_t));
+				CHECK(out_t == ApproxEps(50));
+				CHECK_FALSE(geom::intersects(r, LineSegment(50, 0.1f, 100, 0.1f), out_t));
 			}
 			SECTION("Left ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(10, 10, -100, 10), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(10));
-				REQUIRE(geom::intersects(r, LineSegment(-100, 10, -1000, 10), out_p));
-				CHECK(out_p.x == ApproxEps(-100));
-				CHECK(out_p.y == ApproxEps(10));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-100, 10.1f, -1000, 10.1f), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(10, 10, -100, 10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(-100, 10, -1000, 10), out_t));
+				CHECK(out_t == ApproxEps(90));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-100, 10.1f, -1000, 10.1f), out_t));
 			}
 		}
 		SECTION("Vertical line segments and rays.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, 1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(0, -0.1f, -10, 0), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(0, 5, 0, 1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(1));
-				REQUIRE(geom::intersects(r, LineSegment(0, 50, 0, 100), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(50));
-				CHECK_FALSE(geom::intersects(r, LineSegment(0.1f, 50, 0.1f, 100), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, 1), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(0, -0.1f, -10, 0), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(0, 5, 0, 1), out_t));
+				CHECK(out_t == ApproxEps(1));
+				REQUIRE(geom::intersects(r, LineSegment(0, 50, 0, 100), out_t));
+				CHECK(out_t == ApproxEps(50));
+				CHECK_FALSE(geom::intersects(r, LineSegment(0.1f, 50, 0.1f, 100), out_t));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(0, -1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(10, 10, 10, -100), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-10));
-				REQUIRE(geom::intersects(r, LineSegment(10, -100, 10, -1000), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-100));
-				CHECK_FALSE(geom::intersects(r, LineSegment(10.1f, -100, 10.1f, -1000), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(10, 10, 10, -100), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(10, -100, 10, -1000), out_t));
+				CHECK(out_t == ApproxEps(90));
+				CHECK_FALSE(geom::intersects(r, LineSegment(10.1f, -100, 10.1f, -1000), out_t));
 			}
 		}
 		SECTION("Diagonal line segments and rays.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, -1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, -0.1f, -10, -10), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(5, 5, 1, 1), out_p));
-				CHECK(out_p.x == ApproxEps(1));
-				CHECK(out_p.y == ApproxEps(1));
-				REQUIRE(geom::intersects(r, LineSegment(50, 50, 100, 100), out_p));
-				CHECK(out_p.x == ApproxEps(50));
-				CHECK(out_p.y == ApproxEps(50));
-				CHECK_FALSE(geom::intersects(r, LineSegment(50.1f, 50, 100.1f, 100), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, -1), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, -0.1f, -10, -10), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(5, 5, 1, 1), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(2)));
+				REQUIRE(geom::intersects(r, LineSegment(50, 50, 100, 100), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(5000)));
+				CHECK_FALSE(geom::intersects(r, LineSegment(50.1f, 50, 100.1f, 100), out_t));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(10, 10), Coord2(-1, 2).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(15, 0, 0, 30), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(10));
-				REQUIRE(geom::intersects(r, LineSegment(0, 30, -35, 100), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(30));
-				CHECK_FALSE(geom::intersects(r, LineSegment(0.1f, 30, -34.9f, 100), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(15, 0, 0, 30), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(0, 30, -35, 100), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(500)));
+				CHECK_FALSE(geom::intersects(r, LineSegment(0.1f, 30, -34.9f, 100), out_t));
 			}
 		}
 	}
@@ -657,77 +640,62 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 		SECTION("Horizontal ray.") {
 			SECTION("Rightwards ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, -1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(0, 10, 0, -10), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, 10, -0.1f, 10), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(1000, 10, 1000, -10), out_p));
-				CHECK(out_p.x == ApproxEps(1000));
-				CHECK(out_p.y == ApproxEps(0));;
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, 0, -1), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(0, 10, 0, -10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, 10, -0.1f, 10), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(1000, 10, 1000, -10), out_t));
+				CHECK(out_t == ApproxEps(1000));
 			}
 			SECTION("Leftwards ray not from origin.") {
 				Ray r = Ray(Coord2(-10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(-10, -10, -10, 10), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-9.9f, -10, -9.9f, 10), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(-1000, 10, -1000, -20), out_p));
-				CHECK(out_p.x == ApproxEps(-1000));
-				CHECK(out_p.y == ApproxEps(-10));
+				REQUIRE(geom::intersects(r, LineSegment(-10, -10, -10, 10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-9.9f, -10, -9.9f, 10), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(-1000, 10, -1000, -20), out_t));
+				CHECK(out_t == ApproxEps(990));
 			}
 		}
 		SECTION("Vertical ray.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(10, 0, -10, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(10, -0.1f, 10, -0.1f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(10, 1000, -10, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(1000));
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, -1, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(10, 0, -10, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(10, -0.1f, 10, -0.1f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(10, 1000, -10, 1000), out_t));
+				CHECK(out_t == ApproxEps(1000));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(-10, -10), Coord2(0, -1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(10, -10, -10, -10), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects(r, LineSegment(10, -9.9f, -10, -9.9f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(10, -1000, -10, -1000), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-1000));
+				REQUIRE(geom::intersects(r, LineSegment(10, -10, -10, -10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(10, -9.9f, -10, -9.9f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(10, -1000, -10, -1000), out_t));
+				CHECK(out_t == ApproxEps(990));
 			}
 		}
 		SECTION("Diagonal ray.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 0, -5, 5), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(5, -5, -5, 5), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(5, -5, 0.1f, -0.1f), out_p));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-5, 4.9f, 5, 5.1f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(0, 1000, 1000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(500));
+				REQUIRE(geom::intersects(r, LineSegment(0, 0, -5, 5), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(5, -5, -5, 5), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(5, -5, 0.1f, -0.1f), out_t));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-5, 4.9f, 5, 5.1f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(0, 1000, 1000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(500000)));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(1, -2).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(-10, -5, 0, 0), out_p));
-				CHECK(out_p.x == ApproxEps(-4));
-				CHECK(out_p.y == ApproxEps(-2));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 5.1f, 0, 15.1f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(0, -2000, 4000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(796));
-				CHECK(out_p.y == ApproxEps(-1602));
+				REQUIRE(geom::intersects(r, LineSegment(-10, -5, 0, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(180)));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 5.1f, 0, 15.1f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(0, -2000, 4000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(806*806 + 1612*1612)));
 			}
 		}
 	}
@@ -735,138 +703,123 @@ TEST_CASE("Ray and line segment intersections with coordinate of intersection ou
 		SECTION("Horizontal ray.") {
 			SECTION("Right ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, -1, 1000, 1), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(1000, 1, 0, -1), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(0, -4000, 1, 4000), out_p));
-				CHECK(out_p.x == ApproxEps(0.5f));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-2, -4000, 1, 4000), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(0, -1, 1000, 1), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects(r, LineSegment(1000, 1, 0, -1), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects(r, LineSegment(0, -4000, 1, 4000), out_t));
+				CHECK(out_t == ApproxEps(0.5f));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-2, -4000, 1, 4000), out_t));
 			}
 			SECTION("Left ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(0, 20, -20, -40), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				REQUIRE(geom::intersects(r, LineSegment(-65, 140, 15, -20), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-64.9f, 140, 15.1f, -20), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(0, 20, -20, -40), out_t));
+				CHECK(out_t == ApproxEps(20));
+				REQUIRE(geom::intersects(r, LineSegment(-65, 140, 15, -20), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-64.9f, 140, 15.1f, -20), out_t));
 			}
 		}
 		SECTION("Vertical ray.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(-1, 0, 1, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(500));
-				REQUIRE(geom::intersects(r, LineSegment(1, 1000, -1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(500));
-				REQUIRE(geom::intersects(r, LineSegment(-4000, 0, 4000, 1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0.5f));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-4000, -2, 4000, 1), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(-1, 0, 1, 1000), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects(r, LineSegment(1, 1000, -1, 0), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects(r, LineSegment(-4000, 0, 4000, 1), out_t));
+				CHECK(out_t == ApproxEps(0.5f));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-4000, -2, 4000, 1), out_t));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(20, 0, -40, -20), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				REQUIRE(geom::intersects(r, LineSegment(100, -85, -20, 15), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects(r, LineSegment(140, -64.9f, -20, 15.1f), out_p));
+				REQUIRE(geom::intersects(r, LineSegment(20, 0, -40, -20), out_t));
+				CHECK(out_t == ApproxEps(20));
+				REQUIRE(geom::intersects(r, LineSegment(100, -85, -20, 15), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects(r, LineSegment(140, -64.9f, -20, 15.1f), out_t));
 			}
 		}
 		SECTION("Diagonal ray.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(-10, 0, 10, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects(r, LineSegment(800, 0, 800, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(800));
-				CHECK(out_p.y == ApproxEps(800));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, -10, -0.1f, -10), out_p));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 50, 20, 50.1f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(10, 100, 100, 55), out_p));
-				CHECK(out_p.x == ApproxEps(70));
-				CHECK(out_p.y == ApproxEps(70));
+				REQUIRE(geom::intersects(r, LineSegment(-10, 0, 10, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects(r, LineSegment(800, 0, 800, 1000), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(1280000)));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-0.1f, -10, -0.1f, -10), out_t));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 50, 20, 50.1f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(10, 100, 100, 55), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(9800)));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(1, -2).normalize());
-				REQUIRE(geom::intersects(r, LineSegment(-10, -5, 0, 0), out_p));
-				CHECK(out_p.x == ApproxEps(-4));
-				CHECK(out_p.y == ApproxEps(-2));
-				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 5.1f, 0, 15.1f), out_p));
-				REQUIRE(geom::intersects(r, LineSegment(0, -2000, 4000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(796));
-				CHECK(out_p.y == ApproxEps(-1602));
+				REQUIRE(geom::intersects(r, LineSegment(-10, -5, 0, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(180)));
+				CHECK_FALSE(geom::intersects(r, LineSegment(-20, 5.1f, 0, 15.1f), out_t));
+				REQUIRE(geom::intersects(r, LineSegment(0, -2000, 4000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(806 * 806 + 1612 * 1612)));
 			}
 		}
 	}
 }
 
 TEST_CASE("Ray and line segment intersections, ignoring parallel intersections, with coordinate of intersection output.", "[isect][ray][lineseg]") {
-	Coord2 out_p;
+	geom::gFloat out_t;
 	SECTION("Ray and a point.") {
 		Ray r(Coord2(0, 0), Coord2(1, 2).normalize());
-		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(1, 2, 1, 2), out_p));
-		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, 0), out_p));
-		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(1, 1.5f, 1, 1.5f), out_p));
+		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(1, 2, 1, 2), out_t));
+		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, 0), out_t));
+		CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(1, 1.5f, 1, 1.5f), out_t));
 	}
 	SECTION("Parallel line segments and rays.") {
 		SECTION("Horizontal line segments and rays.") {
 			SECTION("Right ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, 0), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, 0, -10, 0), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, 0, 1, 0), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 0, 100, 0), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 0.1f, 100, 0.1f), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, 0), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, 0, -10, 0), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, 0, 1, 0), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 0, 100, 0), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 0.1f, 100, 0.1f), out_t));
 			}
 			SECTION("Left ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(-1, 0).normalize());
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, 10, -100, 10), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-100, 10, -1000, 10), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-100, 10.1f, -1000, 10.1f), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, 10, -100, 10), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-100, 10, -1000, 10), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-100, 10.1f, -1000, 10.1f), out_t));
 			}
 		}
 		SECTION("Vertical line segments and rays.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, 1), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, -0.1f, -10, 0), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 5, 0, 1), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 50, 0, 100), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0.1f, 50, 0.1f, 100), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, 1), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, -0.1f, -10, 0), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 5, 0, 1), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 50, 0, 100), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0.1f, 50, 0.1f, 100), out_t));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(0, -1).normalize());
 				LineSegment s(10, 10, 10, -100);
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(2, 0, -10, 6), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -100, 10, -1000), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10.1f, -100, 10.1f, -1000), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(2, 0, -10, 6), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -100, 10, -1000), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10.1f, -100, 10.1f, -1000), out_t));
 			}
 		}
 		SECTION("Diagonal line segments and rays.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, -1), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, -0.1f, -10, -10), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, 5, 1, 1), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 50, 100, 100), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50.1f, 50, 100.1f, 100), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, -1), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, -0.1f, -10, -10), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, 5, 1, 1), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50, 50, 100, 100), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(50.1f, 50, 100.1f, 100), out_t));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(10, 10), Coord2(-1, 2).normalize());
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(15, 0, 0, 30), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 30, -35, 100), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0.1f, 30, -34.9f, 100), out_p));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(15, 0, 0, 30), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0, 30, -35, 100), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(0.1f, 30, -34.9f, 100), out_t));
 			}
 		}
 	}
@@ -874,77 +827,62 @@ TEST_CASE("Ray and line segment intersections, ignoring parallel intersections, 
 		SECTION("Horizontal ray.") {
 			SECTION("Rightwards ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, -1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 10, 0, -10), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, 10, -0.1f, 10), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1000, 10, 1000, -10), out_p));
-				CHECK(out_p.x == ApproxEps(1000));
-				CHECK(out_p.y == ApproxEps(0));;
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, 0, -1), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 10, 0, -10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, 10, -0.1f, 10), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1000, 10, 1000, -10), out_t));
+				CHECK(out_t == ApproxEps(1000));
 			}
 			SECTION("Leftwards ray not from origin.") {
 				Ray r = Ray(Coord2(-10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -10, -10, 10), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-9.9f, -10, -9.9f, 10), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-1000, 10, -1000, -20), out_p));
-				CHECK(out_p.x == ApproxEps(-1000));
-				CHECK(out_p.y == ApproxEps(-10));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -10, -10, 10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-9.9f, -10, -9.9f, 10), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-1000, 10, -1000, -20), out_t));
+				CHECK(out_t == ApproxEps(990));
 			}
 		}
 		SECTION("Vertical ray.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 0, -10, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -0.1f, 10, -0.1f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 1000, -10, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(1000));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -1, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 0, -10, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -0.1f, 10, -0.1f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 1000, -10, 1000), out_t));
+				CHECK(out_t == ApproxEps(1000));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(-10, -10), Coord2(0, -1).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, -10, -10, -10), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -9.9f, -10, -9.9f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, -1000, -10, -1000), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-1000));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, -10, -10, -10), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(10, -9.9f, -10, -9.9f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, -1000, -10, -1000), out_t));
+				CHECK(out_t == ApproxEps(990));
 			}
 		}
 		SECTION("Diagonal ray.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -5, 5), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(5, -5, -5, 5), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, -5, 0.1f, -0.1f), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-5, 4.9f, 5, 5.1f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 1000, 1000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(500));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 0, -5, 5), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(5, -5, -5, 5), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(5, -5, 0.1f, -0.1f), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-5, 4.9f, 5, 5.1f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 1000, 1000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(500000)));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(1, -2).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -5, 0, 0), out_p));
-				CHECK(out_p.x == ApproxEps(-4));
-				CHECK(out_p.y == ApproxEps(-2));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 5.1f, 0, 15.1f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -2000, 4000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(796));
-				CHECK(out_p.y == ApproxEps(-1602));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -5, 0, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(180)));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 5.1f, 0, 15.1f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -2000, 4000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(806 * 806 + 1612 * 1612)));
 			}
 		}
 	}
@@ -952,77 +890,62 @@ TEST_CASE("Ray and line segment intersections, ignoring parallel intersections, 
 		SECTION("Horizontal ray.") {
 			SECTION("Right ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 0).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -1, 1000, 1), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1000, 1, 0, -1), out_p));
-				CHECK(out_p.x == ApproxEps(500));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -4000, 1, 4000), out_p));
-				CHECK(out_p.x == ApproxEps(0.5f));
-				CHECK(out_p.y == ApproxEps(0));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-2, -4000, 1, 4000), out_p));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -1, 1000, 1), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1000, 1, 0, -1), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -4000, 1, 4000), out_t));
+				CHECK(out_t == ApproxEps(0.5f));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-2, -4000, 1, 4000), out_t));
 			}
 			SECTION("Left ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 20, -20, -40), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-65, 140, 15, -20), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-64.9f, 140, 15.1f, -20), out_p));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, 20, -20, -40), out_t));
+				CHECK(out_t == ApproxEps(20));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-65, 140, 15, -20), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-64.9f, 140, 15.1f, -20), out_t));
 			}
 		}
 		SECTION("Vertical ray.") {
 			SECTION("Down ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(0, 1).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-1, 0, 1, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(500));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1, 1000, -1, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(500));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-4000, 0, 4000, 1), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0.5f));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-4000, -2, 4000, 1), out_p));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-1, 0, 1, 1000), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(1, 1000, -1, 0), out_t));
+				CHECK(out_t == ApproxEps(500));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-4000, 0, 4000, 1), out_t));
+				CHECK(out_t == ApproxEps(0.5f));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-4000, -2, 4000, 1), out_t));
 			}
 			SECTION("Up ray not from origin.") {
 				Ray r(Coord2(10, -10), Coord2(-1, 0).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(20, 0, -40, -20), out_p));
-				CHECK(out_p.x == ApproxEps(-10));
-				CHECK(out_p.y == ApproxEps(-10));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(100, -85, -20, 15), out_p));
-				CHECK(out_p.x == ApproxEps(10));
-				CHECK(out_p.y == ApproxEps(-10));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(140, -64.9f, -20, 15.1f), out_p));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(20, 0, -40, -20), out_t));
+				CHECK(out_t == ApproxEps(20));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(100, -85, -20, 15), out_t));
+				CHECK(out_t == ApproxEps(0));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(140, -64.9f, -20, 15.1f), out_t));
 			}
 		}
 		SECTION("Diagonal ray.") {
 			SECTION("Diagonal ray from origin.") {
 				Ray r(Coord2(0, 0), Coord2(1, 1).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, 0, 10, 0), out_p));
-				CHECK(out_p.x == ApproxEps(0));
-				CHECK(out_p.y == ApproxEps(0));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(800, 0, 800, 1000), out_p));
-				CHECK(out_p.x == ApproxEps(800));
-				CHECK(out_p.y == ApproxEps(800));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, -10, -0.1f, -10), out_p));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 50, 20, 50.1f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 100, 100, 55), out_p));
-				CHECK(out_p.x == ApproxEps(70));
-				CHECK(out_p.y == ApproxEps(70));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, 0, 10, 0), out_t));
+				CHECK(out_t == ApproxEps(0));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(800, 0, 800, 1000), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(1280000)));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-0.1f, -10, -0.1f, -10), out_t));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 50, 20, 50.1f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(10, 100, 100, 55), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(9800)));
 			}
 			SECTION("Diagonal ray not from origin.") {
 				Ray r(Coord2(-10, 10), Coord2(1, -2).normalize());
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -5, 0, 0), out_p));
-				CHECK(out_p.x == ApproxEps(-4));
-				CHECK(out_p.y == ApproxEps(-2));
-				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 5.1f, 0, 15.1f), out_p));
-				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -2000, 4000, 0), out_p));
-				CHECK(out_p.x == ApproxEps(796));
-				CHECK(out_p.y == ApproxEps(-1602));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(-10, -5, 0, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(180)));
+				CHECK_FALSE(geom::intersects_ignore_parallel(r, LineSegment(-20, 5.1f, 0, 15.1f), out_t));
+				REQUIRE(geom::intersects_ignore_parallel(r, LineSegment(0, -2000, 4000, 0), out_t));
+				CHECK(out_t == ApproxEps(std::sqrt(806 * 806 + 1612 * 1612)));
 			}
 		}
 	}

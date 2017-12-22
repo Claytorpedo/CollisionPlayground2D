@@ -1220,7 +1220,6 @@ TEST_CASE("Ray and circle intersections, with output distance and normal to inte
 		expected_norm = (r.origin + r.dir*(std::sqrt(2) - 1) - Coord2(2, 2)).normalize();
 		CHECK(out_norm.x == ApproxEps(expected_norm.x));
 		CHECK(out_norm.y == ApproxEps(expected_norm.y));
-		CHECK(geom::intersects(r, Circle(1), Coord2(11.4f, 10), out_t, out_norm));
 	}
 }
 TEST_CASE("Ray and circle intersections, with output distance to both intersection points.", "[isect][ray][circle]") {
@@ -1290,6 +1289,70 @@ TEST_CASE("Ray and circle intersections, with output distance to both intersecti
 		CHECK(geom::intersects(r, Circle(1), Coord2(8.6f, 10), out_enter, out_exit));
 		CHECK(out_enter == ApproxEps(std::sqrt(8.2f*8.2f*2.0f)));
 		CHECK(out_exit == ApproxEps(std::sqrt(8.4f*8.4f*2.0f)));
+	}
+}
+TEST_CASE("Ray and circle intersections, with output distance and normals to both intersection points.", "[isect][ray][circle]") {
+	geom::gFloat out_enter, out_exit;
+	Coord2 out_norm_enter, out_norm_exit;
+	SECTION("The circle is behind the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-1.1f, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-0.1f, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, -0.1f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+	}
+	SECTION("The circle is beside the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, 1.1f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10, 1.1f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10, -1.1f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-0.71, 0.71), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(1, 2.5f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(9.79f, 11.21f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10.21f, 8.79f), out_enter, out_norm_enter, out_exit, out_norm_exit));
+	}
+	SECTION("The ray's origin is inside or touches the circle.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK(geom::intersects(r, Circle(1), Coord2(-1, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK(out_enter == ApproxEps(0));
+		CHECK(out_exit == ApproxEps(0));
+		CHECK(out_norm_enter.x == ApproxEps(0));
+		CHECK(out_norm_enter.y == ApproxEps(0));
+		CHECK(out_norm_exit.x == ApproxEps(1));
+		CHECK(out_norm_exit.y == ApproxEps(0));
+		CHECK(geom::intersects(r, Circle(1), Coord2(0, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK(out_enter == ApproxEps(0));
+		CHECK(out_exit == ApproxEps(1));
+		CHECK(out_norm_enter.x == ApproxEps(0));
+		CHECK(out_norm_enter.y == ApproxEps(0));
+		CHECK(out_norm_exit.x == ApproxEps(1));
+		CHECK(out_norm_exit.y == ApproxEps(0));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK(geom::intersects(r, Circle(std::sqrt(2) + geom::constants::EPSILON), Coord2(0, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK(out_enter == ApproxEps(0));
+		CHECK(out_exit == ApproxEps(geom::constants::EPSILON));
+	}
+	SECTION("The circle is in front of the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK(geom::intersects(r, Circle(1), Coord2(1.1f, 0), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK(out_enter == ApproxEps(0.1f));
+		CHECK(out_exit == ApproxEps(2.1f));
+		CHECK(out_norm_enter.x == ApproxEps(-1));
+		CHECK(out_norm_enter.y == ApproxEps(0));
+		CHECK(out_norm_exit.x == ApproxEps(1));
+		CHECK(out_norm_exit.y == ApproxEps(0));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK(geom::intersects(r, Circle(1), Coord2(2, 2), out_enter, out_norm_enter, out_exit, out_norm_exit));
+		CHECK(out_enter == ApproxEps(std::sqrt(2) - 1));
+		CHECK(out_exit == ApproxEps(std::sqrt(2) + 1));
+		Coord2 expected_norm_enter = (r.origin + r.dir*(std::sqrt(2) - 1) - Coord2(2, 2)).normalize();
+		Coord2 expected_norm_exit = (r.origin + r.dir*(std::sqrt(2) + 1) - Coord2(2, 2)).normalize();
+		CHECK(out_norm_enter.x == ApproxEps(expected_norm_enter.x));
+		CHECK(out_norm_enter.y == ApproxEps(expected_norm_enter.y));
+		CHECK(out_norm_exit.x == ApproxEps(expected_norm_exit.x));
+		CHECK(out_norm_exit.y == ApproxEps(expected_norm_exit.y));
 	}
 }
 

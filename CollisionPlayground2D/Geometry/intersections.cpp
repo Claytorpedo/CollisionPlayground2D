@@ -365,14 +365,33 @@ namespace geom {
 		return _find_intersect(ray, r, false, out_exit, &out_norm_exit); // It enters the rectangle, so it must also exit.
 	}
 	// --------------------------------- Ray and polygon intersections -----------------------------------------
+	namespace {
+		inline bool _is_poly_AABB_behind_ray(const Ray& r, const Polygon& p, const Coord2& pos) {
+			return ((r.dir.x == 0 || (r.dir.x > 0 ? pos.x + p.right() < r.origin.x : pos.x + p.left() > r.origin.x)) &&
+			        (r.dir.y == 0 || (r.dir.y > 0 ? pos.y + p.bottom() < r.origin.y : pos.y + p.top() > r.origin.y)));
+		}
+	}
 	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos) {
-		if ((r.dir.x == 0 || (r.dir.x > 0 ? pos.x + p.right()  < r.origin.x : pos.x + p.left() > r.origin.x)) &&
-			(r.dir.y == 0 || (r.dir.y > 0 ? pos.y + p.bottom() < r.origin.y : pos.y + p.top()  > r.origin.y)))
+		if (_is_poly_AABB_behind_ray(r, p, pos))
 			return false; // The bounding box for the polygon is behind the ray.
 		for (std::size_t k = p.size() - 1, i = 0; i < p.size(); k = i++) {
 			if (intersects_ignore_parallel(r, LineSegment(pos + p[k], pos + p[i])))
 				return true;
 		}
+		return false;
+	}
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_t) {
+		if (_is_poly_AABB_behind_ray(r, p, pos))
+			return false; // The bounding box for the polygon is behind the ray.
+		std::size_t first, last;
+		p.getVerticesInDirection(-r.dir, first, last);
+
+		// Look for collision in this range.
+
+		// Look for collision in on the other side.
+		// If we have a collision here and in the first range, return first collision point.
+		// If we have a collision here and none in the first range, return out_t = 0.
+		// No collision here: return false.
 		return false;
 	}
 	// --------------------------------- Ray and circle intersections ------------------------------------------

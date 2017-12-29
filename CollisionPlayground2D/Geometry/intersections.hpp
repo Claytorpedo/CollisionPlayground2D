@@ -46,8 +46,8 @@ namespace geom {
 
 	// Gets the first intersection for the ray and rectangle. If ray's origin intersects the rectangle, then out_t == 0.
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos, gFloat& out_t);
-	// Gets the first intersection along the ray between the ray and the polygon. (If ray's origin intersects the polygon, then out_t == 0.)
-	//bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_t);
+	// Gets the first intersection for the ray and polygon. If ray's origin intersects the polygon, then out_t == 0.
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_t);
 	// Gets the first intersection for the ray and circle. If the ray's origin intersects the circle, then out_t == 0.
 	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_t);
 	// Gets the first intersection along the ray between the ray and the shape. (If ray's origin intersects the shape, then out_t == 0.)

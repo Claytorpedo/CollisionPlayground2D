@@ -1314,6 +1314,59 @@ TEST_CASE("Ray and polygon intersections.", "[isect][ray][poly]") {
 		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 8)));
 	}
 }
+TEST_CASE("Ray and polygon intersections, with output distance to intersection point.", "[isect][ray][poly]") {
+	geom::gFloat out_t;
+	SECTION("The polygon is behind the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(-2.1f, 0), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(-0.1f, 2), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(-2, 0.1f), out_t));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(-0.6f, -0.6f), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(-0.1f, -2), out_t));
+	}
+	SECTION("The polygon is beside the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(0, 2.1f), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 2.1f), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, -2.1f), out_t));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(0.9f, 4), out_t));
+		CHECK_FALSE(geom::intersects(r, Polygon(shapes::octagon), Coord2(5.1f, 2), out_t));
+	}
+	SECTION("The ray's origin is inside or touches the polygon.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(2, 0), out_t));
+		CHECK(out_t == ApproxEps(0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(-2, 0), out_t));
+		CHECK(out_t == ApproxEps(0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(0, 2), out_t));
+		CHECK(out_t == ApproxEps(0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(0, -2), out_t));
+		CHECK(out_t == ApproxEps(0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(1.5f, 1), out_t));
+		CHECK(out_t == ApproxEps(0));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(-0.5f, -0.5f), out_t));
+		CHECK(out_t == ApproxEps(0));
+	}
+	SECTION("The polygon is in front of the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 0), out_t));
+		CHECK(out_t == ApproxEps(8));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 2), out_t));
+		CHECK(out_t == ApproxEps(10));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, -2), out_t));
+		CHECK(out_t == ApproxEps(10));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 10), out_t));
+		CHECK(out_t == ApproxEps(std::sqrt(7.5f*7.5f*2.0f)));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 12), out_t));
+		CHECK(out_t == ApproxEps(std::sqrt(162)));
+		CHECK(geom::intersects(r, Polygon(shapes::octagon), Coord2(10, 8), out_t));
+		CHECK(out_t == ApproxEps(std::sqrt(162)));
+	}
+}
 //********************************************************************** RAY AND CIRCLE TESTS ***********************************************************************
 TEST_CASE("Ray and circle intersections.", "[isect][ray][circle]") {
 	SECTION("The circle is behind the ray.") {

@@ -105,6 +105,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Geometry\Circle.cpp" />
+    <ClCompile Include="Geometry\isect_ray_circle.cpp" />
+    <ClCompile Include="Geometry\isect_ray_poly.cpp" />
+    <ClCompile Include="Geometry\isect_ray_rect.cpp" />
     <ClCompile Include="Geometry\math.cpp" />
     <ClCompile Include="Geometry\Movable.cpp" />
     <ClCompile Include="Geometry\intersections.cpp" />
@@ -120,6 +123,21 @@
     <ClCompile Include="test\catch_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="test\isect_ray_circle_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="test\isect_ray_poly_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="test\isect_ray_rect_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='UnitTest|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="test\math_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -157,6 +175,9 @@
     <ClInclude Include="game.hpp" />
     <ClInclude Include="Geometry\Circle.hpp" />
     <ClInclude Include="Geometry\Collidable.hpp" />
+    <ClInclude Include="Geometry\isect_ray_circle.hpp" />
+    <ClInclude Include="Geometry\isect_ray_poly.hpp" />
+    <ClInclude Include="Geometry\isect_ray_rect.hpp" />
     <ClInclude Include="Geometry\overlaps.hpp" />
     <ClInclude Include="Geometry\sat.hpp" />
     <ClInclude Include="units.hpp" />

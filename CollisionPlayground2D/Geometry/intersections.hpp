@@ -55,17 +55,17 @@ namespace geom {
 
 	// Gets the first intersection and normal for the ray and rectangle. If the ray's origin intersects the rectangle, then out_t == 0, and out_norm = (0,0).
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
-	// Gets the first intersection and normal along the ray between the ray and the polygon. (If ray's origin intersects the polygon, then out_t == 0.)
-	//bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
+	// Gets the first intersection and normal for the ray and polygon. If the ray's origin intersects the polygon, then out_t == 0, and out_norm = (0,0).
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
 	// Gets the first intersection and normal for the ray and circle. If the ray's origin intersects the circle, then out_t == 0, and out_norm = (0,0).
 	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
 	// Gets the first intersection and normal along the ray between the ray and the shape. (If ray's origin intersects the shape, then out_t == 0.)
 	//bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
 
-	// Get both intersections for the ray and rectangle. If the ray's origin intersects the circle, then out_enter == 0.
+	// Get both intersections for the ray and rectangle. If the ray's origin intersects the rectangle, then out_enter == 0.
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos, gFloat& out_enter, gFloat& out_exit);
-	// Get both intersections for the ray and polygon. (If ray's origin intersects the polygon, then out_enter == 0.)
-	//bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_enter, gFloat& out_exit);
+	// Get both intersections for the ray and polygon. If the ray's origin intersects the polygon, then out_enter == 0.
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_enter, gFloat& out_exit);
 	// Get both intersections for the ray and circle. If the ray's origin intersects the circle, then out_enter == 0.
 	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_enter, gFloat& out_exit);
 	// Get both intersections for the ray and shape. (If ray's origin intersects the shape, then out_enter == 0.)
@@ -73,8 +73,8 @@ namespace geom {
 
 	// Get both intersections and normals for the ray and rectangle. If the ray's origin intersects the rectangle, then out_enter == 0, and out_norm_enter = (0, 0).
 	bool intersects(const Ray& ray, const Rect& rect, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit);
-	// Get both intersections and normals for the ray and polygon. (If ray's origin intersects the polygon, then out_enter == 0.)
-	//bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit);
+	// Get both intersections and normals for the ray and polygon. If the ray's origin intersects the polygon, then out_enter == 0, and out_norm_enter = (0, 0).
+	bool intersects(const Ray& r, const Polygon& p, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit);
 	// Get both intersections and normals for the ray and circle. If the ray's origin intersects the circle, then out_enter == 0, and out_norm_enter = (0, 0).
 	bool intersects(const Ray& r, const Circle& c, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit);
 	// Get both intersections and normals for the ray and shape. (If ray's origin intersects the shape, then out_enter == 0.)

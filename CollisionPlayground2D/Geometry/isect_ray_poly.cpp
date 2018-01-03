@@ -14,7 +14,7 @@ namespace geom {
 		// Find an intersection on a polygon in a given range, with an optional normal.
 		inline bool _find_poly_intersect(const Ray& r, const Polygon& p, const Coord2& pos, const std::size_t start, const std::size_t end, gFloat& out_t, Coord2* out_norm = nullptr) {
 			const std::size_t polySize(p.size());
-			for (std::size_t i = start; i != end; i = (++i < polySize) ? i : 0) { // Find enter, if it exists.
+			for (std::size_t i = start; i != end; i = (++i < polySize) ? i : 0) {
 				if (intersects_ignore_parallel(r, LineSegment(pos + p[i], pos + p[i + 1 < polySize ? i + 1 : 0]), out_t)) {
 					if (out_norm)
 						*out_norm = p.getEdgeNorm(i);
@@ -82,7 +82,6 @@ namespace geom {
 			return false; // The bounding box for the polygon is behind the ray.
 		std::size_t first, last;
 		p.getVerticesInDirection(-r.dir, first, last);
-		const std::size_t polySize(p.size());
 		if (!_find_poly_intersect(r, p, pos, last, first, out_exit, &out_norm_exit)) // Check for exit first.
 			return false;
 		if (!_find_poly_intersect(r, p, pos, first, last, out_enter, &out_norm_enter))

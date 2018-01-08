@@ -112,6 +112,25 @@ TEST_CASE("Ray and circle intersections, with output distance to intersection po
 TEST_CASE("Ray and circle intersections, with output distance and normal to intersection point.", "[isect][ray][circle]") {
 	geom::gFloat out_t;
 	Coord2 out_norm;
+	SECTION("The circle is behind the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-1.1f, 0), out_t, out_norm));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, 0), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-0.1f, 0), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, -0.1f), out_t, out_norm));
+	}
+	SECTION("The circle is beside the ray.") {
+		Ray r(Coord2(0, 0), Coord2(1, 0));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(0, 1.1f), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10, 1.1f), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10, -1.1f), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(-0.71f, 0.71f), out_t, out_norm));
+		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(1, 2.5f), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(9.79f, 11.21f), out_t, out_norm));
+		CHECK_FALSE(geom::intersects(r, Circle(1), Coord2(10.21f, 8.79f), out_t, out_norm));
+	}
 	SECTION("The ray's origin is inside or touches the circle.") {
 		Ray r(Coord2(0, 0), Coord2(1, 0));
 		CHECK(geom::intersects(r, Circle(1), Coord2(-1, 0), out_t, out_norm));

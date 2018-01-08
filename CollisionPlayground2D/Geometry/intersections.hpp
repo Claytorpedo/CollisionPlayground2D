@@ -7,8 +7,8 @@
 #include "isect_ray_rect.hpp"
 #include "isect_ray_poly.hpp"
 #include "isect_ray_circle.hpp"
+#include "isect_ray_shape_container.hpp"
 
-// See if geometry primatives intersect each other.
 namespace geom {
 	class LineSegment;
 	class Ray;
@@ -39,16 +39,6 @@ namespace geom {
 
 	// Intersection between a rectangle and a line segment. Considered intersecting if they touch.
 	bool intersects(const Rect& r, const LineSegment& l);
-
-	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos=Coord2(0,0));
-	// Gets the first intersection for the ray and shape. If the ray's origin intersects the shape, then out_t == 0.
-	//bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_t);
-	// Gets the first intersection and normal for the ray and shape. If the ray's origin intersects the shape, then out_t == 0, and out_norm = (0,0).
-	//bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_t, Coord2& out_norm);
-	// Get both intersections for the ray and shape. If the ray's origin intersects the shape, then out_enter == 0.
-	//bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_enter, gFloat& out_exit);
-	// Get both intersections and normals for the ray and shape. If the ray's origin intersects the shape, then out_enter == 0, and out_norm_enter = (0, 0).
-	//bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_enter, Coord2& out_norm_enter, gFloat& out_exit, Coord2& out_norm_exit);
 }
 
 #endif // INCLUDE_GEOM_INTERSECTIONS_HPP

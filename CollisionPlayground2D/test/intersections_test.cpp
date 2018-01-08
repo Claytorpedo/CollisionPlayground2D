@@ -7,19 +7,13 @@
 #include "../Geometry/units.hpp"
 #include "../Geometry/constants.hpp"
 #include "../Geometry/LineSegment.hpp"
-#include "../Geometry/ShapeContainer.hpp"
 #include "../Geometry/Rectangle.hpp"
-#include "../Geometry/Polygon.hpp"
-#include "../Geometry/Circle.hpp"
 #include "../Geometry/Ray.hpp"
 
 using geom::LineSegment;
 using geom::Ray;
 using geom::Coord2;
-using geom::ShapeContainer;
 using geom::Rect;
-using geom::Polygon;
-using geom::Circle;
 
 //*********************************************************************** COORDINATE TESTS **************************************************************************
 TEST_CASE("Rectangle and coordinate intersections.", "[isect][rect][coord]") {
@@ -975,47 +969,4 @@ TEST_CASE("Rectangle line segment intersections.", "[isect][rect][lineseg]") {
 	CHECK_FALSE(geom::intersects(r, LineSegment(6, 7.1f, 8, 8)));
 	CHECK_FALSE(geom::intersects(r, LineSegment(7.1f, 7, 8, 6)));
 	CHECK_FALSE(geom::intersects(r, LineSegment(6, 4.9f, 6, 4.9f)));
-}
-
-//********************************************************************** RAY AND SHAPE TESTS ************************************************************************
-TEST_CASE("Ray and shape intersections.", "[isect][ray][shape]") {
-	SECTION("The shape is behind the ray.") {
-		Ray r(Coord2(0, 0), Coord2(1, 0));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Rect(-1.1f, 0, 1, 1))));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Rect(0, 0, 1, 1)), Coord2(-1.1f, 1)));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon)), Coord2(-2.1f, 0)));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Circle(1)), Coord2(-1.1f, 0)));
-		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Rect(0, 0, 0.9f, 0.9f))));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Rect(0, 0, 0.9f, 0.9f)), Coord2(0.1f, -0.1f)));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon)), Coord2(-0.6f, -0.6f)));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Circle(1)), Coord2(-0.1f, 0)));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Circle(1)), Coord2(0, -0.1f)));
-	}
-	SECTION("The shape is beside the ray.") {
-		Ray r(Coord2(0, 0), Coord2(1, 0));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Rect(0, 1.1f, 1, 1))));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Polygon::translate(Polygon(shapes::octagon), Coord2(10, -2.1f)))));
-		CHECK_FALSE(geom::intersects(r, ShapeContainer(Circle(10, -1.1f, 1))));
-	}
-	SECTION("The ray's origin is inside or touches the shape.") {
-		Ray r(Coord2(0, 0), Coord2(1, 0));
-		CHECK(geom::intersects(r, ShapeContainer(Rect(-1, 0, 1, 1))));
-		CHECK(geom::intersects(r, ShapeContainer(Rect(0, 0, 1, 1)), Coord2(-0.5f, -0.5f)));
-		CHECK(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon)), Coord2(-2, 0)));
-		CHECK(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon))));
-		CHECK(geom::intersects(r, ShapeContainer(Circle(1)), Coord2(-1, 0)));
-		CHECK(geom::intersects(r, ShapeContainer(Circle(1))));
-		r = Ray(Coord2(1, 1), Coord2(1, 1).normalize());
-		CHECK(geom::intersects(r, ShapeContainer(Rect(0, 0, 1, 1))));
-		CHECK(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon))));
-		CHECK(geom::intersects(r, ShapeContainer(Circle(1)), Coord2(1, 1)));
-		CHECK(geom::intersects(r, ShapeContainer(Circle(static_cast<geom::gFloat>(std::sqrt(2)) + geom::constants::EPSILON))));
-	}
-	SECTION("The shape is in front of the ray.") {
-		Ray r(Coord2(0, 0), Coord2(1, 0));
-		CHECK(geom::intersects(r, ShapeContainer(Rect(0, 0, 1, 1)), Coord2(10, 0)));
-		CHECK(geom::intersects(r, ShapeContainer(Polygon(shapes::octagon)), Coord2(10, -2)));
-		CHECK(geom::intersects(r, ShapeContainer(Circle(0, 0, 1)), Coord2(10, -0.9f)));
-	}
 }

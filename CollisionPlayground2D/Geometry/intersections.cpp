@@ -261,36 +261,4 @@ namespace geom {
 			return true;
 		return false;
 	}
-
-	// ----------------------------- Ray and shape container intersections --------------------------------------
-	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos) {
-		switch (s.type()) {
-		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos);
-		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos);
-		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos);
-		default:
-			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
-			return intersects(r, s.shape().toPoly(), pos);
-		}
-	}/*
-	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_t) {
-		switch (s.type()) {
-		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos, out_t);
-		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos, out_t);
-		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos, out_t);
-		default:
-			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
-			return intersects(r, s.shape().toPoly(), pos, out_t);
-		}
-	}
-	bool intersects(const Ray& r, const ShapeContainer& s, const Coord2& pos, gFloat& out_enter, gFloat& out_exit) {
-		switch (s.type()) {
-		case ShapeType::RECTANGLE: return intersects(r, s.rect(), pos, out_enter, out_exit);
-		case ShapeType::POLYGON:   return intersects(r, s.poly(), pos, out_enter, out_exit);
-		case ShapeType::CIRCLE:    return intersects(r, s.circle(), pos, out_enter, out_exit);
-		default:
-			DBG_WARN("Unhandled shape type for ray-shape intersection. Converting to polygon.");
-			return intersects(r, s.shape().toPoly(), pos, out_enter, out_exit);
-		}
-	}*/
 }

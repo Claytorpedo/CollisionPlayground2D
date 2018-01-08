@@ -111,6 +111,12 @@
     <ClCompile Include="test\isect_ray_circle_test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Geometry\isect_ray_shape_container.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test\isect_ray_shape_container_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Geometry\DebugLogger.h">
@@ -219,6 +225,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry\isect_ray_circle.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\isect_ray_shape_container.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,11 +1,8 @@
-#include "Graphics.h"
+#include "Graphics.hpp"
 
 #include <SDL.h>
 #include <string>
 #include <iostream>
-
-#include "Geometry/Rectangle.h"
-#include "Constants.h"
 
 Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {}
 Graphics::~Graphics() {
@@ -14,11 +11,11 @@ Graphics::~Graphics() {
 	SDL_DestroyWindow(window_);
 }
 
-bool Graphics::init() {
+bool Graphics::init(game::Pixel screenWidth, game::Pixel screenHeight) {
 	if ( !SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1") ) { // Set to linear filtering.
 		std::cout << "Warning: Linear filtering could not be enabled.\n";
 	}
-	window_ = SDL_CreateWindow("Collision Playground 2D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, int(constants::SCREEN_WIDTH), int(constants::SCREEN_HEIGHT), SDL_WINDOW_SHOWN);
+	window_ = SDL_CreateWindow("Collision Playground 2D", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
 	if (!window_) {
 		std::cerr << "Error: The window could not be created.\nSDL Error: " << SDL_GetError() << "\n";
 		return false;
@@ -59,7 +56,7 @@ void Graphics::renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 th
 		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
-void Graphics::renderRay(const SDL_Point& origin, const units::Coordinate2D& dir) const {
+void Graphics::renderRay(const SDL_Point& origin, const geom::Coord2& dir) const {
 	std::vector<SDL_Point> points;
 	points.reserve(500);
 	// Just draw an arbitrary length.
@@ -100,6 +97,10 @@ void Graphics::renderCircle(const SDL_Point& center, Uint8 radius) const {
 			SDL_RenderDrawPoint(renderer_, center.x+i, center.y+j);
 		}
 	}
+}
+
+void Graphics::setWindowTitle(const std::string& text) {
+	SDL_SetWindowTitle(window_, text.data());
 }
 
 void Graphics::clear() {

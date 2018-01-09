@@ -1,16 +1,20 @@
 SRCDIR = .
-GEOMDIR = $(SRCDIR)/Geometry
-GEOMSRC = $(wildcard $(GEOMDIR)/*.cpp)
-SRCS = $(wildcard $(SRCDIR)/*.cpp) $(GEOMSRC)
+
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
 ODIR = $(SRCDIR)/build
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
 
+GEOMDIR = $(SRCDIR)/Geometry
+GEOMSRC = $(wildcard $(GEOMDIR)/*.cpp)
+GEOMOBJS = $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(GEOMSRC))
+
 TESTDIR = $(SRCDIR)/test
 TESTODIR = $(ODIR)
-TESTSRCS = $(wildcard $(TESTDIR)/*.cpp) $(GEOMSRC)
+TESTSRCS = $(wildcard $(TESTDIR)/*.cpp)
 TESTOBJS = $(patsubst $(SRCDIR)/%.cpp,$(TESTODIR)/%.o,$(TESTSRCS))
 
 PROG = collisions
+TESTPROG = $(PROG)_test
 
 CC = g++
 
@@ -23,27 +27,28 @@ INCL_DIRS = `pkg-config --cflags sdl2`
 
 DEBUG_FLAGS = -DDEBUG -g
 
-.PHONY: all clean dir testdir debug test
+.PHONY: all clean help dir testdir debug test runtest
 
 all: dir $(PROG)
 
-$(PROG): $(OBJS)
+$(PROG): $(GEOMOBJS) $(OBJS)
 	$(CC) $^ $(LINK_FLAGS) -o $@
 
 $(OBJS): $(ODIR)/%.o : $(SRCDIR)/%.cpp
+	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
+$(GEOMOBJS) : $(ODIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
 
 debug: COMP_FLAGS += $(DEBUG_FLAGS)
 debug: all
 
-# test:
-# Similar to all, but looks in TEST DIR and builds whatever test files there are (maybe only one?)
-# build things into build/test
-# runtest: just execute the test file
-test: dir testdir runtests
+test: dir testdir buildtests
 
-runtests: $(TESTOBJS)
-	$(CC) $^ $(LINK_FLAGS) -o $@
+runtest: test
+	$(SRCDIR)/$(TESTPROG)
+
+buildtests: $(GEOMOBJS) $(TESTOBJS)
+	$(CC) $^ $(LINK_FLAGS) -o $(TESTPROG)
 	
 $(TESTOBJS): $(TESTODIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
@@ -56,4 +61,4 @@ dir:
 	mkdir -p $(ODIR)/$(GEOMDIR)
 
 clean:
-	rm -rf $(ODIR) $(PROG)
+	rm -rf $(ODIR) $(PROG) $(TESTPROG)

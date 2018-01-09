@@ -26,11 +26,6 @@ namespace geom {
 		return p.getProjection(axis);
 	}
 
-	Polygon Shape::extend(const Coord2& dir, const gFloat dist) const {
-		Polygon p(this->toPoly());
-		return p.extend(dir, dist);
-	}
-
 	Rect Shape::getAABB() const {
 		return Rect(left(), top(), right() - left(), bottom() - top());
 	}

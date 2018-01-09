@@ -65,27 +65,6 @@ namespace geom {
 		return Projection(min, max);
 	}
 
-	void Polygon::expand(const gFloat expandAmount) {
-		if (expandAmount < 0) {
-			std::cerr << "Error: Cannot expand a polygon by negative amounts.\n";
-			return;
-		}
-		std::vector<Coord2> newVertices;
-		newVertices.reserve(vertices_.size());
-		for (std::size_t i = 0; i < vertices_.size(); ++i) {
-			Coord2 vertexNorm = (getEdgeNorm(i == 0 ? vertices_.size() - 1 : i - 1) + getEdgeNorm(i)).normalize();
-			newVertices.push_back(vertices_[i] + vertexNorm*expandAmount);
-		}
-		for (std::size_t i = 0; i < vertices_.size(); ++i)
-			vertices_[i] = newVertices[i];
-		_find_bounds();
-	}
-	Polygon Polygon::expand(const Polygon& p, const gFloat expandAmount) {
-		Polygon s(p);
-		s.expand(expandAmount);
-		return s;
-	}
-
 	bool Polygon::getVerticesInDirection(const Coord2& dir, std::size_t& out_first, std::size_t& out_last, bool& out_is_first_perp, bool& out_is_last_perp) const {
 		const int numVerts(vertices_.size());
 		// Look for where edge normals change from being acute with the given direction, to perpendicular or obtuse.

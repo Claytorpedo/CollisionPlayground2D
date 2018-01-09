@@ -43,11 +43,6 @@ namespace geom {
 		// Compute all normals for the polygon.
 		void computeNormals() const;
 
-		// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
-		void expand(const gFloat expandAmount);
-		// Increase the size of a polygon by scaleAmount in all directions (by vertex normals).
-		static Polygon expand(const Polygon& p, const gFloat expandAmount);
-
 		// Find the region of vertices in a given direction (for instance, to extend the polygon in that direction).
 		// out_first         - the first vertex in the region.
 		// out_last          - the last vertex in the region.

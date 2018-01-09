@@ -30,8 +30,6 @@ namespace geom {
 		// Convert the shape into a polygon.
 		// All child classes should be able to be at least approximated by a convex polygon.
 		virtual Polygon toPoly() const = 0;
-		// Extend a shape in a direction by a distance.
-		virtual Polygon extend(const Coord2& dir, const gFloat dist) const;
 		// Get the axis-aligned bounding box for a shape.
 		virtual Rect getAABB() const;
 		// Find the closest vertex/point to a given point.

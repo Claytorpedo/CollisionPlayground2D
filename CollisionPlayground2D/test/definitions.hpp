@@ -6,11 +6,10 @@
 
 #include <vector>
 
-#include "../Geometry/constants.hpp"
 #include "../Geometry/units.hpp"
 #include "../Geometry/Movable.hpp"
 
-#define ApproxEps(x) Approx(x).margin(geom::constants::EPSILON)
+#define ApproxEps(x) Approx(x).margin(0.00001)
 #define ApproxCollides(x) Approx(x).margin(geom::Movable::COLLISION_BUFFER) // For collision resolution, where perfect accuracy isn't as important.
 
 namespace shapes { // Some shapes we'll use in various tests.

@@ -3,6 +3,7 @@
 
 #include "../Geometry/isect_ray_shape_container.hpp"
 #include "../Geometry/units.hpp"
+#include "../Geometry/constants.hpp"
 #include "../Geometry/Ray.hpp"
 #include "../Geometry/ShapeContainer.hpp"
 #include "../Geometry/Rectangle.hpp"

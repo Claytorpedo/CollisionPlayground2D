@@ -5,8 +5,7 @@
 #include <SDL.h>
 #include <vector>
 
-#include "Geometry/units.hpp"
-#include "Geometry/Rectangle.hpp"
+#include "Geometry2D/Geometry.hpp"
 
 namespace geom { class Shape; }
 class Graphics;

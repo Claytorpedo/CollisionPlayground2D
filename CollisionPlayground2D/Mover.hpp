@@ -3,9 +3,7 @@
 #define INCLUDE_MOVER_HPP
 
 #include "units.hpp"
-#include "Geometry/Movable.hpp"
-#include "Geometry/ShapeContainer.hpp"
-#include "Geometry/units.hpp"
+#include "Geometry2D/Geometry.hpp"
 
 namespace geom { class CollisionMap; }
 

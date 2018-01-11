@@ -7,7 +7,6 @@
 #include <string>
 
 #include "units.hpp"
-#include "Geometry/units.hpp"
 
 class Graphics {
 public:
@@ -20,7 +19,7 @@ public:
 	void setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a=255) const;
 	void renderRect(const SDL_Rect& rect, Uint8 thickness=1) const;
 	void renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 thickness=1) const;
-	void renderRay(const SDL_Point& origin, const geom::Coord2& dir) const;
+	void renderRay(const SDL_Point& origin, const float dirx, const float diry) const;
 	void renderPoly(std::vector<SDL_Point>& points) const;
 	void renderPoint(const SDL_Point& point, Uint8 pointSize=1) const;
 	void renderCircle(const SDL_Point& center, Uint8 radius) const;

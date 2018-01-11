@@ -1,64 +1,58 @@
-SRCDIR = .
+SRCDIR := .
 
-SRCS = $(wildcard $(SRCDIR)/*.cpp)
-ODIR = $(SRCDIR)/build
-OBJS = $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+ODIR := $(SRCDIR)/build
+OBJS := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
 
-GEOMDIR = $(SRCDIR)/Geometry
-GEOMSRC = $(wildcard $(GEOMDIR)/*.cpp)
-GEOMOBJS = $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(GEOMSRC))
+MKDIRS := $(ODIR)
 
-TESTDIR = $(SRCDIR)/test
-TESTODIR = $(ODIR)
-TESTSRCS = $(wildcard $(TESTDIR)/*.cpp)
-TESTOBJS = $(patsubst $(SRCDIR)/%.cpp,$(TESTODIR)/%.o,$(TESTSRCS))
+GEOM := $(SRCDIR)/Geometry2D
+SUBMODS := $(GEOM)
+SUBMODCMD := $(MAKECMDGOALS)
 
-PROG = collisions
-TESTPROG = $(PROG)_test
+PROG := examples
 
 CC = g++
-
 COMP_FLAGS = -std=c++11 -Wall -pedantic
-# Any linker flags, such as libraries to link to (pkg-config --libs).
-LINK_FLAGS = `pkg-config --libs sdl2`
-
-# Any additional include dirs, such as for libraries (pkg-config --cflags).
+LINK_FLAGS = `pkg-config --libs sdl2` -L$(GEOM)/lib/ -lgeom
 INCL_DIRS = `pkg-config --cflags sdl2`
 
 DEBUG_FLAGS = -DDEBUG -g
 
-.PHONY: all clean help dir testdir debug test runtest
+##To compile thread-safe version of submodule Geometry, set THREADED=TRUE
+export THREADED
 
-all: dir $(PROG)
+.PHONY: $(SUBMODS)
+.PHONY: all debug clean cleanall clean_submods help
 
-$(PROG): $(GEOMOBJS) $(OBJS)
+all:            ## Build the examples.
+all: $(MKDIRS) $(SUBMODS) $(PROG)
+
+$(SUBMODS):
+	$(MAKE) -C $@ $(SUBMODCMD)
+
+$(PROG): $(OBJS)
 	$(CC) $^ $(LINK_FLAGS) -o $@
 
 $(OBJS): $(ODIR)/%.o : $(SRCDIR)/%.cpp
 	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
-$(GEOMOBJS) : $(ODIR)/%.o : $(SRCDIR)/%.cpp
-	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
 
+debug:          ## Make debug build. 
 debug: COMP_FLAGS += $(DEBUG_FLAGS)
 debug: all
 
-test: dir testdir buildtests
+$(MKDIRS):
+	@mkdir -p $@
 
-runtest: test
-	$(SRCDIR)/$(TESTPROG)
+clean:          ## Clean this project and all submodules.
+clean: clean_local clean_submods
 
-buildtests: $(GEOMOBJS) $(TESTOBJS)
-	$(CC) $^ $(LINK_FLAGS) -o $(TESTPROG)
+clean_local:    ## Clean this project, ignoring submodules.
+	rm -rf $(ODIR) $(PROG)
+
+clean_submods:  ## Clean only submodules.
+clean_submods: SUBMODCMD := clean
+clean_submods: $(SUBMODS)
 	
-$(TESTOBJS): $(TESTODIR)/%.o : $(SRCDIR)/%.cpp
-	$(CC) -c $(INCL_DIRS) $(COMP_FLAGS) $< -o $@
-
-testdir:
-	mkdir -p $(ODIR)/$(TESTDIR)
-
-dir:
-	mkdir -p $(ODIR)
-	mkdir -p $(ODIR)/$(GEOMDIR)
-
-clean:
-	rm -rf $(ODIR) $(PROG) $(TESTPROG)
+help:           ## Display this help.
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'

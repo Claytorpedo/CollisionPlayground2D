@@ -12,7 +12,7 @@
 #include "Graphics.hpp"
 #include "Mover.hpp"
 
-#include "Geometry/Geometry.hpp"
+#include "Geometry2D/Geometry.hpp"
 
 using namespace geom;
 

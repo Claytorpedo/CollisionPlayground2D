@@ -1,7 +1,6 @@
 #include "Room.hpp"
 
 #include <SDL.h>
-#include <vector>
 #include <fstream>
 #include <string>
 #include <sstream>
@@ -11,10 +10,6 @@
 #include "util.hpp"
 
 #include "Graphics.hpp"
-#include "Geometry/units.hpp"
-#include "Geometry/constants.hpp"
-#include "Geometry/Direction.hpp"
-#include "Geometry/Shape.hpp"
 
 const Uint8 Room::HEIGHT = 12 * 4;
 const Uint8 Room::WIDTH = 20 * 4;

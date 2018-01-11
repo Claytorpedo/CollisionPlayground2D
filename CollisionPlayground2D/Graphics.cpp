@@ -56,12 +56,12 @@ void Graphics::renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 th
 		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
-void Graphics::renderRay(const SDL_Point& origin, const geom::Coord2& dir) const {
+void Graphics::renderRay(const SDL_Point& origin, const float dirx, const float diry) const {
 	std::vector<SDL_Point> points;
 	points.reserve(500);
 	// Just draw an arbitrary length.
 	for (int i = 0; i < 1500; i+=3) {
-		SDL_Point p = {static_cast<int>(origin.x + dir.x*i), static_cast<int>(origin.y + dir.y*i)};
+		SDL_Point p = {static_cast<int>(origin.x + dirx*i), static_cast<int>(origin.y + diry*i)};
 		points.push_back(p);
 	}
 	SDL_RenderDrawPoints(renderer_, points.data(), points.size());

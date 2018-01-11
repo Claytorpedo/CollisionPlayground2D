@@ -1,10 +1,5 @@
 #include "Mover.hpp"
 
-#include "Geometry/ShapeContainer.hpp"
-#include "Geometry/Polygon.hpp"
-#include "Geometry/CollisionMap.hpp"
-#include "Geometry/math.hpp"
-
 const game::Velocity     Mover::MAX_SPEED = 0.3f;
 const game::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (game::Velocity)std::sin(geom::constants::PI / 4.0f);
 const game::Acceleration Mover::ACCELERATION = 0.0025f;

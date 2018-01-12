@@ -3,7 +3,7 @@
 #include <bitset>
 
 bool Input::refresh() {
-	clear();
+	clearFrame();
 	return poll();
 }
 
@@ -12,10 +12,10 @@ bool Input::poll() {
 	while (SDL_PollEvent( &e ) ) {
 		switch(e.type) {
 		case SDL_KEYDOWN:
-			keyDownEvent(  mapSDLKToKey(e.key.keysym.sym) );
+			keyDownEvent(e.key.keysym.sym);
 			break;
 		case SDL_KEYUP:
-			keyUpEvent(  mapSDLKToKey(e.key.keysym.sym) );
+			keyUpEvent(e.key.keysym.sym);
 			break;
 		case SDL_QUIT: // User closes window.
 			return false;
@@ -26,45 +26,24 @@ bool Input::poll() {
 	return true;
 }
 
-Input::Key Input::mapSDLKToKey(SDL_Keycode k) const {
-	switch(k) {
-	case SDLK_LEFT:
-	case SDLK_a:
-		return Input::LEFT;
-	case SDLK_RIGHT:
-	case SDLK_d:
-		return Input::RIGHT;
-	case SDLK_UP:
-	case SDLK_w:
-		return Input::UP;
-	case SDLK_DOWN:
-	case SDLK_s:
-		return Input::DOWN;
-	case SDLK_ESCAPE:
-		return Input::ESC;
-	case SDLK_r:
-		return Input::R;
-	case SDLK_e:
-		return Input::E;
-	default:
-		break;
-	}
-	return Input::INVALID;
+void Input::clearFrame() {
+	pressed_keys_.clear();
+	released_keys_.clear();
 }
-
 void Input::clear() {
-	pressed_keys_.reset();
-	released_keys_.reset();
+	pressed_keys_.clear();
+	released_keys_.clear();
+	held_keys_.clear();
 }
-void Input::keyDownEvent(Key k) {
+void Input::keyDownEvent(SDL_Keycode k) {
 	pressed_keys_[k] = true;
 	held_keys_[k] = true;
 }
-void Input::keyUpEvent(Key k) {
+void Input::keyUpEvent(SDL_Keycode k) {
 	released_keys_[k] = true;
 	held_keys_[k] = false;
 }
 
-bool Input::isKeyHeld(Key k)      { return held_keys_[k]; }
-bool Input::wasKeyPressed(Key k)  { return pressed_keys_[k]; }
-bool Input::wasKeyReleased(Key k) { return released_keys_[k]; }
+bool Input::isKeyHeld(SDL_Keycode k)      { return held_keys_[k]; }
+bool Input::wasKeyPressed(SDL_Keycode k)  { return pressed_keys_[k]; }
+bool Input::wasKeyReleased(SDL_Keycode k) { return released_keys_[k]; }

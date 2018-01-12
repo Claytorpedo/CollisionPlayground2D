@@ -2,23 +2,11 @@
 #ifndef INCLUDE_INPUT_HPP
 #define INCLUDE_INPUT_HPP
 
-#include <bitset>
+#include <map>
 #include <SDL.h>
 
 class Input {
 public:
-	enum Key {
-		INVALID, // For inputs that are not being handled.
-		LEFT,
-		RIGHT,
-		UP,
-		DOWN,
-		ESC,
-		R,
-		E,
-
-		TOTAL_KEYS
-	};
 	Input() : held_keys_(), pressed_keys_(), released_keys_() {}
 	~Input() {}
 
@@ -26,31 +14,30 @@ public:
 	// Returns false if the window was closed, otherwise returns true.
 	bool refresh();
 
-	// Clear bitsets for new frame.
+	// Clear keydown and keyup events.
+	void clearFrame();
+	// Clear all events.
 	void clear();
 
 	// Poll for new input.
 	// Returns false if the window was closed, otherwise returns true.
 	bool poll();
 
-	// Get equivalent Key for a given SDL_Keycode.
-	Key mapSDLKToKey(SDL_Keycode k) const;
-
-	void keyDownEvent(Key k);
-	void keyUpEvent(Key k);
+	void keyDownEvent(SDL_Keycode k);
+	void keyUpEvent(SDL_Keycode k);
 
 	// Return whether a key is being held down.
 	// Note that there is no time delay for this: a key just pressed down is also held.
-	bool isKeyHeld(Key k);
+	bool isKeyHeld(SDL_Keycode k);
 	// See if a key was pressed down.
-	bool wasKeyPressed(Key k);
+	bool wasKeyPressed(SDL_Keycode k);
 	// See if a key stopped being pressed/held down.
-	bool wasKeyReleased(Key k);
+	bool wasKeyReleased(SDL_Keycode k);
 
 private:
-	std::bitset<TOTAL_KEYS> held_keys_;
-	std::bitset<TOTAL_KEYS> pressed_keys_;
-	std::bitset<TOTAL_KEYS> released_keys_;
+	std::map<SDL_Keycode, bool> held_keys_;
+	std::map<SDL_Keycode, bool> pressed_keys_;
+	std::map<SDL_Keycode, bool> released_keys_;
 };
 
 

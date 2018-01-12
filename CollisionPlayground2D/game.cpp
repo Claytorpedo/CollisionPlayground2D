@@ -195,30 +195,30 @@ namespace game {
 		while (true) {
 			if (!input.refresh())
 				break; // Window was closed.
-			if (input.wasKeyPressed(Input::ESC))
+			if (input.wasKeyPressed(SDLK_ESCAPE))
 				break;
 
 			// Horizontal movement.
-			if (input.isKeyHeld(Input::LEFT) && input.isKeyHeld(Input::RIGHT)) {
+			if ((input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a)) && (input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d))) {
 				mover.stopMovingHorizontal();
-			} else if (input.isKeyHeld(Input::LEFT)) {
+			} else if (input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a)) {
 				mover.moveLeft();
-			} else if (input.isKeyHeld(Input::RIGHT)) {
+			} else if (input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d)) {
 				mover.moveRight();
 			} else {
 				mover.stopMovingHorizontal();
 			}
 			// Vertical movement.
-			if (input.isKeyHeld(Input::UP) && input.isKeyHeld(Input::DOWN)) {
+			if ((input.isKeyHeld(SDLK_UP) || input.isKeyHeld(SDLK_w)) && (input.isKeyHeld(SDLK_DOWN) || input.isKeyHeld(SDLK_s))) {
 				mover.stopMovingVertical();
-			} else if (input.isKeyHeld(Input::UP)) {
+			} else if (input.isKeyHeld(SDLK_UP) || input.isKeyHeld(SDLK_w)) {
 				mover.moveUp();
-			} else if (input.isKeyHeld(Input::DOWN)) {
+			} else if (input.isKeyHeld(SDLK_DOWN) || input.isKeyHeld(SDLK_s)) {
 				mover.moveDown();
 			} else {
 				mover.stopMovingVertical();
 			}
-			if (input.wasKeyPressed(Input::R)) {
+			if (input.wasKeyPressed(SDLK_r)) {
 				map.clear();
 				for (std::size_t i = 0; i < numShapes; ++i)
 					map.add(genPoly(twister, POLY_REGION, POLY_MIN, POLY_MAX, POLY_MIN_VERTS, POLY_MAX_VERTS));
@@ -236,11 +236,10 @@ namespace game {
 			for (std::size_t i = 0; i < map.size(); ++i) {
 	#ifdef DEBUG
 				geom::overlaps(collider, map[i]->getCollider()) ? graphics.setRenderColour(255, 0, 0) : graphics.setRenderColour(0, 100, 255);
-				drawPoly(map[i]->getCollider().shape().toPoly(), graphics);
 	#else
 				graphics.setRenderColour(0, 100, 255);
-				drawPoly(map[i]->getCollider().shape().toPoly(), graphics);
 	#endif
+				drawPoly(map[i]->getCollider().shape().toPoly(), graphics);
 			}
 
 			graphics.setRenderColour(255, 0, 0);

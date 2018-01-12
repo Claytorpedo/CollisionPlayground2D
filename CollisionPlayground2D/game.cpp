@@ -12,6 +12,8 @@
 #include "Graphics.hpp"
 #include "Mover.hpp"
 
+#include "geom_examples/SimpleCollisionMap.hpp"
+
 #include "Geometry2D/Geometry.hpp"
 
 using namespace geom;
@@ -22,36 +24,6 @@ namespace game {
 	const gFloat      POLY_MAX = 100.0f;
 	const std::size_t POLY_MIN_VERTS = 3;
 	const std::size_t POLY_MAX_VERTS = 20;
-
-	// Extremely simple CollisionMap implementation: no data structure speedup at all.
-	class SimpleCollisionMap : public CollisionMap {
-	public:
-		std::vector<Collidable*> obstacles;
-		SimpleCollisionMap() {}
-		~SimpleCollisionMap() {
-			clear();
-		}
-		virtual const std::vector<Collidable*> getColliding(const Collidable& collider, const geom::Coord2& delta) const {
-			return std::vector<Collidable*>(obstacles.begin(), obstacles.end());
-		}
-		void add(ShapeContainer shape) {
-			obstacles.push_back(new Wall(shape));
-		}
-		void add(Collidable* collidable) {
-			obstacles.push_back(collidable);
-		}
-		inline Collidable* operator[](std::size_t index) const {
-			return obstacles[index];
-		}
-		inline std::size_t size() const {
-			return obstacles.size();
-		}
-		void clear() {
-			for (std::size_t i = 0; i < obstacles.size(); ++i)
-				delete obstacles[i];
-			obstacles.clear();
-		}
-	};
 
 	void close() {
 		SDL_Quit();

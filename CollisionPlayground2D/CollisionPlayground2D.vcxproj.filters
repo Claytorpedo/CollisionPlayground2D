@@ -86,18 +86,6 @@
     <ClInclude Include="game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Input.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mover.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Room.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="units.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -186,6 +174,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Geometry2D\Geometry.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geom_examples\Example.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geom_examples\SimpleCollisionMap.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

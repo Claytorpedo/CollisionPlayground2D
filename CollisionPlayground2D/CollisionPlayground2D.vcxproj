@@ -93,6 +93,9 @@
     <ClCompile Include="Geometry2D\geom\shapes\ShapeContainer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="constants.hpp" />
+    <ClInclude Include="gen.hpp" />
+    <ClInclude Include="geom_examples\Example.hpp" />
+    <ClInclude Include="geom_examples\SimpleCollisionMap.hpp" />
     <ClInclude Include="game.hpp" />
     <ClInclude Include="Geometry2D\Geometry.hpp" />
     <ClInclude Include="Geometry2D\geom\collisions\Collidable.hpp" />
@@ -126,7 +129,7 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Mover.cpp" />
     <ClCompile Include="Room.cpp" />
-    <ClCompile Include="game.cpp"/>
+    <ClCompile Include="game.cpp" />
     <ClInclude Include="util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

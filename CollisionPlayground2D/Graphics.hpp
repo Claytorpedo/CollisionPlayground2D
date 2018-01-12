@@ -8,6 +8,8 @@
 
 #include "units.hpp"
 
+#include "Geometry2D/Geometry.hpp"
+
 class Graphics {
 public:
 	Graphics();
@@ -19,10 +21,18 @@ public:
 	void setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a=255) const;
 	void renderRect(const SDL_Rect& rect, Uint8 thickness=1) const;
 	void renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 thickness=1) const;
-	void renderRay(const SDL_Point& origin, const float dirx, const float diry) const;
-	void renderPoly(std::vector<SDL_Point>& points) const;
+	void renderLines(const std::vector<SDL_Point>& points, Uint8 thickness=1) const;
+	void renderRay(const SDL_Point& origin, float dirx, float diry, Uint16 length=1000, Uint8 thickness=1) const;
+	void renderPoly(const std::vector<SDL_Point>& points, Uint8 thickness=1) const;
 	void renderPoint(const SDL_Point& point, Uint8 pointSize=1) const;
-	void renderCircle(const SDL_Point& center, Uint8 radius) const;
+	void renderPoints(const std::vector<SDL_Point>& points, Uint8 pointSize=1) const;
+	void renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickness=1) const;
+
+	void renderRect(const geom::Rect& r, Uint8 thickness=1) const;
+	void renderPoly(const geom::Polygon& p, Uint8 thickness=1) const;
+	void renderPolyVerts(const geom::Polygon& p, Uint8 pointSize=1) const;
+	void renderPolyEdgeNormals(const geom::Polygon& p, Uint16 length=50, Uint8 thickness=1) const;
+	void renderCircle(const geom::Circle& c, Uint8 thickness=1) const;
 
 	void setWindowTitle(const std::string& text);
 

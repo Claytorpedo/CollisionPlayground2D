@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 
+#include "util.hpp"
+
 Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {}
 Graphics::~Graphics() {
 	// Free renderer and window.
@@ -36,67 +38,116 @@ void Graphics::setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {
 }
 
 void Graphics::renderRect(const SDL_Rect& rect, Uint8 thickness) const {
-	SDL_RenderDrawRect(renderer_, &rect);
-
-	if (thickness < 2)
-		return;
-	for (Uint8 i = 1; i < thickness; ++i) {
-		SDL_Rect r = { rect.x+i, rect.y+i, rect.w-i*2, rect.h-i*2 };
-		SDL_RenderDrawRect(renderer_, &r);
-	}
+	std::vector<SDL_Rect> rects;
+	rects.reserve(thickness + 1);
+	rects.push_back(rect);
+	for (Uint8 i = 1; i < thickness; ++i)
+		rects.push_back(SDL_Rect{rect.x+i, rect.y+i, rect.w-i*2, rect.h-i*2 });
+	SDL_RenderDrawRects(renderer_, rects.data(), rects.size());
 }
 
 void Graphics::renderLine(const SDL_Point& start, const SDL_Point& end, Uint8 thickness) const {
 	SDL_RenderDrawLine(renderer_, start.x, start.y, end.x, end.y);
-
-	if (thickness < 2)
-		return;
 	for (Uint8 i = 1; i < thickness; ++i) {
 		SDL_RenderDrawLine(renderer_, start.x+i, start.y, end.x+i, end.y);
 		SDL_RenderDrawLine(renderer_, start.x, start.y+i, end.x, end.y+i);
 	}
 }
-void Graphics::renderRay(const SDL_Point& origin, const float dirx, const float diry) const {
+void Graphics::renderLines(const std::vector<SDL_Point>& points, Uint8 thickness) const {
+	SDL_RenderDrawLines(renderer_, points.data(), points.size());
+	if (thickness < 2)
+		return;
+	std::vector<SDL_Point> points_out = points, points_in = points;
+	const std::size_t size = points.size();
+	for (Uint8 i = 1; i < thickness; ++i) {
+		for (std::size_t k = 0; k < size; ++k) {
+			++points_out[i].x;
+			++points_in[i].y;
+		}
+		SDL_RenderDrawLines(renderer_, points_out.data(), size);
+		SDL_RenderDrawLines(renderer_, points_in.data(), size);
+	}
+}
+void Graphics::renderRay(const SDL_Point& origin, float dirx, float diry, Uint16 length, Uint8 thickness) const {
 	std::vector<SDL_Point> points;
-	points.reserve(500);
-	// Just draw an arbitrary length.
-	for (int i = 0; i < 1500; i+=3) {
-		SDL_Point p = {static_cast<int>(origin.x + dirx*i), static_cast<int>(origin.y + diry*i)};
-		points.push_back(p);
+	points.reserve(length/(2*thickness));
+	for (int i = 0; i < length; i+=2*thickness)
+		points.push_back(SDL_Point{ static_cast<int>(origin.x + dirx * i), static_cast<int>(origin.y + diry * i) });
+	renderPoints(points, thickness);
+}
+void Graphics::renderPoly(const std::vector<SDL_Point>& points, Uint8 thickness) const {
+	std::vector<SDL_Point> drawPoints = points;
+	drawPoints.push_back(points[0]); // Duplicate the first vertex to close the shape.
+	renderLines(drawPoints, thickness);
+}
+void Graphics::renderPoint(const SDL_Point& point, Uint8 pointSize) const {
+	std::vector<SDL_Point> points;
+	const int r = static_cast<int>(pointSize) - 1;
+	const int r2 = r * r;
+	for (int i = -r; i <= r; ++i) {
+		for (int j = -r; j <= r; ++j) {
+			if (i*i + j * j <= r2) // Check if inside the circle.
+				points.push_back(SDL_Point{ point.x + i, point.y + j });
+		}
 	}
 	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
 }
-void Graphics::renderPoly(std::vector<SDL_Point>& points) const {
-	points.push_back(points[0]); // Duplicate the first vertex to close the shape.
-	SDL_RenderDrawLines(renderer_, points.data(), points.size());
-}
-void Graphics::renderPoint(const SDL_Point& point, Uint8 pointSize) const {
-	SDL_RenderDrawPoint(renderer_, point.x, point.y);
-
-	if (pointSize < 2)
-		return;
-	int s = static_cast<int>(pointSize);
-	int s2 = s*s;
-	for (int i = -s; i < s; ++i) {
-		for (int j = -s; j < s; ++j) {
-			if (i == 0 && j == 0)
-				continue; // Already drew the center;
-			if (i*i + j*j > s2)
-				continue; // Not inside the circle.
-			SDL_RenderDrawPoint(renderer_, point.x+i, point.y+j);
+void Graphics::renderPoints(const std::vector<SDL_Point>& points, Uint8 pointSize) const {
+	std::vector<SDL_Point> drawPoints;
+	const int r = static_cast<int>(pointSize) - 1;
+	const int r2 = r * r;
+	for (std::size_t h = 0; h < points.size(); ++h) {
+		for (int i = -r; i <= r; ++i) {
+			for (int j = -r; j <= r; ++j) {
+				if (i*i + j*j <= r2) // Check if inside the circle.
+					drawPoints.push_back(SDL_Point{ points[h].x + i, points[h].y + j });
+			}
 		}
 	}
+	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
 }
-void Graphics::renderCircle(const SDL_Point& center, Uint8 radius) const {
+void Graphics::renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickness) const {
+	std::vector<SDL_Point> points;
 	int r = static_cast<int>(radius);
 	int r2 = r*r;
-	for (int i = -r; i < r; ++i) {
-		for (int j = -r; j < r; ++j) {
-			if (i*i + j*j > r2)
-				continue; // Not inside the circle.
-			SDL_RenderDrawPoint(renderer_, center.x+i, center.y+j);
+	int minRad = r - static_cast<int>(thickness);
+	int minRad2 = minRad < 0 ? 0 : minRad * minRad;
+	for (int i = -r; i <= r; ++i) {
+		for (int j = -r; j <= r; ++j) {
+			const int hypotenuse2(i*i + j*j);
+			if (hypotenuse2 <= r2 && hypotenuse2 >= minRad)
+				points.push_back(SDL_Point{ center.x + i, center.y + j });
 		}
 	}
+	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
+}
+
+void Graphics::renderRect(const geom::Rect& r, Uint8 thickness) const {
+	SDL_Rect r = { static_cast<int>(r.x), static_cast<int>(r.y), static_cast<int>(r.w), static_cast<int>(r.h) };
+	renderRect(r, thickness);
+}
+
+void Graphics::renderPoly(const geom::Polygon& p, Uint8 thickness) const {
+	const size_t size = p.size();
+	for (std::size_t k = size - 1, i = 0; i < size; k = i++)
+		renderLine(game::util::coord2DToSDLPoint(p[k]), game::util::coord2DToSDLPoint(p[i]), thickness);
+}
+void Graphics::renderPolyVerts(const geom::Polygon& p, Uint8 pointSize) const {
+	const size_t size = p.size();
+	for (std::size_t i = 0; i < size; ++i)
+		renderPoint(game:: util::coord2DToSDLPoint(p[i]), pointSize);
+}
+void Graphics::renderPolyEdgeNormals(const geom::Polygon& p, Uint16 length, Uint8 thickness) const {
+	const size_t size = p.size();
+	for (std::size_t i = 0, k = size - 1; i < size; k = i++) {
+		const geom::Coord2 start((p[k] + p[i]) * 0.5f);
+		const geom::Coord2 end(start + p.getEdgeNorm(k) * length);
+		renderLine(game::util::coord2DToSDLPoint(start), game::util::coord2DToSDLPoint(end), thickness);
+	}
+}
+
+void Graphics::renderCircle(const geom::Circle& c, Uint8 thickness) const {
+	renderCircle(game::util::coord2DToSDLPoint(c.center), static_cast<Uint16>(c.radius), thickness);
 }
 
 void Graphics::setWindowTitle(const std::string& text) {

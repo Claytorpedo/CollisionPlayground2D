@@ -44,5 +44,4 @@ private:
 	SDL_Renderer* renderer_;
 };
 
-
 #endif // INCLUDE_GRAPHICS_HPP

@@ -24,9 +24,6 @@
     <ClCompile Include="Room.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mover.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -79,6 +76,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Geometry2D\geom\math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geom_examples\Mover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geom_examples\ExamplePoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -182,7 +188,22 @@
     <ClInclude Include="geom_examples\SimpleCollisionMap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gen.hpp">
+    <ClInclude Include="geom_examples\Mover.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Room.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geom_examples\ExamplePoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="generator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

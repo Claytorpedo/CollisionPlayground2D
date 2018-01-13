@@ -115,7 +115,7 @@ void Graphics::renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickn
 	for (int i = -r; i <= r; ++i) {
 		for (int j = -r; j <= r; ++j) {
 			const int hypotenuse2(i*i + j*j);
-			if (hypotenuse2 <= r2 && hypotenuse2 >= minRad)
+			if (hypotenuse2 <= r2 && hypotenuse2 >= minRad2)
 				points.push_back(SDL_Point{ center.x + i, center.y + j });
 		}
 	}

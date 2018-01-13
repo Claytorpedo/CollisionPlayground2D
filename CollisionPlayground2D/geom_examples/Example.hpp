@@ -4,15 +4,15 @@
 
 #include "../units.hpp"
 
+class Input;
+class Graphics;
 namespace game {
-	class Input;
-	class Graphics;
-
 	class Example {
 	public:
 		virtual ~Example() {}
-		virtual const bool update(Input input, MS elapsedTime);
-		virtual const bool draw(Graphics graphics);
+		virtual void update(Input& input, const MS elapsedTime) = 0;
+		virtual void draw(Graphics& graphics) = 0;
+		virtual void reset() = 0;
 	};
 }
 

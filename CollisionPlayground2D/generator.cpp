@@ -1,6 +1,7 @@
 #include "generator.hpp"
 
 #include <algorithm>
+#include <iostream>
 
 namespace gen {
 	void init() {

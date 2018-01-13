@@ -1,5 +1,7 @@
 #include "ExamplePoly.hpp"
 
+#include <iostream>
+
 #include "../generator.hpp"
 #include "../Input.hpp"
 #include "../Graphics.hpp"
@@ -26,7 +28,7 @@ namespace game {
 		bool isOccupied = false;
 		do {
 			for (std::size_t i = 0; i < NUM_POLYS; ++i) {
-				if (isOccupied = geom::overlaps(collider, position, map_[i]->getCollider(), map_[i]->getPosition())) {
+				if ((isOccupied = geom::overlaps(collider, position, map_[i]->getCollider(), map_[i]->getPosition()))) {
 					collider = gen::poly(POLY_MIN_RAD, POLY_MAX_RAD, POLY_MIN_VERTS, POLY_MAX_VERTS);
 					position = gen::coord2(level_region_);
 					std::cout << "Spot occupied. Trying somewhere else...\n";

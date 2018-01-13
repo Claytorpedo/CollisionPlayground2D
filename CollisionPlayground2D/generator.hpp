@@ -1,6 +1,6 @@
 #pragma once
-#ifndef INCLUDE_GAME_GEN_HPP
-#define INCLUDE_GAME_GEN_HPP
+#ifndef INCLUDE_GAME_GENERATOR_HPP
+#define INCLUDE_GAME_GENERATOR_HPP
 
 #include <random>
 
@@ -18,4 +18,4 @@ namespace gen {
 	geom::Coord2 coord2(const geom::Rect& region);
 }
 
-#endif INCLUDE_GAME_GEN_HPP
+#endif // INCLUDE_GAME_GENERATOR_HPP

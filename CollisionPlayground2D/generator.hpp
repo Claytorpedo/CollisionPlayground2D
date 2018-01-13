@@ -6,14 +6,16 @@
 
 #include "Geometry2D/Geometry.hpp"
 
-class Mover;
-namespace game {
+namespace gen {
+	static std::mt19937 rng;
+	void init();
 	// Generate a polygon.
 	// region is a bounding box defining the region to place the polygon's center in (part of the polygon can be outside this region).
 	// minRad and maxRad control how large the generated polygon will be.
 	// minVerts and maxVerts control how many vertices the generated polygon can have.
-	geom::Polygon genPoly(std::mt19937& rando, const geom::Rect& region,
-		const geom::gFloat minRad, const geom::gFloat maxRad, const std::size_t minVerts, const std::size_t maxVerts);
+	geom::Polygon poly(const geom::gFloat minRad, const geom::gFloat maxRad, const std::size_t minVerts, const std::size_t maxVerts);
+	// Generate a 2D coordinate within a given region.
+	geom::Coord2 coord2(const geom::Rect& region);
 }
 
 #endif INCLUDE_GAME_GEN_HPP

@@ -149,9 +149,23 @@ void Graphics::renderPolyEdgeNormals(const geom::Polygon& p, const geom::Coord2&
 		renderLine(game::util::coord2DToSDLPoint(start), game::util::coord2DToSDLPoint(end), thickness);
 	}
 }
-
 void Graphics::renderCircle(const geom::Circle& c, const geom::Coord2& pos, Uint8 thickness) const {
 	renderCircle(game::util::coord2DToSDLPoint(c.center+pos), static_cast<Uint16>(c.radius), thickness);
+}
+void Graphics::renderShape(const geom::ShapeContainer& s, const geom::Coord2& pos, Uint8 thickness) const {
+	switch (s.type()) {
+	case geom::ShapeType::RECTANGLE:
+		renderRect(s.rect(), pos, thickness);
+		break;
+	case geom::ShapeType::POLYGON:
+		renderPoly(s.poly(), pos, thickness);
+		break;
+	case geom::ShapeType::CIRCLE:
+		renderCircle(s.circle(), pos, thickness);
+		break;
+	default:
+		std::cerr << "Error: Unhandled shape type to renderShape.\n";
+	}
 }
 
 void Graphics::setWindowTitle(const std::string& text) {

@@ -81,10 +81,10 @@
     <ClCompile Include="geom_examples\Mover.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="geom_examples\ExamplePoly.cpp">
+    <ClCompile Include="generator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="generator.cpp">
+    <ClCompile Include="geom_examples\ExampleShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -200,10 +200,10 @@
     <ClInclude Include="Room.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="geom_examples\ExamplePoly.hpp">
+    <ClInclude Include="generator.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="generator.hpp">
+    <ClInclude Include="geom_examples\ExampleShapes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

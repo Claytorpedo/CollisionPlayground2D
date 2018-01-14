@@ -92,12 +92,12 @@
     <ClCompile Include="Geometry2D\geom\shapes\Rectangle.cpp" />
     <ClCompile Include="Geometry2D\geom\shapes\Shape.cpp" />
     <ClCompile Include="Geometry2D\geom\shapes\ShapeContainer.cpp" />
-    <ClCompile Include="geom_examples\ExamplePoly.cpp" />
+    <ClCompile Include="geom_examples\ExampleShapes.cpp" />
     <ClCompile Include="main.cpp" />
     <ClInclude Include="constants.hpp" />
     <ClInclude Include="generator.hpp" />
     <ClInclude Include="geom_examples\Example.hpp" />
-    <ClInclude Include="geom_examples\ExamplePoly.hpp" />
+    <ClInclude Include="geom_examples\ExampleShapes.hpp" />
     <ClInclude Include="geom_examples\Mover.hpp" />
     <ClInclude Include="geom_examples\SimpleCollisionMap.hpp" />
     <ClInclude Include="game.hpp" />

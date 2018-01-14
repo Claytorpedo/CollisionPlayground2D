@@ -10,8 +10,8 @@ namespace game {
 	class Example {
 	public:
 		virtual ~Example() {}
-		virtual void update(Input& input, const MS elapsedTime) = 0;
-		virtual void draw(Graphics& graphics) = 0;
+		virtual void update(const Input& input, const MS elapsedTime) = 0;
+		virtual void draw(const Graphics& graphics) = 0;
 		virtual void reset() = 0;
 	};
 }

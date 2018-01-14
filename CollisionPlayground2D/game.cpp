@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <memory>
 
 #include "units.hpp"
 #include "constants.hpp"
@@ -11,7 +12,7 @@
 #include "generator.hpp"
 
 #include "geom_examples/Example.hpp"
-#include "geom_examples/ExamplePoly.hpp"
+#include "geom_examples/ExampleShapes.hpp"
 
 #include "Geometry2D/Geometry.hpp"
 
@@ -56,8 +57,7 @@ namespace game {
 			closeWithError();
 			return -1;
 		}
-		Example* example;
-		example = new ExamplePoly(game::LEVEL_REGION);
+		std::unique_ptr<Example> example(std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::POLY, LEVEL_REGION));
 		previousTime = SDL_GetTicks();
 		// Start the game loop.
 		while (true) {
@@ -65,9 +65,17 @@ namespace game {
 				break; // Window was closed.
 			if (input.wasKeyPressed(SDLK_ESCAPE))
 				break;
-			if (input.wasKeyPressed(SDLK_r)) {
+			if (input.wasKeyPressed(SDLK_r))
 				example->reset();
-			}
+			if (input.wasKeyPressed(SDLK_1))
+				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::RECT, LEVEL_REGION);
+			if (input.wasKeyPressed(SDLK_2))
+				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::POLY, LEVEL_REGION);
+			if (input.wasKeyPressed(SDLK_3))
+				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::CIRCLE, LEVEL_REGION);
+			if (input.wasKeyPressed(SDLK_4))
+				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::MIXED, LEVEL_REGION);
+
 			currentTime = SDL_GetTicks();
 			elapsedTime = currentTime - previousTime;
 			previousTime = currentTime;

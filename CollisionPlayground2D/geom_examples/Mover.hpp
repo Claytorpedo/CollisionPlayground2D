@@ -29,7 +29,7 @@ namespace game {
 		const geom::Coord2& getPosition() const;
 		const geom::ShapeContainer& getCollider() const;
 
-		void receiveInput(Input& input);
+		void receiveInput(const Input& input);
 
 		void moveLeft();
 		void moveRight();

@@ -55,7 +55,7 @@ namespace game {
 		return collider_;
 	}
 
-	void Mover::receiveInput(Input& input) {
+	void Mover::receiveInput(const Input& input) {
 		// Horizontal movement.
 		if ((input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a)) && (input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d))) {
 			stopMovingHorizontal();

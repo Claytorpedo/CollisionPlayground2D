@@ -40,4 +40,8 @@ namespace gen {
 		std::uniform_real_distribution<geom::gFloat> Y(region.top(), region.bottom());
 		return geom::Coord2(X(rng), Y(rng));
 	}
+	geom::gFloat gFloat(const geom::gFloat min, const geom::gFloat max) {
+		std::uniform_real_distribution<geom::gFloat> f(min, max);
+		return f(rng);
+	}
 }

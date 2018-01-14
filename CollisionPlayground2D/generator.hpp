@@ -16,6 +16,8 @@ namespace gen {
 	geom::Polygon poly(const geom::gFloat minRad, const geom::gFloat maxRad, const std::size_t minVerts, const std::size_t maxVerts);
 	// Generate a 2D coordinate within a given region.
 	geom::Coord2 coord2(const geom::Rect& region);
+	// Generate a gFloat within a given range [min, max).
+	geom::gFloat gFloat(const geom::gFloat min, const geom::gFloat max);
 }
 
 #endif // INCLUDE_GAME_GENERATOR_HPP

@@ -12,6 +12,7 @@
 
 class Graphics {
 public:
+	static const std::string DEFAULT_WINDOW_TITLE;
 	Graphics();
 	~Graphics();
 

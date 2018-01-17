@@ -19,12 +19,6 @@ namespace game {
 			MIXED,
 		};
 
-		static const std::size_t  NUM_SHAPES;
-		static const geom::gFloat SHAPE_MIN_SIZE;
-		static const geom::gFloat SHAPE_MAX_SIZE;
-		static const std::size_t  POLY_MIN_VERTS;
-		static const std::size_t  POLY_MAX_VERTS;
-
 		ExampleShapes(ExampleType type, const geom::Rect& levelRegion);
 		~ExampleShapes() = default;
 		virtual void update(const Input& input, const MS elapsedTime);
@@ -38,10 +32,7 @@ namespace game {
 
 		void _init();
 		void _gen_mover();
-		geom::ShapeContainer _gen_shape() const;
-		geom::Rect _gen_rect() const;
-		geom::Polygon _gen_poly() const;
-		geom::Circle _gen_circle() const;
+		geom::ShapeContainer ExampleShapes::_gen_example_shape() const;
 	};
 }
 

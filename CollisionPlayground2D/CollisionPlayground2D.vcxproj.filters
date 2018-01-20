@@ -87,6 +87,15 @@
     <ClCompile Include="geom_examples\ExampleShapes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="geom_examples\Example.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geom_examples\ExampleRays.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="geom_examples\RotatingRay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.hpp">
@@ -205,6 +214,12 @@
     </ClInclude>
     <ClInclude Include="geom_examples\ExampleShapes.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geom_examples\RotatingRay.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="geom_examples\ExampleRays.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

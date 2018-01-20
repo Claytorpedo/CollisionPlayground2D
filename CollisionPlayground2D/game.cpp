@@ -13,6 +13,7 @@
 
 #include "geom_examples/Example.hpp"
 #include "geom_examples/ExampleShapes.hpp"
+#include "geom_examples/ExampleRays.hpp"
 
 #include "Geometry2D/Geometry.hpp"
 
@@ -26,7 +27,10 @@ namespace game {
 		EXAMPLE_HEADER + "1: Rectangles",
 		EXAMPLE_HEADER + "2: Polygons",
 		EXAMPLE_HEADER + "3: Circles",
-		EXAMPLE_HEADER + "4: Mixed shapes"
+		EXAMPLE_HEADER + "4: Mixed shapes",
+		EXAMPLE_HEADER + "5: Peircing ray",
+		EXAMPLE_HEADER + "6: Closest ray",
+		EXAMPLE_HEADER + "7: Reflecting ray",
 	};
 	static std::string window_title_ = "Collision Playground 2D";
 	static std::string fps_display_ = "";
@@ -91,6 +95,15 @@ namespace game {
 			} else if (input.wasKeyPressed(SDLK_4)) {
 				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::MIXED, LEVEL_REGION);
 				example_title_ = EXAMPLE_NAMES[4];
+			} else if (input.wasKeyPressed(SDLK_5)) {
+				example = std::make_unique<ExampleRays>(ExampleRays::ExampleType::PEIRCING, LEVEL_REGION);
+				example_title_ = EXAMPLE_NAMES[5];
+			} else if (input.wasKeyPressed(SDLK_6)) {
+				example = std::make_unique<ExampleRays>(ExampleRays::ExampleType::CLOSEST, LEVEL_REGION);
+				example_title_ = EXAMPLE_NAMES[6];
+			} else if (input.wasKeyPressed(SDLK_7)) {
+				example = std::make_unique<ExampleRays>(ExampleRays::ExampleType::REFLECTING, LEVEL_REGION);
+				example_title_ = EXAMPLE_NAMES[7];
 			}
 
 			currentTime = SDL_GetTicks();

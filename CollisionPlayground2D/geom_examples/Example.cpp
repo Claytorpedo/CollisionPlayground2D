@@ -12,9 +12,9 @@ namespace game {
 
 	geom::ShapeContainer Example::genShape() const {
 		const geom::gFloat rand(gen::gFloat(0.0f, 1.0f));
-		if (rand < 0.33f)
+		if (rand < 0.2f)
 			return geom::ShapeContainer(genRect());
-		if (rand < 0.66f)
+		if (rand < 0.70f)
 			return geom::ShapeContainer(genPoly());
 		return geom::ShapeContainer(genCircle());
 	}

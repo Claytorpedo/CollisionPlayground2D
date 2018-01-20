@@ -90,7 +90,7 @@ void Graphics::renderPoints(const std::vector<SDL_Point>& points, Uint8 pointSiz
 			}
 		}
 	}
-	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
+	SDL_RenderDrawPoints(renderer_, drawPoints.data(), drawPoints.size());
 }
 void Graphics::renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickness) const {
 	std::vector<SDL_Point> points;

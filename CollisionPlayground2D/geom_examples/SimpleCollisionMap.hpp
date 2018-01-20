@@ -17,9 +17,6 @@ namespace game {
 		virtual const std::vector<geom::Collidable*> getColliding(const geom::Collidable& collider, const geom::Coord2& delta) const {
 			return std::vector<geom::Collidable*>(obstacles.begin(), obstacles.end());
 		}
-		void add(geom::ShapeContainer shape) {
-			obstacles.push_back(new geom::Wall(shape));
-		}
 		void add(geom::Collidable* collidable) {
 			obstacles.push_back(collidable);
 		}

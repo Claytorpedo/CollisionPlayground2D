@@ -1,10 +1,12 @@
 SRCDIR := .
 
-SRCS := $(wildcard $(SRCDIR)/*.cpp)
+EXNAME := geom_examples
+
+SRCS := $(wildcard $(SRCDIR)/*.cpp) $(wildcard $(SRCDIR)/$(EXNAME)/*.cpp)
 ODIR := $(SRCDIR)/build
 OBJS := $(patsubst $(SRCDIR)/%.cpp,$(ODIR)/%.o,$(SRCS))
 
-MKDIRS := $(ODIR)
+MKDIRS := $(ODIR) $(ODIR)/$(EXNAME)
 
 GEOM := $(SRCDIR)/Geometry2D
 SUBMODS := $(GEOM)

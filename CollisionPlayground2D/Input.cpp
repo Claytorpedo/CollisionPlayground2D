@@ -1,7 +1,5 @@
 #include "Input.hpp"
 
-#include <bitset>
-
 bool Input::refresh() {
 	clearFrame();
 	return poll();
@@ -44,6 +42,15 @@ void Input::keyUpEvent(SDL_Keycode k) {
 	held_keys_[k] = false;
 }
 
-bool Input::isKeyHeld(SDL_Keycode k)      { return held_keys_[k]; }
-bool Input::wasKeyPressed(SDL_Keycode k)  { return pressed_keys_[k]; }
-bool Input::wasKeyReleased(SDL_Keycode k) { return released_keys_[k]; }
+bool Input::isKeyHeld(SDL_Keycode k) const {
+	auto it(held_keys_.find(k));
+	return it != held_keys_.end() && it->second;
+}
+bool Input::wasKeyPressed(SDL_Keycode k) const {
+	auto it(pressed_keys_.find(k));
+	return it != pressed_keys_.end() && it->second;
+}
+bool Input::wasKeyReleased(SDL_Keycode k) const {
+	auto it(released_keys_.find(k));
+	return it != released_keys_.end() && it->second;
+}

@@ -69,7 +69,8 @@ namespace game {
 		const geom::Ray& r(rotating_ray_.getRay());
 		std::size_t ind;
 		geom::gFloat near, far;
-		bool isCollision = _find_closest_isect(r, ind, near, geom::Coord2{}, far, geom::Coord2{});
+		geom::Coord2 unused1, unused2;
+		bool isCollision = _find_closest_isect(r, ind, near, unused1, far, unused2);
 		// Draw results.
 		for (std::size_t i = 0; i < map_.size(); ++i) {
 			if (ind == i)

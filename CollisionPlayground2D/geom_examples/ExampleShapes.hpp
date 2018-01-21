@@ -32,7 +32,7 @@ namespace game {
 
 		void _init();
 		void _gen_mover();
-		geom::ShapeContainer ExampleShapes::_gen_example_shape() const;
+		geom::ShapeContainer _gen_example_shape() const;
 	};
 }
 

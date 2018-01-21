@@ -72,8 +72,8 @@ namespace game {
 			closeWithError();
 			return -1;
 		}
-		std::unique_ptr<Example> example(std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::POLY, LEVEL_REGION));
-		example_title_ = EXAMPLE_NAMES[2];
+		std::unique_ptr<Example> example(std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::MIXED, LEVEL_REGION));
+		example_title_ = EXAMPLE_NAMES[4];
 		previousTime = SDL_GetTicks();
 		// Start the game loop.
 		while (true) {

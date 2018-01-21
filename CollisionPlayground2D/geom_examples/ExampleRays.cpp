@@ -96,8 +96,7 @@ namespace game {
 			norm_near = -norm_far; // Reflect inside the shape.
 		}
 		const geom::Coord2 reflectedPos(testRay.origin + testRay.dir * geom::math::clamp(near - 0.01f, 0.0f, near));
-		const geom::Coord2 reflectedDir(testRay.dir - 2.0f * norm_near * testRay.dir.dot(norm_near));
-		out_reflected = geom::Ray(reflectedPos, reflectedDir);
+		out_reflected = geom::Ray(reflectedPos, geom::math::reflect(testRay.dir, norm_near));
 		out_reflect_dist = near;
 		return true;
 	}

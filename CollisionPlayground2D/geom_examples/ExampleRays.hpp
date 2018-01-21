@@ -14,6 +14,8 @@ namespace game {
 	public:
 
 		static const std::size_t MAX_REFLECTIONS;
+		static const Uint16      MAX_RAY_LENGTH;
+		static const Uint8       HIT_POINT_SIZE;
 		// Colours.
 		static const Colour RAY_COLOUR;
 		static const Colour RAY_ORIGIN_COLOUR;

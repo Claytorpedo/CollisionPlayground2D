@@ -11,6 +11,8 @@
 namespace game {
 
 	const std::size_t ExampleRays::MAX_REFLECTIONS = 30;
+	const Uint16      ExampleRays::MAX_RAY_LENGTH  = 1000;
+	const Uint8       ExampleRays::HIT_POINT_SIZE  = 4;
 
 	const Colour ExampleRays::RAY_COLOUR          = Colour::YELLOW;
 	const Colour ExampleRays::RAY_ORIGIN_COLOUR   = Colour::ORANGE;
@@ -47,9 +49,9 @@ namespace game {
 			graphics.renderShape(map_[i]->getCollider(), map_[i]->getPosition());
 		}
 		graphics.setRenderColour(RAY_COLOUR);
-		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir.x, r.dir.y);
+		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir.x, r.dir.y, MAX_RAY_LENGTH);
 		graphics.setRenderColour(HIT_POINT_COLOUR);
-		graphics.renderPoints(intersections, 4);
+		graphics.renderPoints(intersections, HIT_POINT_SIZE);
 	}
 	bool ExampleRays::_find_closest_isect(geom::Ray testRay,
 		std::size_t& out_closest_ind, geom::gFloat& out_near, geom::Coord2& out_norm_near, geom::gFloat& out_far, geom::Coord2& out_norm_far) const {
@@ -86,10 +88,10 @@ namespace game {
 			graphics.renderShape(map_[i]->getCollider(), map_[i]->getPosition());
 		}
 		graphics.setRenderColour(RAY_COLOUR);
-		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir.x, r.dir.y, isCollision ? static_cast<Uint16>(near) : 1000);
+		graphics.renderRay(util::coord2DToSDLPoint(r.origin), r.dir.x, r.dir.y, isCollision ? static_cast<Uint16>(near) : MAX_RAY_LENGTH);
 		if (isCollision) {
 			graphics.setRenderColour(HIT_POINT_COLOUR);
-			graphics.renderPoint(util::coord2DToSDLPoint(r.origin + r.dir * near), 4);
+			graphics.renderPoint(util::coord2DToSDLPoint(r.origin + r.dir * near), HIT_POINT_SIZE);
 		}
 	}
 	bool ExampleRays::_find_reflection(geom::Ray testRay, std::size_t& out_ind, geom::gFloat& out_reflect_dist, geom::Ray& out_reflected) const {
@@ -101,7 +103,7 @@ namespace game {
 			near = far; // Use the exit point.
 			norm_near = -norm_far; // Reflect inside the shape.
 		}
-		const geom::Coord2 reflectedPos(testRay.origin + testRay.dir * geom::math::clamp(near - 0.01f, 0.0f, near));
+		const geom::Coord2 reflectedPos(testRay.origin + testRay.dir * geom::math::clamp(near - 0.1f, 0.0f, near));
 		out_reflected = geom::Ray(reflectedPos, geom::math::reflect(testRay.dir, norm_near));
 		out_reflect_dist = near;
 		return true;
@@ -141,7 +143,7 @@ namespace game {
 		}
 		if (numReflects < MAX_REFLECTIONS) { // Draw final ray, if necessary.
 			graphics.setRenderColour(_reflect_interp_colour(numReflects));
-			graphics.renderRay(util::coord2DToSDLPoint(currentRay.origin), currentRay.dir.x, currentRay.dir.y);
+			graphics.renderRay(util::coord2DToSDLPoint(currentRay.origin), currentRay.dir.x, currentRay.dir.y, MAX_RAY_LENGTH);
 		}
 		for (std::size_t i = 0; i < map_.size(); ++i) {
 			if (std::find(indices.begin(), indices.end(), i) != indices.end())
@@ -151,7 +153,7 @@ namespace game {
 			graphics.renderShape(map_[i]->getCollider(), map_[i]->getPosition());
 		}
 		graphics.setRenderColour(HIT_POINT_COLOUR);
-		graphics.renderPoints(reflectPoints, 4);
+		graphics.renderPoints(reflectPoints, HIT_POINT_SIZE);
 	}
 	void ExampleRays::draw(const Graphics& graphics) {
 		// Draw ray's origin.

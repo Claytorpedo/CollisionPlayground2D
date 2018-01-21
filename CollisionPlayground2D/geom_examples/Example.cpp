@@ -10,6 +10,9 @@ namespace game {
 	const std::size_t  Example::POLY_MIN_VERTS = 3;
 	const std::size_t  Example::POLY_MAX_VERTS = 20;
 
+	const Colour Example::SHAPE_COLOUR     = Colour::LIGHT_BLUE;
+	const Colour Example::HIT_SHAPE_COLOUR = Colour::RED;
+
 	geom::ShapeContainer Example::genShape() const {
 		const geom::gFloat rand(gen::gFloat(0.0f, 1.0f));
 		if (rand < 0.2f)

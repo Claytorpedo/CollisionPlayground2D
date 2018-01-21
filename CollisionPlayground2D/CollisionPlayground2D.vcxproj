@@ -92,8 +92,10 @@
     <ClCompile Include="Geometry2D\geom\shapes\Rectangle.cpp" />
     <ClCompile Include="Geometry2D\geom\shapes\Shape.cpp" />
     <ClCompile Include="Geometry2D\geom\shapes\ShapeContainer.cpp" />
+    <ClCompile Include="Colour.cpp" />
     <ClCompile Include="geom_examples\Example.cpp" />
     <ClCompile Include="geom_examples\ExampleRays.cpp" />
+    <ClInclude Include="Colour.hpp" />
     <ClInclude Include="geom_examples\ExampleRays.hpp" />
     <ClCompile Include="geom_examples\ExampleShapes.cpp" />
     <ClCompile Include="geom_examples\RotatingRay.cpp" />

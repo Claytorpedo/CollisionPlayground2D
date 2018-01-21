@@ -14,6 +14,12 @@ namespace game {
 	public:
 
 		static const std::size_t MAX_REFLECTIONS;
+		// Colours.
+		static const Colour RAY_COLOUR;
+		static const Colour RAY_ORIGIN_COLOUR;
+		static const Colour HIT_POINT_COLOUR;
+		static const Colour RAY_REFLECT_COLOURS[];
+		static const std::size_t NUM_REFLECT_COLOURS;
 
 		enum class ExampleType {
 			PEIRCING,
@@ -39,6 +45,7 @@ namespace game {
 		void _draw_peircing(const Graphics& graphics) const;
 		void _draw_closest(const Graphics& graphics) const;
 		void _draw_reflecting(const Graphics& graphics) const;
+		Colour _reflect_interp_colour(std::size_t reflectDepth) const; // Change the ray's colour while reflecting.
 	};
 }
 

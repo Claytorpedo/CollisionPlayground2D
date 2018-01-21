@@ -111,7 +111,7 @@ namespace game {
 			previousTime = currentTime;
 			example->update(input, elapsedTime);
 
-			graphics.clear();
+			graphics.clear(game::BACKGROUND_COLOUR);
 			example->draw(graphics);
 			setFPSDisplay(graphics, elapsedTime);
 			graphics.setWindowTitle(fps_display_ + window_title_ + example_title_);

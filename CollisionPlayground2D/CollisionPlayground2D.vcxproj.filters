@@ -96,6 +96,9 @@
     <ClCompile Include="geom_examples\RotatingRay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Colour.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="game.hpp">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="geom_examples\ExampleRays.hpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Colour.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

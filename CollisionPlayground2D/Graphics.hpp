@@ -7,6 +7,7 @@
 #include <string>
 
 #include "units.hpp"
+#include "Colour.hpp"
 
 #include "Geometry2D/Geometry.hpp"
 
@@ -20,6 +21,7 @@ public:
 	bool init(game::Pixel screenWidth, game::Pixel screenHeight);
 	// Render SDL structs.
 	void setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a=255) const;
+	void setRenderColour(const Colour& c) const;
 	void renderRect(const SDL_Rect& rect, Uint8 thickness=1) const;
 	void renderLine(const SDL_Point& start, const SDL_Point& end) const;
 	void renderLines(const std::vector<SDL_Point>& points) const;
@@ -38,6 +40,7 @@ public:
 
 	void setWindowTitle(const std::string& text);
 
+	void clear(const Colour& c);
 	void clear();
 	void present();
 

@@ -3,6 +3,7 @@
 #define INCLUDE_GAME_EXAMPLE_HPP
 
 #include "../units.hpp"
+#include "../Colour.hpp"
 
 namespace geom {
 	class ShapeContainer;
@@ -21,6 +22,9 @@ namespace game {
 		static const geom::gFloat SHAPE_MAX_SIZE;
 		static const std::size_t  POLY_MIN_VERTS;
 		static const std::size_t  POLY_MAX_VERTS;
+
+		static const Colour	SHAPE_COLOUR;
+		static const Colour	HIT_SHAPE_COLOUR;
 
 		virtual ~Example() {}
 		virtual void update(const Input& input, const MS elapsedTime) = 0;

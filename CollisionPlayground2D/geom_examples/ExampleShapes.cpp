@@ -56,15 +56,15 @@ namespace game {
 		for (std::size_t i = 0; i < map_.size(); ++i) {
 #ifdef DEBUG
 			if (geom::overlaps(mover_.getCollider(), mover_.getPosition(), map_[i]->getCollider(), map_[i]->getPosition()))
-				graphics.setRenderColour(255, 0, 0);
+				graphics.setRenderColour(Example::HIT_SHAPE_COLOUR);
 			else
-				graphics.setRenderColour(0, 100, 255);
+				graphics.setRenderColour(Example::SHAPE_COLOUR);
 #else
-			graphics.setRenderColour(0, 100, 255);
+			graphics.setRenderColour(Example::SHAPE_COLOUR);
 #endif
 			graphics.renderShape(map_[i]->getCollider(), map_[i]->getPosition());
 		}
-		graphics.setRenderColour(255, 0, 0);
+		graphics.setRenderColour(Example::HIT_SHAPE_COLOUR);
 		graphics.renderShape(mover_.getCollider(), mover_.getPosition());
 	}
 	void ExampleShapes::reset() {

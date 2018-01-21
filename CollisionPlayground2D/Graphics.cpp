@@ -38,6 +38,9 @@ bool Graphics::init(game::Pixel screenWidth, game::Pixel screenHeight) {
 void Graphics::setRenderColour(Uint8 r, Uint8 g, Uint8 b, Uint8 a) const {
 	SDL_SetRenderDrawColor(renderer_, r, g, b, a);
 }
+void Graphics::setRenderColour(const Colour& c) const {
+	SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+}
 
 void Graphics::renderRect(const SDL_Rect& rect, Uint8 thickness) const {
 	std::vector<SDL_Rect> rects;
@@ -158,8 +161,11 @@ void Graphics::setWindowTitle(const std::string& text) {
 	SDL_SetWindowTitle(window_, text.data());
 }
 
+void Graphics::clear(const Colour& c) {
+	SDL_SetRenderDrawColor(renderer_, c.r, c.g, c.b, c.a);
+	SDL_RenderClear(renderer_);
+}
 void Graphics::clear() {
-	SDL_SetRenderDrawColor(renderer_, 0,0,0, 255); // Black.
 	SDL_RenderClear(renderer_);
 }
 void Graphics::present() {

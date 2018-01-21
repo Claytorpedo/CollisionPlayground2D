@@ -15,7 +15,7 @@ SUBMODCMD := $(MAKECMDGOALS)
 PROG := examples
 
 CC = g++
-COMP_FLAGS = -std=c++11 -Wall -pedantic
+COMP_FLAGS = -std=c++14 -Wall -pedantic
 LINK_FLAGS = `pkg-config --libs sdl2` -L$(GEOM)/lib/ -lgeom
 INCL_DIRS = `pkg-config --cflags sdl2`
 
@@ -33,7 +33,7 @@ all: $(MKDIRS) $(SUBMODS) $(PROG)
 $(SUBMODS):
 	$(MAKE) -C $@ $(SUBMODCMD)
 
-$(PROG): $(OBJS)
+$(PROG): $(OBJS) | $(SUBMODS)
 	$(CC) $^ $(LINK_FLAGS) -o $@
 
 $(OBJS): $(ODIR)/%.o : $(SRCDIR)/%.cpp

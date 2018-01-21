@@ -81,9 +81,9 @@ namespace game {
 				break; // Window was closed.
 			if (input.wasKeyPressed(SDLK_ESCAPE))
 				break;
-			if (input.wasKeyPressed(SDLK_r))
+			if (input.wasKeyPressed(SDLK_r)) {
 				example->reset();
-			if (input.wasKeyPressed(SDLK_1)) {
+			} else if (input.wasKeyPressed(SDLK_1)) {
 				example = std::make_unique<ExampleShapes>(ExampleShapes::ExampleType::RECT, LEVEL_REGION);
 				example_title_ = EXAMPLE_NAMES[1];
 			} else if (input.wasKeyPressed(SDLK_2)) {

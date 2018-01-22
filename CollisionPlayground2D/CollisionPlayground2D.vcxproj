@@ -137,12 +137,10 @@
     <ClInclude Include="Geometry2D\geom\units.hpp" />
     <ClInclude Include="Graphics.hpp" />
     <ClInclude Include="Input.hpp" />
-    <ClInclude Include="Room.hpp" />
     <ClInclude Include="units.hpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="geom_examples\Mover.cpp" />
-    <ClCompile Include="Room.cpp" />
     <ClCompile Include="game.cpp" />
     <ClInclude Include="util.hpp" />
   </ItemGroup>

@@ -38,6 +38,8 @@ namespace game {
 		void stopMovingHorizontal();
 		void stopMovingVertical();
 		void stopMoving();
+	protected:
+		virtual bool onCollision(geom::Movable::CollisionInfo& info);
 	private:
 		geom::ShapeContainer collider_;
 		geom::Coord2 position_;
@@ -45,7 +47,7 @@ namespace game {
 		game::Acceleration2D acceleration_;
 		game::Velocity2D velocity_;
 
-		void update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map);
+		void _update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map);
 		void _init() const;
 	};
 }

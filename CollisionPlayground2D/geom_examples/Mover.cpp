@@ -3,7 +3,7 @@
 #include "../Input.hpp"
 
 namespace game {
-	const game::Velocity     Mover::MAX_SPEED = 0.3f;
+	const game::Velocity     Mover::MAX_SPEED = 0.35f;
 	const game::Velocity     Mover::MAX_DIAGONAL_SPEED = Mover::MAX_SPEED * (game::Velocity)std::sin(geom::constants::PI / 4.0f);
 	const game::Acceleration Mover::ACCELERATION = 0.0025f;
 	const game::Acceleration Mover::DECELERATION = 0.004f;
@@ -22,10 +22,10 @@ namespace game {
 
 	void Mover::update(const game::MS elapsedTime, const geom::CollisionMap& map) {
 		const game::Velocity maxSpeed = (!geom::math::almostZero(acceleration_.x) && !geom::math::almostZero(acceleration_.y)) ? MAX_DIAGONAL_SPEED : MAX_SPEED;
-		update_position(elapsedTime, maxSpeed, map);
+		_update_position(elapsedTime, maxSpeed, map);
 	}
 
-	void Mover::update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map) {
+	void Mover::_update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map) {
 		velocity_ += acceleration_ * (geom::gFloat)(elapsedTime);
 		velocity_.x = geom::math::clamp(velocity_.x, -maxSpeed, maxSpeed);
 		velocity_.y = geom::math::clamp(velocity_.y, -maxSpeed, maxSpeed);
@@ -41,6 +41,12 @@ namespace game {
 		}
 		const geom::Coord2 delta(velocity_*(geom::gFloat)(elapsedTime));
 		position_ = Movable::move(collider_, position_, delta, map);
+	}
+
+	bool Mover::onCollision(geom::Movable::CollisionInfo& info) {
+		// Project velocity against the normal, losing speed from the collision.
+		velocity_ = velocity_.project(info.normal.perpCW());
+		return true;
 	}
 
 	void Mover::setPosition(const geom::Coord2& position) {

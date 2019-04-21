@@ -119,12 +119,12 @@ namespace game {
 		const int interp_B = second.b - static_cast<int>(first.b);
 		const int interp_A = second.a - static_cast<int>(first.a);
 		const float interpolation(interpFactor - segment);
-		return Colour(
+		return Colour{
 			static_cast<Uint8>(first.r + interp_R * interpolation),
 			static_cast<Uint8>(first.g + interp_G * interpolation),
 			static_cast<Uint8>(first.b + interp_B * interpolation),
 			static_cast<Uint8>(first.a + interp_A * interpolation)
-		);
+		};
 	}
 	void ExampleRays::_draw_reflecting(const Graphics& graphics) const {
 		std::vector<int> indices; // Keep track of shapes that were hit.

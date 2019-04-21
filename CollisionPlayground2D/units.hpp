@@ -2,18 +2,20 @@
 #ifndef INCLUDE_GAME_UNITS_HPP
 #define INCLUDE_GAME_UNITS_HPP
 
+#include <cstdint>
+
 #include <Geometry2D/Geometry.hpp>
 
 namespace game {
-	typedef int          Pixel;
-	typedef unsigned int MS;
-	typedef unsigned int FPS;
-	typedef geom::gFloat Velocity;     // Coordinate / MS
-	typedef geom::gFloat Acceleration; // Coordinate / MS / MS
+	using Pixel = int32_t;
+	using MS = uint32_t;
+	using FPS = uint32_t;
+	using Velocity = geom::gFloat;     // Coordinate / MS
+	using Acceleration = geom::gFloat; // Coordinate / MS / MS
 
-	typedef geom::Vec2<Pixel>         Pixel2D;
-	typedef geom::Vec2<Velocity>      Velocity2D;
-	typedef geom::Vec2<Acceleration>  Acceleration2D;
+	using Pixel2D = geom::Vec2<Pixel>;
+	using Velocity2D = geom::Vec2<Velocity>;
+	using Acceleration2D = geom::Vec2<Acceleration>;
 }
 
 #endif // INCLUDE_GAME_UNITS_HPP

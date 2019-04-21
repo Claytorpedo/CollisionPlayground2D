@@ -9,7 +9,7 @@ namespace game {
 	const Pixel SCREEN_WIDTH = 1280;
 	const Pixel SCREEN_HEIGHT = 720;
 
-	const MS    SECOND_MILLIS = 1000; // Milliseconds per second.
+	const MS SECOND_MILLIS = 1000; // Milliseconds per second.
 
 	const Colour BACKGROUND_COLOUR = Colour::DARK_GREY;
 }

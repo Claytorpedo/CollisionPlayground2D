@@ -2,8 +2,9 @@
 #ifndef INCLUDE_GAME_ROTATING_RAY_HPP
 #define INCLUDE_GAME_ROTATING_RAY_HPP
 
-#include "../Geometry2D/Geometry.hpp"
 #include "../units.hpp"
+
+#include <Geometry2D/Geometry.hpp>
 
 class Input;
 namespace game {

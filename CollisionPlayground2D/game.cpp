@@ -15,7 +15,7 @@
 #include "geom_examples/ExampleShapes.hpp"
 #include "geom_examples/ExampleRays.hpp"
 
-#include "Geometry2D/Geometry.hpp"
+#include <Geometry2D/Geometry.hpp>
 
 namespace game {
 	const geom::Rect LEVEL_REGION = geom::Rect(util::tileToCoord(10), util::tileToCoord(5),

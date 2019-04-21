@@ -1,4 +1,4 @@
 [submodule "CollisionPlayground2D/Geometry2D"]
-	path = CollisionPlayground2D/Geometry2D
+	path = External/Geometry2D
 	url = git@github.com:Claytorpedo/Geometry2D.git
 	branch = master

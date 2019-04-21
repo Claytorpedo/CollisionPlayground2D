@@ -1,7 +1,8 @@
 #include "Example.hpp"
 
-#include "../Geometry2D/Geometry.hpp"
 #include "../generator.hpp"
+
+#include <Geometry2D/Geometry.hpp>
 
 namespace game {
 	const std::size_t  Example::NUM_SHAPES = 20;

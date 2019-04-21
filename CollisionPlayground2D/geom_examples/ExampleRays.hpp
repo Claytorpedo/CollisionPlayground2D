@@ -7,7 +7,7 @@
 #include "SimpleCollisionMap.hpp"
 #include "RotatingRay.hpp"
 
-#include "../Geometry2D/Geometry.hpp"
+#include <Geometry2D/Geometry.hpp>
 
 namespace game {
 	class ExampleRays: public Example {

@@ -6,7 +6,7 @@
 #include "Mover.hpp"
 #include "SimpleCollisionMap.hpp"
 
-#include "../Geometry2D/Geometry.hpp"
+#include <Geometry2D/Geometry.hpp>
 
 namespace game {
 	class ExampleShapes : public Example {

@@ -3,8 +3,9 @@
 #define INCLUDE_GAME_MOVER_HPP
 
 #include "../units.hpp"
-#include "../Geometry2D/Geometry.hpp"
 #include "../Input.hpp"
+
+#include <Geometry2D/Geometry.hpp>
 
 namespace geom { class CollisionMap; }
 class Input;

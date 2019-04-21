@@ -52,6 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NO_CONSOLE_COLOUR;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\Programming\CollisionPlayground2D\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -76,22 +77,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="generator.cpp" />
-    <ClCompile Include="Geometry2D\geom\collisions\collisions.cpp" />
-    <ClCompile Include="Geometry2D\geom\collisions\Movable.cpp" />
-    <ClCompile Include="Geometry2D\geom\collisions\Wall.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\intersections.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\isect_ray_circle.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\isect_ray_poly.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\isect_ray_rect.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\isect_ray_shape_container.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\overlaps.cpp" />
-    <ClCompile Include="Geometry2D\geom\intersections\sat.cpp" />
-    <ClCompile Include="Geometry2D\geom\math.cpp" />
-    <ClCompile Include="Geometry2D\geom\shapes\Circle.cpp" />
-    <ClCompile Include="Geometry2D\geom\shapes\Polygon.cpp" />
-    <ClCompile Include="Geometry2D\geom\shapes\Rectangle.cpp" />
-    <ClCompile Include="Geometry2D\geom\shapes\Shape.cpp" />
-    <ClCompile Include="Geometry2D\geom\shapes\ShapeContainer.cpp" />
     <ClCompile Include="Colour.cpp" />
     <ClCompile Include="geom_examples\Example.cpp" />
     <ClCompile Include="geom_examples\ExampleRays.cpp" />
@@ -108,33 +93,6 @@
     <ClInclude Include="geom_examples\RotatingRay.hpp" />
     <ClInclude Include="geom_examples\SimpleCollisionMap.hpp" />
     <ClInclude Include="game.hpp" />
-    <ClInclude Include="Geometry2D\Geometry.hpp" />
-    <ClInclude Include="Geometry2D\geom\collisions\Collidable.hpp" />
-    <ClInclude Include="Geometry2D\geom\collisions\CollisionMap.hpp" />
-    <ClInclude Include="Geometry2D\geom\collisions\collisions.hpp" />
-    <ClInclude Include="Geometry2D\geom\collisions\Movable.hpp" />
-    <ClInclude Include="Geometry2D\geom\collisions\Wall.hpp" />
-    <ClInclude Include="Geometry2D\geom\constants.hpp" />
-    <ClInclude Include="Geometry2D\geom\debug_logger.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\intersections.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\isect_ray_circle.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\isect_ray_poly.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\isect_ray_rect.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\isect_ray_shape_container.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\overlaps.hpp" />
-    <ClInclude Include="Geometry2D\geom\intersections\sat.hpp" />
-    <ClInclude Include="Geometry2D\geom\math.hpp" />
-    <ClInclude Include="Geometry2D\geom\primatives\Direction.hpp" />
-    <ClInclude Include="Geometry2D\geom\primatives\LineSegment.hpp" />
-    <ClInclude Include="Geometry2D\geom\primatives\Projection.hpp" />
-    <ClInclude Include="Geometry2D\geom\primatives\Ray.hpp" />
-    <ClInclude Include="Geometry2D\geom\primatives\Vector2D.hpp" />
-    <ClInclude Include="Geometry2D\geom\shapes\Circle.hpp" />
-    <ClInclude Include="Geometry2D\geom\shapes\Polygon.hpp" />
-    <ClInclude Include="Geometry2D\geom\shapes\Rectangle.hpp" />
-    <ClInclude Include="Geometry2D\geom\shapes\Shape.hpp" />
-    <ClInclude Include="Geometry2D\geom\shapes\ShapeContainer.hpp" />
-    <ClInclude Include="Geometry2D\geom\units.hpp" />
     <ClInclude Include="Graphics.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="units.hpp" />
@@ -143,6 +101,11 @@
     <ClCompile Include="geom_examples\Mover.cpp" />
     <ClCompile Include="game.cpp" />
     <ClInclude Include="util.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\External\Geometry2D\vcxproj\Geometry2D\Geometry2D.vcxproj">
+      <Project>{36788756-1109-4ad0-90e3-ad81bdcb34e6}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

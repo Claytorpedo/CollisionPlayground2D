@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GAME_SIMPLE_COLLISION_MAP_HPP
 #define INCLUDE_GAME_SIMPLE_COLLISION_MAP_HPP
 
-#include "../Geometry2D/Geometry.hpp"
+#include <Geometry2D/Geometry.hpp>
 
 // Extremely simple CollisionMap implementation: no data structure speedup at all.
 

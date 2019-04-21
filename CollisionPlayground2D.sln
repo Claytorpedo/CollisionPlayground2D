@@ -4,17 +4,34 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CollisionPlayground2D", "CollisionPlayground2D\CollisionPlayground2D.vcxproj", "{526C2165-860F-47C1-86AC-256A092ECA98}"
+	ProjectSection(ProjectDependencies) = postProject
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6} = {36788756-1109-4AD0-90E3-AD81BDCB34E6}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Geometry2D", "External\Geometry2D\vcxproj\Geometry2D\Geometry2D.vcxproj", "{36788756-1109-4AD0-90E3-AD81BDCB34E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
 		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{526C2165-860F-47C1-86AC-256A092ECA98}.Debug|Win32.ActiveCfg = Debug|Win32
 		{526C2165-860F-47C1-86AC-256A092ECA98}.Debug|Win32.Build.0 = Debug|Win32
+		{526C2165-860F-47C1-86AC-256A092ECA98}.Debug|x64.ActiveCfg = Debug|Win32
 		{526C2165-860F-47C1-86AC-256A092ECA98}.Release|Win32.ActiveCfg = Release|Win32
 		{526C2165-860F-47C1-86AC-256A092ECA98}.Release|Win32.Build.0 = Release|Win32
+		{526C2165-860F-47C1-86AC-256A092ECA98}.Release|x64.ActiveCfg = Release|Win32
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Debug|Win32.Build.0 = Debug|Win32
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Debug|x64.ActiveCfg = Debug|x64
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Debug|x64.Build.0 = Debug|x64
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Release|Win32.ActiveCfg = Release|Win32
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Release|Win32.Build.0 = Release|Win32
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Release|x64.ActiveCfg = Release|x64
+		{36788756-1109-4AD0-90E3-AD81BDCB34E6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

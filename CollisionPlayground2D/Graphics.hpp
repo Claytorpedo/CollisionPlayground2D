@@ -9,7 +9,7 @@
 #include "units.hpp"
 #include "Colour.hpp"
 
-#include "Geometry2D/Geometry.hpp"
+#include <Geometry2D/Geometry.hpp>
 
 class Graphics {
 public:

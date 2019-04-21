@@ -16,7 +16,7 @@ SUBMODCMD := $(MAKECMDGOALS)
 PROG := examples
 
 CC = g++
-COMP_FLAGS = -std=c++14 -Wall -Wextra -pedantic
+COMP_FLAGS = -std=c++17 -Wall -Wextra -pedantic
 LINK_FLAGS = `pkg-config --libs sdl2` -L$(GEOM)/lib/ -lgeom
 INCL_DIRS = `pkg-config --cflags sdl2` -I $(EXTERNAL)
 

@@ -53,6 +53,8 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>NO_CONSOLE_COLOUR;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>E:\Programming\CollisionPlayground2D\External;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

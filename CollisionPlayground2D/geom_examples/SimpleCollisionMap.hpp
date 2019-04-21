@@ -14,7 +14,7 @@ namespace game {
 		~SimpleCollisionMap() {
 			clear();
 		}
-		virtual const std::vector<geom::Collidable*> getColliding(const geom::Collidable& collider, const geom::Coord2& delta) const {
+		virtual const std::vector<geom::Collidable*> getColliding(const geom::Collidable&, const geom::Coord2&) const {
 			return std::vector<geom::Collidable*>(obstacles.begin(), obstacles.end());
 		}
 		void add(geom::Collidable* collidable) {

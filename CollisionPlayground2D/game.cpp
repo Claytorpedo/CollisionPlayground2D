@@ -20,9 +20,7 @@
 #include <Geometry2D/Geometry.hpp>
 
 namespace game {
-	const geom::Rect LEVEL_REGION = geom::Rect(util::tileToCoord(10), util::tileToCoord(5),
-		game::SCREEN_WIDTH - util::tileToCoord(20), game::SCREEN_HEIGHT - util::tileToCoord(10)
-	);
+	const geom::Rect LEVEL_REGION = geom::Rect{ 160, 80, SCREEN_WIDTH - 320, SCREEN_HEIGHT - 160 };
 	const std::array<std::string, 7> EXAMPLE_NAMES {
 		" - Example 1: Rectangles",
 		" - Example 2: Polygons",

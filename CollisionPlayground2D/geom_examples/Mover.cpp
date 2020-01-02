@@ -8,7 +8,7 @@ namespace game {
 	const game::Acceleration Mover::ACCELERATION = 0.0025f;
 	const game::Acceleration Mover::DECELERATION = 0.004f;
 
-	void Mover::_init() const {
+	void Mover::_init() {
 		if (collider_.type() == geom::ShapeType::POLYGON)
 			collider_.poly().computeNormals();
 	}
@@ -27,8 +27,8 @@ namespace game {
 
 	void Mover::_update_position(const game::MS elapsedTime, const game::Velocity maxSpeed, const geom::CollisionMap& map) {
 		velocity_ += acceleration_ * (geom::gFloat)(elapsedTime);
-		velocity_.x = geom::math::clamp(velocity_.x, -maxSpeed, maxSpeed);
-		velocity_.y = geom::math::clamp(velocity_.y, -maxSpeed, maxSpeed);
+		velocity_.x = std::clamp(velocity_.x, -maxSpeed, maxSpeed);
+		velocity_.y = std::clamp(velocity_.y, -maxSpeed, maxSpeed);
 		if (acceleration_.x == 0 && velocity_.x != 0) {
 			const bool isPos(velocity_.x > 0);
 			velocity_.x += (isPos ? -1.0f : 1.0f) * DECELERATION * elapsedTime;
@@ -53,11 +53,11 @@ namespace game {
 		position_ = position;
 	}
 
-	const geom::Coord2& Mover::getPosition() const {
+	geom::Coord2 Mover::getPosition() const {
 		return position_;
 	}
 
-	const geom::ShapeContainer& Mover::getCollider() const {
+	geom::ConstShapeRef Mover::getCollider() const {
 		return collider_;
 	}
 

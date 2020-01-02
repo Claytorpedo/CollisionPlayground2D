@@ -45,7 +45,7 @@ namespace game {
 			return Example::genShape();
 		default:
 			std::cerr << "Unhandled example type.\n";
-			return geom::ShapeContainer();
+			return geom::ShapeContainer(Example::genRect());
 		}
 	}
 	void ExampleShapes::update(const Input& input, MS elapsedTime) {

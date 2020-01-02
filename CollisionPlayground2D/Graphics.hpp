@@ -36,7 +36,7 @@ public:
 	void renderPolyVerts(const geom::Polygon& p, const geom::Coord2& pos, Uint8 pointSize=1) const;
 	void renderPolyEdgeNormals(const geom::Polygon& p, const geom::Coord2& pos, Uint16 length=50) const;
 	void renderCircle(const geom::Circle& c, const geom::Coord2& pos, Uint8 thickness=1) const;
-	void renderShape(const geom::ShapeContainer& s, const geom::Coord2& pos, Uint8 thickness = 1) const;
+	void renderShape(geom::ConstShapeRef s, const geom::Coord2& pos, Uint8 thickness = 1) const;
 
 	void setWindowTitle(const std::string& text);
 

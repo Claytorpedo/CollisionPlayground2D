@@ -103,7 +103,7 @@ namespace game {
 			near = far; // Use the exit point.
 			norm_near = -norm_far; // Reflect inside the shape.
 		}
-		const geom::Coord2 reflectedPos(testRay.origin + testRay.dir * geom::math::clamp(near - 0.1f, 0.0f, near));
+		const geom::Coord2 reflectedPos(testRay.origin + testRay.dir * std::clamp(near - 0.1f, 0.0f, near));
 		out_reflected = geom::Ray(reflectedPos, geom::math::reflect(testRay.dir, norm_near));
 		out_reflect_dist = near;
 		return true;

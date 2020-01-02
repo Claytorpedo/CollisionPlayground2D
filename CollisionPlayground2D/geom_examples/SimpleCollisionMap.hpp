@@ -10,20 +10,19 @@ namespace game {
 	class SimpleCollisionMap : public geom::CollisionMap {
 	public:
 		std::vector<geom::Collidable*> obstacles;
-		SimpleCollisionMap() {}
-		~SimpleCollisionMap() {
+		~SimpleCollisionMap() override {
 			clear();
 		}
-		virtual const std::vector<geom::Collidable*> getColliding(const geom::Collidable&, const geom::Coord2&) const {
+		const std::vector<geom::Collidable*> getColliding(const geom::Collidable&, geom::Coord2) const override {
 			return std::vector<geom::Collidable*>(obstacles.begin(), obstacles.end());
 		}
 		void add(geom::Collidable* collidable) {
 			obstacles.push_back(collidable);
 		}
-		inline geom::Collidable* operator[](std::size_t index) const {
+		geom::Collidable* operator[](std::size_t index) const {
 			return obstacles[index];
 		}
-		inline std::size_t size() const {
+		std::size_t size() const {
 			return obstacles.size();
 		}
 		void clear() {

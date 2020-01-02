@@ -141,7 +141,7 @@ void Graphics::renderPolyEdgeNormals(const geom::Polygon& p, const geom::Coord2&
 void Graphics::renderCircle(const geom::Circle& c, const geom::Coord2& pos, Uint8 thickness) const {
 	renderCircle(game::util::coord2DToSDLPoint(c.center+pos), static_cast<Uint16>(c.radius), thickness);
 }
-void Graphics::renderShape(const geom::ShapeContainer& s, const geom::Coord2& pos, Uint8 thickness) const {
+void Graphics::renderShape(geom::ConstShapeRef s, const geom::Coord2& pos, Uint8 thickness) const {
 	switch (s.type()) {
 	case geom::ShapeType::RECTANGLE:
 		renderRect(s.rect(), pos, thickness);

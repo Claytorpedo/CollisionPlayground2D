@@ -26,9 +26,9 @@ namespace game {
 	void RotatingRay::update(const game::MS elapsedTime) {
 		if (rot_accel_ == 0.0f) {
 			if (rot_vel_ > 0.0f)
-				rot_vel_ = std::clamp(rot_vel_ - ROT_DECEL * game::Acceleration(elapsedTime), 0.0f, rot_vel_);
+				rot_vel_ = geom::math::clamp(rot_vel_ - ROT_DECEL * game::Acceleration(elapsedTime), 0.0f, rot_vel_);
 			else if (rot_vel_ < 0.0f)
-				rot_vel_ = std::clamp(rot_vel_ + ROT_DECEL * game::Acceleration(elapsedTime), 0.0f, rot_vel_);
+				rot_vel_ = geom::math::clamp(rot_vel_ + ROT_DECEL * game::Acceleration(elapsedTime), 0.0f, rot_vel_);
 		} else {
 			rot_vel_ += rot_accel_ * game::Acceleration(elapsedTime);
 			rot_vel_ = std::clamp(rot_vel_, -MAX_ROT_SPEED, MAX_ROT_SPEED);

@@ -11,12 +11,13 @@ namespace game {
 	RotatingRay::RotatingRay(geom::Ray ray) : ray_(ray), rot_accel_(0), rot_vel_(0) {}
 
 	void RotatingRay::receiveInput(const Input& input) {
-		if ((input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a) || input.isKeyHeld(SDLK_DOWN) || input.isKeyHeld(SDLK_s)) && 
-			(input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d) || input.isKeyHeld(SDLK_UP) || input.isKeyHeld(SDLK_w)) ) {
+		const bool holdingLeftKey = input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a) || input.isKeyHeld(SDLK_DOWN) || input.isKeyHeld(SDLK_s);
+		const bool holdingRightKey = input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d) || input.isKeyHeld(SDLK_UP) || input.isKeyHeld(SDLK_w);
+		if (holdingLeftKey && holdingRightKey) {
 			stopRotating();
-		} else if (input.isKeyHeld(SDLK_LEFT) || input.isKeyHeld(SDLK_a) || input.isKeyHeld(SDLK_DOWN) || input.isKeyHeld(SDLK_s)) {
+		} else if (holdingLeftKey) {
 			rotateCW();
-		} else if (input.isKeyHeld(SDLK_RIGHT) || input.isKeyHeld(SDLK_d) || input.isKeyHeld(SDLK_UP) || input.isKeyHeld(SDLK_w)) {
+		} else if (holdingRightKey) {
 			rotateCCW();
 		} else {
 			stopRotating();

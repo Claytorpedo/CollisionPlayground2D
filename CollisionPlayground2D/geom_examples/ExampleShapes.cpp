@@ -16,20 +16,17 @@ namespace game {
 		_gen_mover();
 	}
 	void ExampleShapes::_gen_mover() {
-		geom::ShapeContainer collider(_gen_example_shape());
-		geom::Coord2 position(gen::coord2(level_region_));
+		geom::ShapeContainer collider = _gen_example_shape();
+		geom::Coord2 position = gen::coord2(level_region_);
 		// Ensure that the mover doesn't start inside another shape (do collision tests until it is put down cleanly).
-		bool isOccupied = false;
-		do {
-			for (std::size_t i = 0; i < NUM_SHAPES; ++i) {
-				if ((isOccupied = geom::overlaps(collider, position, map_[i]->getCollider(), map_[i]->getPosition()))) {
-					collider = _gen_example_shape();
-					position = gen::coord2(level_region_);
-					std::cout << "Spot occupied. Trying somewhere else...\n";
-					break;
-				}
-			}
-		} while (isOccupied);
+		// Just assume that it will always be possible to place the mover...
+		for (;;) {
+			if (std::none_of(map_.obstacles.cbegin(), map_.obstacles.cend(), [&](const auto& obs) { return geom::overlaps(collider, position, obs->getCollider(), obs->getPosition()); }))
+				break;
+			collider = _gen_example_shape();
+			position = gen::coord2(level_region_);
+			std::cout << "Spot occupied. Trying somewhere else...\n";
+		}
 		std::cout << "Mover has entered the level.\n";
 		mover_ = Mover(collider, position);
 	}

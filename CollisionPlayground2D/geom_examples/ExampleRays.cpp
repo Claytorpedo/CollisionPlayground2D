@@ -127,7 +127,7 @@ namespace game {
 		};
 	}
 	void ExampleRays::_draw_reflecting(const Graphics& graphics) const {
-		std::vector<int> indices; // Keep track of shapes that were hit.
+		std::vector<std::size_t> indices; // Keep track of shapes that were hit.
 		std::vector<SDL_Point> reflectPoints;
 		std::size_t numReflects(0), ind;
 		geom::Ray currentRay(rotating_ray_.getRay()), reflectedRay;

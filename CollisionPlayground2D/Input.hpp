@@ -7,9 +7,6 @@
 
 class Input {
 public:
-	Input() : held_keys_(), pressed_keys_(), released_keys_() {}
-	~Input() {}
-
 	// Clear old input and poll for new input.
 	// Returns false if the window was closed, otherwise returns true.
 	bool refresh();

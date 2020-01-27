@@ -1,8 +1,7 @@
-#pragma once
 #ifndef INCLUDE_INPUT_HPP
 #define INCLUDE_INPUT_HPP
 
-#include <map>
+#include <unordered_map>
 #include <SDL.h>
 
 class Input {
@@ -32,10 +31,9 @@ public:
 	bool wasKeyReleased(SDL_Keycode k) const;
 
 private:
-	std::map<SDL_Keycode, bool> held_keys_;
-	std::map<SDL_Keycode, bool> pressed_keys_;
-	std::map<SDL_Keycode, bool> released_keys_;
+	std::unordered_map<SDL_Keycode, bool> held_keys_;
+	std::unordered_map<SDL_Keycode, bool> pressed_keys_;
+	std::unordered_map<SDL_Keycode, bool> released_keys_;
 };
-
 
 #endif // INCLUDE_INPUT_HPP

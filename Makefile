@@ -66,7 +66,7 @@ COMP_FLAGS := -std=c++17 -Wall -Wextra -pedantic
 #Useful to use either package config for an instaled dependency or a direct path to a library (e.g. a submodule):
 #`pkg-config --libs sdl2`
 #-Lpath/to/my/lib/ -lmylib$(CONFIG_APPEND.$(CONFIG))
-LDFLAGS := `pkg-config --libs sdl2` -L$(GEOM)/lib/ -lgeom$(CONFIG_APPEND.$(CONFIG))
+LDFLAGS := -lSDL2 -L$(GEOM)/lib/ -lgeom$(CONFIG_APPEND.$(CONFIG))
 #Set include directories for compilation here, similar to LDFLAGS.
 #`pkg-config --cflags sdl2`
 #-Ipath/to/my/include/dir
@@ -266,7 +266,7 @@ endif
 HELP_REGEX = ^$(IGNORE_REGEX)([.a-zA-Z_-]+):.*?\#\# .*$$
 .PHONY: help
 help:           ## Display this help.
-	@grep -P '$(HELP_REGEX)' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -P '$(HELP_REGEX)' $(firstword $(MAKEFILE_LIST)) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 # Include all dependency files. Use "-" flavour because they might not exist yet (e.g. new file being compiled).
 -include $(DEPS)

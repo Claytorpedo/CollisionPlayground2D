@@ -1,0 +1,7 @@
+# Throw everything together. Good enough for now.
+EXTERNAL := $(sort $(shell find External/Geometry2D/geom/ -name *.cpp))
+LOCAL := $(sort $(shell find "CollisionPlayground2D/" -name "*.cpp"))
+SRCS := $(EXTERNAL) $(LOCAL)
+
+all:
+	emcc $(SRCS) -I External/ -std=c++17 -O2 -s USE_SDL=2 -o examples.js

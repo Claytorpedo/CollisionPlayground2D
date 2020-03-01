@@ -6,8 +6,6 @@
 
 #include "util.hpp"
 
-const std::string Graphics::DEFAULT_WINDOW_TITLE = "Collision Playground 2D";
-
 Graphics::Graphics() : window_(nullptr), renderer_(nullptr) {}
 Graphics::~Graphics() {
 	// Free renderer and window.
@@ -19,7 +17,12 @@ bool Graphics::init(game::Pixel screenWidth, game::Pixel screenHeight) {
 	if ( !SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1") ) { // Set to linear filtering.
 		std::cout << "Warning: Linear filtering could not be enabled.\n";
 	}
-	window_ = SDL_CreateWindow(DEFAULT_WINDOW_TITLE.data(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+	window_ = SDL_CreateWindow("Collision Playground 2D",
+		SDL_WINDOWPOS_UNDEFINED,
+		SDL_WINDOWPOS_UNDEFINED,
+		screenWidth,
+		screenHeight,
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 	if (!window_) {
 		std::cerr << "Error: The window could not be created.\nSDL Error: " << SDL_GetError() << "\n";
 		return false;

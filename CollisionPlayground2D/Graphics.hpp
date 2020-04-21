@@ -1,4 +1,3 @@
-#pragma once
 #ifndef INCLUDE_GRAPHICS_HPP
 #define INCLUDE_GRAPHICS_HPP
 
@@ -31,12 +30,12 @@ public:
 	void renderPoints(const std::vector<SDL_Point>& points, Uint8 pointSize=1) const;
 	void renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickness=1) const;
 	// Render Geometry shapes.
-	void renderRect(const geom::Rect& r, const geom::Coord2& pos, Uint8 thickness=1) const;
-	void renderPoly(const geom::Polygon& p, const geom::Coord2& pos) const;
-	void renderPolyVerts(const geom::Polygon& p, const geom::Coord2& pos, Uint8 pointSize=1) const;
-	void renderPolyEdgeNormals(const geom::Polygon& p, const geom::Coord2& pos, Uint16 length=50) const;
-	void renderCircle(const geom::Circle& c, const geom::Coord2& pos, Uint8 thickness=1) const;
-	void renderShape(geom::ConstShapeRef s, const geom::Coord2& pos, Uint8 thickness = 1) const;
+	void renderRect(const ctp::Rect& r, const ctp::Coord2& pos, Uint8 thickness=1) const;
+	void renderPoly(const ctp::Polygon& p, const ctp::Coord2& pos) const;
+	void renderPolyVerts(const ctp::Polygon& p, const ctp::Coord2& pos, Uint8 pointSize=1) const;
+	void renderPolyEdgeNormals(const ctp::Polygon& p, const ctp::Coord2& pos, Uint16 length=50) const;
+	void renderCircle(const ctp::Circle& c, const ctp::Coord2& pos, Uint8 thickness=1) const;
+	void renderShape(ctp::ConstShapeRef s, const ctp::Coord2& pos, Uint8 thickness = 1) const;
 
 	void setWindowTitle(const std::string& text);
 

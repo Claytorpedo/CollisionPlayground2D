@@ -1,4 +1,3 @@
-#pragma once
 #ifndef INCLUDE_COLOURS_HPP
 #define INCLUDE_COLOURS_HPP
 

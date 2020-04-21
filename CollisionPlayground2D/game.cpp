@@ -29,7 +29,7 @@
 using namespace game;
 
 namespace {
-const geom::Rect LEVEL_REGION = geom::Rect{160, 80, SCREEN_WIDTH - 320, SCREEN_HEIGHT - 160};
+const ctp::Rect LEVEL_REGION = ctp::Rect{160, 80, SCREEN_WIDTH - 320, SCREEN_HEIGHT - 160};
 constexpr std::array<std::string_view, 7> EXAMPLE_NAMES{
 	" - Example 1: Rectangles",
 	" - Example 2: Polygons",

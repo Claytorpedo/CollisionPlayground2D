@@ -114,12 +114,12 @@ void Graphics::renderCircle(const SDL_Point& center, Uint16 radius, Uint8 thickn
 	SDL_RenderDrawPoints(renderer_, points.data(), points.size());
 }
 
-void Graphics::renderRect(const geom::Rect& r, const geom::Coord2& pos, Uint8 thickness) const {
+void Graphics::renderRect(const ctp::Rect& r, const ctp::Coord2& pos, Uint8 thickness) const {
 	SDL_Rect rect = { static_cast<int>(r.x+pos.x), static_cast<int>(r.y+pos.y), static_cast<int>(r.w), static_cast<int>(r.h) };
 	renderRect(rect, thickness);
 }
 
-void Graphics::renderPoly(const geom::Polygon& p, const geom::Coord2& pos) const {
+void Graphics::renderPoly(const ctp::Polygon& p, const ctp::Coord2& pos) const {
 	std::vector<SDL_Point> points;
 	points.reserve(p.size() + 1);
 	for (std::size_t i = 0; i < p.size(); ++i)
@@ -127,32 +127,32 @@ void Graphics::renderPoly(const geom::Polygon& p, const geom::Coord2& pos) const
 	points.push_back(game::util::coord2DToSDLPoint(p[0] + pos)); // Close the polygon.
 	renderLines(points);
 }
-void Graphics::renderPolyVerts(const geom::Polygon& p, const geom::Coord2& pos, Uint8 pointSize) const {
+void Graphics::renderPolyVerts(const ctp::Polygon& p, const ctp::Coord2& pos, Uint8 pointSize) const {
 	const size_t size = p.size();
 	for (std::size_t i = 0; i < size; ++i)
 		renderPoint(game:: util::coord2DToSDLPoint(p[i]+pos), pointSize);
 }
-void Graphics::renderPolyEdgeNormals(const geom::Polygon& p, const geom::Coord2& pos, Uint16 length) const {
+void Graphics::renderPolyEdgeNormals(const ctp::Polygon& p, const ctp::Coord2& pos, Uint16 length) const {
 	const size_t size = p.size();
-	const geom::Coord2 twoPos = pos * 2.0f;
+	const ctp::Coord2 twoPos = pos * 2.0f;
 	for (std::size_t i = 0, k = size - 1; i < size; k = i++) {
-		const geom::Coord2 start((p[k] + p[i] + twoPos) * 0.5f);
-		const geom::Coord2 end(start + p.getEdgeNorm(k) * length);
+		const ctp::Coord2 start((p[k] + p[i] + twoPos) * 0.5f);
+		const ctp::Coord2 end(start + p.getEdgeNorm(k) * length);
 		renderLine(game::util::coord2DToSDLPoint(start), game::util::coord2DToSDLPoint(end));
 	}
 }
-void Graphics::renderCircle(const geom::Circle& c, const geom::Coord2& pos, Uint8 thickness) const {
+void Graphics::renderCircle(const ctp::Circle& c, const ctp::Coord2& pos, Uint8 thickness) const {
 	renderCircle(game::util::coord2DToSDLPoint(c.center+pos), static_cast<Uint16>(c.radius), thickness);
 }
-void Graphics::renderShape(geom::ConstShapeRef s, const geom::Coord2& pos, Uint8 thickness) const {
+void Graphics::renderShape(ctp::ConstShapeRef s, const ctp::Coord2& pos, Uint8 thickness) const {
 	switch (s.type()) {
-	case geom::ShapeType::RECTANGLE:
+	case ctp::ShapeType::RECTANGLE:
 		renderRect(s.rect(), pos, thickness);
 		break;
-	case geom::ShapeType::POLYGON:
+	case ctp::ShapeType::POLYGON:
 		renderPoly(s.poly(), pos);
 		break;
-	case geom::ShapeType::CIRCLE:
+	case ctp::ShapeType::CIRCLE:
 		renderCircle(s.circle(), pos, thickness);
 		break;
 	default:

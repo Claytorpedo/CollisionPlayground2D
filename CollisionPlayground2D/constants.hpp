@@ -1,4 +1,3 @@
-#pragma once
 #ifndef INCLUDE_CONSTANTS_HPP
 #define INCLUDE_CONSTANTS_HPP
 

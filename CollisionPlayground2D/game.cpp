@@ -26,8 +26,7 @@
 #include <emscripten.h>
 #endif
 
-using namespace game;
-
+namespace game {
 namespace {
 const ctp::Rect LEVEL_REGION = ctp::Rect{160, 80, SCREEN_WIDTH - 320, SCREEN_HEIGHT - 160};
 constexpr std::array<std::string_view, 7> EXAMPLE_NAMES{
@@ -153,3 +152,4 @@ int game::run(int, char* []) {
 	close();
 	return 0;
 }
+} // namespace game

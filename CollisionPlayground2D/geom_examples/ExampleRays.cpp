@@ -20,8 +20,8 @@ const Colour ExampleRays::HIT_POINT_COLOUR = Colour::CYAN;
 const Colour ExampleRays::RAY_REFLECT_COLOURS[] = {RAY_COLOUR, Colour::LIGHT_GREEN, Colour::FUCHSIA, Colour::ORANGE};
 const std::size_t ExampleRays::NUM_REFLECT_COLOURS = 4;
 
-ExampleRays::ExampleRays(ExampleType type, const ctp::Rect& levelRegion) : type_(type), level_region_(levelRegion),
-rotating_ray_(ctp::Ray(level_region_.center(), ctp::Coord2(1, 0))) {
+ExampleRays::ExampleRays(ExampleType type, const ctp::Rect& levelRegion)
+	: type_(type), level_region_(levelRegion), rotating_ray_{ctp::Ray{level_region_.center(), ctp::Coord2(1, 0)}} {
 	_init();
 }
 void ExampleRays::_init() {
@@ -103,7 +103,7 @@ bool ExampleRays::_find_reflection(ctp::Ray testRay, std::size_t& out_ind, ctp::
 		norm_near = -norm_far; // Reflect inside the shape.
 	}
 	const ctp::Coord2 reflectedPos(testRay.origin + testRay.dir * std::clamp(near - 0.1f, 0.0f, near));
-	out_reflected = ctp::Ray(reflectedPos, ctp::math::reflect(testRay.dir, norm_near));
+	out_reflected = {reflectedPos, ctp::math::reflect(testRay.dir, norm_near)};
 	out_reflect_dist = near;
 	return true;
 }

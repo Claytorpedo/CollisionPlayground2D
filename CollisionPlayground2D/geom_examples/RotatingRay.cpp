@@ -7,7 +7,7 @@ const game::Velocity RotatingRay::MAX_ROT_SPEED = 0.05f;
 const game::Acceleration RotatingRay::ROT_ACCEL = 0.0001f;
 const game::Acceleration RotatingRay::ROT_DECEL = 0.0004f;
 
-RotatingRay::RotatingRay() : ray_(ctp::Coord2(0, 0), ctp::Coord2(1, 0)), rot_accel_(0), rot_vel_(0) {}
+RotatingRay::RotatingRay() : ray_{ctp::Coord2(0, 0), ctp::Coord2(1, 0)}, rot_accel_(0), rot_vel_(0) {}
 RotatingRay::RotatingRay(ctp::Ray ray) : ray_(ray), rot_accel_(0), rot_vel_(0) {}
 
 void RotatingRay::receiveInput(const Input& input) {

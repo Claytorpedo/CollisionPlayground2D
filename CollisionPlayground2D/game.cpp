@@ -58,13 +58,13 @@ void closeWithError() {
 }
 
 constexpr int FPS_SMOOTHING = 20; // Get an average over several frames.
-std::vector<game::FPS> fps_counter_;
+std::vector<FPS> fps_counter_;
 std::string getFPS() {
 	if (fps_counter_.size() >= FPS_SMOOTHING)
 		fps_counter_.erase(fps_counter_.begin());
 	fps_counter_.emplace_back(util::millisToFPS(elapsedTime));
 
-	game::FPS ave = std::accumulate(fps_counter_.cbegin(), fps_counter_.cend(), 0);
+	FPS ave = std::accumulate(fps_counter_.cbegin(), fps_counter_.cend(), 0);
 	std::ostringstream stream;
 	stream << "FPS: " << ave / fps_counter_.size() << " - ";
 	return stream.str();
@@ -116,7 +116,7 @@ update() {
 	previousTime = currentTime;
 	example->update(input, elapsedTime);
 
-	graphics.clear(game::BACKGROUND_COLOUR);
+	graphics.clear(BACKGROUND_COLOUR);
 	example->draw(graphics);
 	std::string windowTitle = getFPS();
 	windowTitle.reserve(windowTitle.size() + WINDOW_TITLE.size() + EXAMPLE_NAMES[exampleNum].size());
@@ -131,10 +131,10 @@ update() {
 }
 } // namespace
 
-int game::run(int, char* []) {
+int run(int, char* []) {
 	gen::init();
 
-	if (!graphics.init(game::SCREEN_WIDTH, game::SCREEN_HEIGHT)) {
+	if (!graphics.init(SCREEN_WIDTH, SCREEN_HEIGHT)) {
 		std::cerr << "Error: Failed to initialize graphics.\n";
 		closeWithError();
 		return -1;
